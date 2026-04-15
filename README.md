@@ -362,7 +362,6 @@ See [docs/PRIOR_ART.md](docs/PRIOR_ART.md) for a detailed comparison. The short 
 | OpenAPI | API response shapes | Full page lifecycle from ingestion to indexation |
 | WordPress/Drupal | Human editorial workflow | Multi-agent production at programmatic scale |
 | Anthropic Skills | What agents know how to do | What agents are *not allowed* to do |
-| PrescientIQ / Metaflow | Pre-publish quality gates for pSEO | Continuous graduation/degradation + snapshot boundaries + link graph rules |
 
 The novelty is not in any single component. It's in the **continuous lifecycle** — pages that automatically graduate and degrade between quality tiers based on data freshness, governed by contracts that coordinate multiple agents through snapshot boundaries and link graph rules, proven in production with measurable SEO outcomes.
 
