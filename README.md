@@ -2,11 +2,9 @@
 
 **A governance framework for AI agents that build websites.**
 
-Constitutional CMS is not a content management system. It's a contract system. It defines what autonomous AI agents are *permitted to publish* — and what they are not.
+CMS used to mean Content Management System — software for humans who write pages. Constitutional CMS manages the *contracts* that govern what AI agents are permitted to publish. Same acronym, different era.
 
-Traditional CMS platforms (WordPress, Webflow, Drupal, Shopify) answer one question: **how does a human build a website?**
-
-Constitutional CMS answers a different question: **how do you prevent multiple AI agents from breaking a website they're building simultaneously?**
+WordPress, Webflow, Drupal, and Shopify were designed for human authors. They still work for that. Constitutional CMS is designed for the gap that opens when **agents become the authors** — and nobody is checking whether the 400th page they generated has valid data, working links, or enough substance to deserve a spot in Google's index.
 
 ---
 
@@ -285,12 +283,13 @@ These apply to every agent in the system, regardless of role.
 
 ---
 
-## What This Is Not
+## Scope
 
-- **Not a CMS.** There is no editor, no admin panel, no content entry UI. Agents produce content. Contracts govern it.
-- **Not an agent framework.** It doesn't orchestrate agents, route messages, or manage tool access. Use CrewAI, LangGraph, Claude Code, or whatever you want. Constitutional CMS is the governance layer that sits above your framework.
-- **Not a CI/CD tool.** It doesn't run tests or deploy code. It defines what the tests should verify and what "deployed correctly" means.
-- **Not specific to any tech stack.** The contracts are YAML. The agents can be Claude, GPT, Codex, local models, or humans. The backend can be anything. The frontend can be anything.
+Constitutional CMS governs **what agents publish**. It does not:
+
+- **Orchestrate agents.** It doesn't route messages or manage tool access. Use CrewAI, LangGraph, Claude Code, Codex, or whatever you want. Constitutional CMS is the governance layer that sits above your agent framework.
+- **Run tests or deploy code.** It defines what the tests should verify and what "deployed correctly" means. Your CI/CD pipeline enforces it.
+- **Depend on any specific tech stack.** The contracts are YAML. The agents can be Claude, GPT, Codex, local models, or humans. The backend, frontend, and hosting are your choice. The production proof below runs on Railway + Supabase + Cloudflare, but nothing in the spec requires that.
 
 ---
 
@@ -302,8 +301,10 @@ This framework governs [SERPRadio](https://serpradio.com), a programmatic flight
 - **54ms** median TTFB
 - **Lighthouse** accessibility 100, SEO 100
 - **~$107/month** total infrastructure (Railway + Supabase + Cloudflare)
-- **Zero hand-written pages** — all agent-produced, contract-governed
+- **Zero hand-written pages** — all agent-produced, human-reviewed, contract-governed
 - **4 AI agents**, 7 repos, 19 PRs merged in a single session with zero audit failures
+
+The agents write the code and produce the content. The human writes the contracts, reviews the PRs, and applies the migrations. The contracts prevent the agents from breaking each other's work.
 
 ---
 
@@ -321,7 +322,7 @@ constitutional-cms/
 │   └── sprints/                       # Sprint-scoped work contracts
 │       └── example-sprint.yaml
 ├── examples/
-│   ├── travel-intelligence/           # Travel routing example
+│   ├── location-intelligence/         # Location intelligence example
 │   │   ├── page_types.yaml
 │   │   ├── enrichment_stages.yaml
 │   │   └── link_rules.yaml
@@ -356,13 +357,14 @@ See [docs/PRIOR_ART.md](docs/PRIOR_ART.md) for a detailed comparison. The short 
 
 | Tool | What it governs | What Constitutional CMS adds |
 |------|----------------|------------------------------|
+| Microsoft Agent Governance Toolkit | Agent runtime security (permissions, tool access, kill switches) | Content-specific governance: publish tiers, link graphs, schema emission |
 | OPA/Rego | Infrastructure access policies | Content quality and publish-tier gating |
 | OpenAPI | API response shapes | Full page lifecycle from ingestion to indexation |
-| JSON Schema | Data validation | Agent ownership boundaries and coordination |
 | WordPress/Drupal | Human editorial workflow | Multi-agent production at programmatic scale |
 | Anthropic Skills | What agents know how to do | What agents are *not allowed* to do |
+| PrescientIQ / Metaflow | Pre-publish quality gates for pSEO | Continuous graduation/degradation + snapshot boundaries + link graph rules |
 
-The novelty is not in any single component. It's in applying governance contracts to the specific problem of **multiple AI agents building web content simultaneously** — with publish-tier degradation, snapshot boundaries, and link graph rules that produce measurable SEO outcomes.
+The novelty is not in any single component. It's in the **continuous lifecycle** — pages that automatically graduate and degrade between quality tiers based on data freshness, governed by contracts that coordinate multiple agents through snapshot boundaries and link graph rules, proven in production with measurable SEO outcomes.
 
 ---
 

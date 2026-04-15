@@ -1,0 +1,48 @@
+# Location Intelligence - Link Graph Rules
+
+rules:
+  - name: no_phantom_links
+    description: "Never emit a link to a URL not in the location registry"
+    applies_to: all_page_types
+    enforcement: hard_block
+
+  - name: shell_isolation
+    description: "SHELL-tier location pages do not emit outbound links"
+    applies_to: pages_at_tier_SHELL
+    enforcement: hard_block
+
+  - name: region_to_locations
+    description: "Region pages link to active child locations"
+    applies_to: region_page
+    allowed_targets: [location_page]
+    constraint: "target.region_code == source.region_code AND target.tier >= BASIC"
+    enforcement: hard_block
+
+  - name: location_to_region
+    description: "Location pages link back to their parent region"
+    applies_to: location_page
+    allowed_targets: [region_page]
+    constraint: "target.region_code == source.region_code"
+    enforcement: hard_block
+
+  - name: cluster_siblings
+    description: "Location pages link to related locations in the same cluster"
+    applies_to: location_page
+    allowed_targets: [location_page]
+    constraint: "target.location_cluster == source.location_cluster AND target.tier >= BASIC"
+    max_links: 8
+    enforcement: soft_warn
+
+  - name: analysis_to_parent
+    description: "Analysis pages link only to their parent location page"
+    applies_to: analysis_page
+    allowed_targets: [location_page]
+    constraint: "target.location_id == source.location_id"
+    enforcement: hard_block
+
+  - name: no_analysis_below_basic
+    description: "Suppress analysis links if parent location is below BASIC"
+    applies_to: location_page
+    constraint: "only emit analysis links if source.tier >= BASIC"
+    enforcement: hard_block
+    rationale: "Can't publish timing analysis without qualifying baseline data"

@@ -26,6 +26,22 @@
 | **AutoGen** | Multi-agent conversation | Agents negotiate through conversation. Constitutional CMS removes the need for negotiation — the contract is the agreement. |
 | **Anthropic Skills** | Packaged expertise folders | Skills teach agents what to do. Constitutional CMS teaches agents what they cannot do. Complementary, not competing. |
 
+## Agent Governance
+
+| Tool | What It Governs | How Constitutional CMS Differs |
+|------|----------------|-------------------------------|
+| **Microsoft Agent Governance Toolkit** (April 2026, MIT license) | Runtime security for autonomous agents: capability sandboxing, identity trust scoring, circuit breakers, kill switches. Maps to all 10 OWASP agentic AI risks. | Microsoft governs agent *actions* in infrastructure — what tools they can access, what permissions they have, when to kill a rogue process. Constitutional CMS governs agent *output* on the web — what content quality tier a page earns, what links it can emit, what schema it deserves. Different domain entirely. |
+| **OWASP Top 10 for Agentic Applications** (Dec 2025) | Risk taxonomy: goal hijacking, tool misuse, cascading failures, rogue agents | A threat model, not an implementation. Constitutional CMS is an implementation pattern that addresses a subset of these risks (cascading failures, contract drift) specifically for web content production. |
+| **Singapore IMDA Model AI Governance Framework** (Jan 2026) | Government-level framework for agentic AI governance: action-space scoping, autonomy levels, human oversight | Policy guidance for enterprises. Constitutional CMS is a concrete YAML-based spec that developers can clone and run today. Complementary layers — one is policy, the other is implementation. |
+
+## Programmatic SEO Governance
+
+| Tool | What It Does | How Constitutional CMS Differs |
+|------|-------------|-------------------------------|
+| **PrescientIQ** | Pre-flight checks that stop bad pages from reaching the sitemap. Dynamic indexing logic to preserve crawl budget. | Pass/fail at publish time. Constitutional CMS adds **continuous lifecycle** — a page published today as FULL can degrade to SHELL tomorrow when its data goes stale, and graduate back when the pipeline recovers. No human intervention. PrescientIQ gates once. Constitutional CMS governs continuously. |
+| **Metaflow** | Multi-agent pSEO pipeline: separate agents for ingestion, generation, QA, and publish decisions. | Structurally similar pipeline, but Metaflow is a hosted platform for building those pipelines. Constitutional CMS is a governance spec you bring to your own stack. Metaflow also lacks snapshot boundary enforcement and declarative link graph rules. |
+| **AirOps** | Workflow-based programmatic content generation with templates and quality thresholds. | Content factory, not governance spec. AirOps builds the pages. Constitutional CMS defines what the pages must satisfy to exist at each quality tier. |
+
 ## CI/CD & Quality Tools
 
 | Tool | What It Checks | How Constitutional CMS Differs |
@@ -36,6 +52,13 @@
 
 ## The Gap This Fills
 
-None of the tools above were designed for the workflow: "multiple AI agents producing web content from data pipelines at programmatic scale, where content quality directly affects search engine credibility."
+Agent governance toolkits (Microsoft) govern what agents are *allowed to do*. Programmatic SEO platforms (Metaflow, AirOps) govern content quality *at publish time*. Traditional CMS platforms (WordPress, Drupal) govern *human* editorial workflows.
 
-Constitutional CMS sits in the gap between agent frameworks (which coordinate work) and content platforms (which manage human editorial workflows). It governs agent-produced content with the rigor of infrastructure policy and the domain awareness of SEO tooling.
+Constitutional CMS fills the specific gap between these:
+
+1. **Continuous lifecycle governance** — not just pass/fail at publish, but ongoing graduation and degradation as data freshness changes
+2. **Snapshot boundaries** — structural rules preventing multi-agent contract drift on shared data, specific to web content production
+3. **Declarative link graph rules** — preventing broken internal links at generation time, not auditing them after the fact
+4. **A portable spec, not a platform** — YAML contracts you bring to your own stack, not a hosted service you depend on
+
+The closest competitor to Constitutional CMS is a team that writes good internal documentation about how their agents should behave. The difference is that documentation is advisory. Contracts are enforceable.
