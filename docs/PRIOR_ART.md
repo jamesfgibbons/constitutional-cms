@@ -38,9 +38,7 @@
 
 | Tool | What It Does | How Constitutional CMS Differs |
 |------|-------------|-------------------------------|
-| **PrescientIQ** | Pre-flight checks that stop bad pages from reaching the sitemap. Dynamic indexing logic to preserve crawl budget. | Pass/fail at publish time. Constitutional CMS adds **continuous lifecycle** — a page published today as FULL can degrade to SHELL tomorrow when its data goes stale, and graduate back when the pipeline recovers. No human intervention. PrescientIQ gates once. Constitutional CMS governs continuously. |
-| **Metaflow** | Multi-agent pSEO pipeline: separate agents for ingestion, generation, QA, and publish decisions. | Structurally similar pipeline, but Metaflow is a hosted platform for building those pipelines. Constitutional CMS is a governance spec you bring to your own stack. Metaflow also lacks snapshot boundary enforcement and declarative link graph rules. |
-| **AirOps** | Workflow-based programmatic content generation with templates and quality thresholds. | Content factory, not governance spec. AirOps builds the pages. Constitutional CMS defines what the pages must satisfy to exist at each quality tier. |
+| **Hosted publishing platforms** | Content generation workflows, quality thresholds, and publish-time gating for scaled content systems. | Constitutional CMS is not a hosted platform. It is a portable governance spec with continuous graduation/degradation, snapshot boundaries, and declarative link graph rules. |
 
 ## CI/CD & Quality Tools
 
@@ -52,7 +50,7 @@
 
 ## The Gap This Fills
 
-Agent governance toolkits (Microsoft) govern what agents are *allowed to do*. Programmatic SEO platforms (Metaflow, AirOps) govern content quality *at publish time*. Traditional CMS platforms (WordPress, Drupal) govern *human* editorial workflows.
+Agent governance toolkits (Microsoft) govern what agents are *allowed to do*. Hosted publishing platforms govern content quality *at publish time*. Traditional CMS platforms (WordPress, Drupal) govern *human* editorial workflows.
 
 Constitutional CMS fills the specific gap between these:
 

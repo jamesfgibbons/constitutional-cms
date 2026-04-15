@@ -68,9 +68,7 @@ The agent governance space is moving fast. Here's who's adjacent:
 
 **Microsoft Agent Governance Toolkit** (released April 2, 2026 under MIT) addresses all 10 OWASP agentic AI risks with runtime security — capability sandboxing, trust scoring, circuit breakers. It governs agent *permissions and actions*, not agent *content output*. Different domain, but it owns the "agent governance" keyword space.
 
-**PrescientIQ** calls itself "the governance layer" for programmatic SEO, with pre-flight checks and dynamic indexing logic. It gates at publish time — pass or fail. It does not do continuous graduation/degradation based on data freshness.
-
-**Metaflow** runs multi-agent pSEO pipelines with separate agents for ingestion, generation, QA, and publish decisions. Structurally similar to Constitutional CMS's enrichment stages, but it's a hosted platform, not a portable spec. It lacks snapshot boundary enforcement and link graph rules.
+**Hosted publishing platforms** can provide pre-flight checks, dynamic indexing logic, and agent-assisted publishing workflows. They generally gate at publish time. Constitutional CMS is different because it treats governance as a portable spec with continuous graduation/degradation, snapshot boundaries, and link graph rules.
 
 **OWASP Agentic Top 10** and the **Singapore IMDA governance framework** are policy documents, not implementations. They define what risks exist. Constitutional CMS is one implementation that addresses a subset of those risks for web content specifically.
 
@@ -81,5 +79,3 @@ Nobody else has the combination of continuous publish-tier lifecycle + snapshot 
 ## The Honest Summary
 
 Constitutional CMS is a novel *application* of established *principles* to a *new problem*. The principles (policy-as-code, separation of concerns, quality gates) are proven. The problem (governing multi-agent web content production with continuous data-driven quality tiers) is new. The specific combination — publish-tier graduation/degradation, snapshot boundaries, link graph rules, contract-based agent coordination — doesn't exist anywhere else as a portable spec, and it's proven in production with measurable results.
-
-The risk is that this pattern is simple enough that a well-resourced team could rebuild it in a quarter. The advantage is that Targeted Impressions has already run it in production and has the receipts.
