@@ -368,4 +368,4 @@ The novelty is not in any single component. It's in the **continuous lifecycle**
 
 ---
 
-*Targeted Impressions LLC — [constitutionalcms.com](https://constitutionalcms.com)*
+*Targeted Impressions LLC — [targetedimpressions.com](https://targetedimpressions.com)*
