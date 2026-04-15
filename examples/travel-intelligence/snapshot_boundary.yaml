@@ -1,0 +1,13 @@
+principle: "The snapshot table is the contract between write agents and read agents"
+
+boundaries:
+  write_agents: [agent_1, agent_5]
+  read_agents: [agent_2]
+  verify_agents: [agent_3]
+
+rules:
+  - "Write agents publish snapshot state. Read agents consume it."
+  - "Read agents never compute primary route data at render time."
+  - "Schema changes require an explicit migration and review."
+
+failure_mode: "fail_safe_not_silent"

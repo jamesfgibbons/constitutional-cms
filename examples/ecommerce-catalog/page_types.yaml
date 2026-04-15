@@ -1,0 +1,97 @@
+# E-commerce Product Catalog - Page Type Contracts
+# Example for an agent-built product intelligence site
+
+product_page:
+  description: "Product detail page with pricing, reviews, and competitive analysis"
+  url_pattern: "/products/{category}/{product-slug}"
+  
+  tiers:
+    FULL:
+      required_fields:
+        - product_name
+        - price_usd
+        - description_block    # LLM-generated, 500+ words
+        - specifications[]     # at least 5 specs
+        - review_summary       # aggregated from review data
+        - competitive_position # price percentile vs competitors
+        - json_ld_product
+        - images[]             # at least 1 image URL
+      min_word_count: 500
+      schema_emission: true
+      internal_links: true
+      
+    BASIC:
+      required_fields:
+        - product_name
+        - price_usd
+        - specifications[]
+      min_word_count: 150
+      schema_emission: true
+      internal_links: true
+      
+    SHELL:
+      required_fields:
+        - product_name
+        - category
+      schema_emission: false
+      internal_links: false
+      noindex: true
+      
+    SUPPRESS:
+      trigger: "Product discontinued AND no pricing in 90+ days"
+
+  degradation_rules:
+    - condition: "price_usd is null OR last_price_check > 7 days"
+      action: "degrade to SHELL"
+    - condition: "images[] is empty"
+      action: "cap at BASIC"
+
+category_page:
+  description: "Category hub listing products with filtering and trends"
+  url_pattern: "/products/{category}"
+  
+  tiers:
+    FULL:
+      required_fields:
+        - category_name
+        - child_products[]     # at least 10 products at BASIC+
+        - price_range          # min/max across active products
+        - trend_narrative      # LLM-generated market analysis
+      min_word_count: 300
+      schema_emission: true
+      internal_links: true
+      
+    BASIC:
+      required_fields:
+        - category_name
+        - child_products[]     # at least 3 products
+      min_word_count: 100
+      schema_emission: true
+      
+    SHELL:
+      required_fields:
+        - category_name
+      schema_emission: false
+
+comparison_page:
+  description: "Head-to-head product comparison (entity × entity combination)"
+  url_pattern: "/compare/{product-a}-vs-{product-b}"
+  
+  tiers:
+    FULL:
+      required_fields:
+        - product_a_snapshot    # must be BASIC tier or above
+        - product_b_snapshot    # must be BASIC tier or above
+        - comparison_narrative  # LLM-generated analysis
+        - spec_diff_table       # deterministic spec comparison
+        - price_history_both    # price trend for both products
+      min_word_count: 600
+      schema_emission: true
+      
+    SHELL:
+      required_fields:
+        - product_a_name
+        - product_b_name
+      trigger: "Either product is below BASIC tier"
+      schema_emission: false
+      noindex: true

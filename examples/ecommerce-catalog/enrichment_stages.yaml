@@ -1,0 +1,44 @@
+# E-commerce Catalog - Enrichment Stage Contracts
+
+stages:
+  - name: price_ingestion
+    description: "Ingest product prices from supplier feeds and scraping"
+    writes_to: price_observations
+    owner: agent_1
+    schedule: "0 */4 * * *"
+    quality_gate:
+      - "price_usd > 0"
+      - "currency is valid ISO 4217"
+      - "product_id exists in product_catalog"
+    cost_per_run: "$0.00"
+
+  - name: review_aggregation
+    description: "Aggregate reviews from multiple sources"
+    writes_to: review_summaries
+    owner: agent_1
+    schedule: "0 2 * * *"
+    quality_gate:
+      - "review_count >= 1"
+      - "average_rating between 1.0 and 5.0"
+      - "source attribution present"
+
+  - name: product_snapshot
+    description: "Materialize complete product state"
+    reads_from: [price_observations, review_summaries, product_catalog]
+    writes_to: product_snapshots
+    owner: agent_1
+    schedule: "*/10 * * * *"
+    quality_gate:
+      - "snapshot.updated_at < 30 minutes"
+
+  - name: product_narrative
+    description: "LLM-generated product descriptions and competitive analysis"
+    reads_from: product_snapshots
+    writes_to: product_narratives
+    owner: agent_5
+    schedule: "0 5 * * *"
+    quality_gate:
+      - "word_count >= 500"
+      - "no price claims outside snapshot data"
+      - "competitive_position sourced from price_percentile, not hallucinated"
+    cost_per_run: "$0.03/product"

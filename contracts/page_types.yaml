@@ -1,0 +1,53 @@
+# Page Type Contracts
+# Define what data each page type requires at each quality tier.
+# 
+# Tiers (highest to lowest):
+#   FULL     - Complete page with all enrichment. Schema emits. Links active.
+#   BASIC    - Minimum viable page. Core data present. Schema emits.
+#   SHELL    - Placeholder. Entity exists but data insufficient. No schema. No links. Noindex.
+#   SUPPRESS - Removed from sitemap entirely. Returns 404.
+#
+# Pages automatically graduate and degrade between tiers based on data quality.
+# No human editorial decision required.
+
+# --- Replace this example with your domain's page types ---
+
+example_entity_page:
+  description: "A page about a single entity in your domain"
+  url_pattern: "/{entity-type}/{entity-slug}"
+  
+  tiers:
+    FULL:
+      required_fields:
+        - entity_name
+        - primary_metric        # The main number (price, score, rating, etc.)
+        - narrative_block        # LLM-generated content
+        - json_ld_schema         # Structured data
+      min_word_count: 800
+      schema_emission: true
+      internal_links: true
+      
+    BASIC:
+      required_fields:
+        - entity_name
+        - primary_metric
+      min_word_count: 200
+      schema_emission: true
+      internal_links: true
+      
+    SHELL:
+      required_fields:
+        - entity_name
+      min_word_count: 0
+      schema_emission: false
+      internal_links: false
+      noindex: true
+      
+    SUPPRESS:
+      trigger: "Entity deprecated or data source permanently unavailable"
+
+  degradation_rules:
+    - condition: "primary_metric is null OR last_observation > staleness_threshold"
+      action: "degrade to SHELL"
+    - condition: "narrative_block is null"
+      action: "cap at BASIC"

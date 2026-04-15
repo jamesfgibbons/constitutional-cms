@@ -1,0 +1,48 @@
+# Enrichment Stage Contracts
+# Define the pipeline stages that produce page data.
+# Each stage has exactly one owner. No two agents write the same table.
+
+stages:
+  - name: data_ingestion
+    description: "Ingest raw data from external sources"
+    writes_to: raw_observations
+    owner: agent_1
+    schedule: "0 */6 * * *"    # Every 6 hours
+    quality_gate:
+      - "Required fields are not null"
+      - "Values within expected ranges"
+      - "Duplicate detection passes"
+    cost_per_run: "$0.00"       # Document LLM/API costs
+
+  - name: snapshot_materialization
+    description: "Compute derived state from raw data"
+    reads_from: [raw_observations]
+    writes_to: entity_snapshots
+    owner: agent_1
+    schedule: "*/5 * * * *"     # Every 5 minutes
+    quality_gate:
+      - "snapshot.updated_at < staleness_threshold"
+      - "All computed fields within valid ranges"
+
+  - name: narrative_enrichment
+    description: "LLM-generated content for entity pages"
+    reads_from: entity_snapshots
+    writes_to: narrative_blocks
+    owner: agent_5
+    schedule: "0 4 * * *"       # Daily at 4 AM
+    quality_gate:
+      - "word_count >= min_word_count for target tier"
+      - "No confabulated statistics (all numbers from snapshot)"
+      - "Voice compliance check passes"
+      - "Entity density >= 3 named entities"
+    cost_per_run: "$0.05/entity" # Document this honestly
+
+  - name: schema_assembly
+    description: "Deterministic JSON-LD construction"
+    reads_from: entity_snapshots
+    writes_to: schema_cache
+    owner: agent_1
+    quality_gate:
+      - "Page must be BASIC tier or above"
+      - "All schema fields sourced from snapshot (never computed at render time)"
+      - "Schema validates against schema.org spec"
