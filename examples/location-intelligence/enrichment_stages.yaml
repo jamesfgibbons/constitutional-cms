@@ -1,0 +1,58 @@
+# Location Intelligence - Enrichment Stage Contracts
+
+stages:
+  - name: signal_collection
+    description: "Collect observed metrics from the primary source API"
+    writes_to: source_observations
+    owner: agent_1
+    schedule: "0 1 * * *"
+    quality_gate:
+      - "source_label is not 'Various' or 'Unknown'"
+      - "primary_metric > 0 AND primary_metric < 50000"
+      - "observation_type is in the approved observation set"
+      - "entity exists in the tracked entity registry"
+    cost_per_run: "$0.00"
+
+  - name: ops_ingestion
+    description: "Operational and environmental signals for each location"
+    writes_to: operational_data
+    owner: agent_1
+    schedule: "*/30 * * * *"
+    quality_gate:
+      - "source_timestamp within last 2 hours"
+      - "location_code passes source validation"
+    cost_per_run: "$0.00"
+
+  - name: location_snapshot
+    description: "Materialize complete location state from all sources"
+    reads_from: [source_observations, operational_data]
+    writes_to: location_state_snapshots
+    owner: agent_1
+    schedule: "*/5 * * * *"
+    quality_gate:
+      - "normalized state scores each between 0.0 and 1.0"
+      - "classification label is in the approved taxonomy"
+      - "snapshot.updated_at < staleness_threshold"
+
+  - name: analysis_views
+    description: "SQL materialized views for timing and trend analysis"
+    reads_from: source_observations
+    writes_to: analysis_views
+    owner: agent_1
+    schedule: "0 3 * * *"
+    quality_gate:
+      - "min_observations >= 30 for statistical significance"
+      - "date ranges span at least 14 days"
+
+  - name: narrative_enrichment
+    description: "LLM-generated location intelligence briefs"
+    reads_from: location_state_snapshots
+    writes_to: location_narratives
+    owner: agent_5
+    schedule: "0 4 * * *"
+    quality_gate:
+      - "word_count >= 800"
+      - "entity_density >= 3 named entities"
+      - "no confabulated metrics (all numeric claims come from snapshot)"
+      - "voice is analytical, not promotional"
+    cost_per_run: "$0.05/location"

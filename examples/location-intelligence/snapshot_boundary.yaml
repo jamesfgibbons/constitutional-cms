@@ -7,7 +7,7 @@ boundaries:
 
 rules:
   - "Write agents publish snapshot state. Read agents consume it."
-  - "Read agents never compute primary route data at render time."
+  - "Read agents never compute primary location data at render time."
   - "Schema changes require an explicit migration and review."
 
 failure_mode: "fail_safe_not_silent"
