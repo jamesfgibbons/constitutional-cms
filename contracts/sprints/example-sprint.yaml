@@ -1,0 +1,41 @@
+# Example Sprint Contract
+# Copy this template for each sprint. Fill in the specifics.
+# The sprint is not done when PRs merge. It's done when the live site 
+# proves the contracts are satisfied.
+
+sprint:
+  name: "Example Sprint Name"
+  date: "2026-04-15"
+  
+  scope:
+    in:
+      - "Task 1: Brief description of what's being built"
+      - "Task 2: Brief description"
+    out:
+      - "Explicitly deferred: thing we're NOT doing this sprint"
+      - "Explicitly deferred: another thing"
+  
+  agent_assignments:
+    agent_1_backend:
+      - "PR #NNN: description"
+    agent_2_frontend:
+      - "PR #NNN: description"
+    agent_3_contracts:
+      - "Contract validation task"
+    human:
+      - "Authenticated operations (deploy, migrate, credential rotation)"
+  
+  acceptance_gates:
+    - "Gate 1: specific, verifiable condition on the live site"
+    - "Gate 2: another specific condition"
+    - "Gate 3: measurable outcome"
+  
+  exit_criteria:
+    - "All acceptance gates pass on the LIVE SITE"
+    - "Eval harness shows improvement over previous baseline"
+    - "No regressions in priority stack levels below current work"
+
+  priority_context:
+    current_level: 2  # Content Truth
+    blocked_by: "nothing — Level 1 (Data Truth) is green"
+    do_not_touch: "Level 4 (Experience Layer) — not until Levels 1-3 stable"

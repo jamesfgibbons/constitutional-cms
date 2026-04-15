@@ -1,0 +1,48 @@
+# Travel Intelligence - Link Graph Rules
+
+rules:
+  - name: no_phantom_links
+    description: "Never emit a link to a URL not in the route registry"
+    applies_to: all_page_types
+    enforcement: hard_block
+
+  - name: shell_isolation
+    description: "SHELL-tier route pages do not emit outbound links"
+    applies_to: pages_at_tier_SHELL
+    enforcement: hard_block
+
+  - name: hub_to_routes
+    description: "Airport hub pages link to active child routes"
+    applies_to: hub_page
+    allowed_targets: [route_page]
+    constraint: "target.origin == source.origin AND target.tier >= BASIC"
+    enforcement: hard_block
+
+  - name: route_to_hub
+    description: "Route pages link back to their origin hub"
+    applies_to: route_page
+    allowed_targets: [hub_page]
+    constraint: "target.origin == source.origin"
+    enforcement: hard_block
+
+  - name: corridor_siblings
+    description: "Route pages link to related routes in the same route cluster"
+    applies_to: route_page
+    allowed_targets: [route_page]
+    constraint: "target.route_cluster == source.route_cluster AND target.tier >= BASIC"
+    max_links: 8
+    enforcement: soft_warn
+
+  - name: best_time_to_parent
+    description: "Best-time pages link only to their parent route page"
+    applies_to: best_time_page
+    allowed_targets: [route_page]
+    constraint: "target.route_id == source.route_id"
+    enforcement: hard_block
+
+  - name: no_best_time_below_basic
+    description: "Suppress best-time links if parent route is below BASIC"
+    applies_to: route_page
+    constraint: "only emit best-time links if source.tier >= BASIC"
+    enforcement: hard_block
+    rationale: "Can't recommend booking windows without pricing data"

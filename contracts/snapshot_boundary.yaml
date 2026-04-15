@@ -1,0 +1,55 @@
+# Snapshot Boundary Contract
+# The rule that prevents the most dangerous class of multi-agent bug.
+# 
+# Principle: The database schema is the inter-agent contract.
+# Write agents produce rows. Read agents consume rows. Never cross.
+
+principle: "Separate write authority from read authority"
+
+boundaries:
+  write_agents:
+    - agent_1    # Data pipeline, snapshot materialization
+    - agent_5    # Narrative enrichment (writes to specific columns only)
+  read_agents:
+    - agent_2    # Frontend rendering (SSR templates, components)
+  verify_agents:
+    - agent_3    # Eval harness, contract validation, QA
+
+rules:
+  - id: no_compute_on_read
+    rule: "Read agents NEVER compute primary data"
+    detail: >
+      If the data isn't in the snapshot, it doesn't exist at render time.
+      The fix is always "write agent adds it to the snapshot" — 
+      never "read agent computes it in the SSR loader."
+    enforcement: hard_block
+
+  - id: schema_change_requires_migration
+    rule: "Snapshot schema changes require a migration file"
+    detail: >
+      Migrations are reviewable, reversible, and auditable.
+      No agent modifies the snapshot schema without a migration PR.
+    enforcement: hard_block
+
+  - id: single_writer_per_table
+    rule: "Each table has exactly one write owner"
+    detail: >
+      No two agents write the same table.
+      This prevents conflicting assumptions about schema, timing, 
+      and conflict resolution.
+    enforcement: hard_block
+
+  - id: staleness_guard
+    rule: "Stale snapshots degrade gracefully"
+    behavior:
+      fresh: "Serve from snapshot (target: sub-50ms)"
+      stale: "Fall through to live computation (logged as anomaly)"
+      missing: "Render SHELL template"
+    threshold: "cron_interval + tolerance_window"
+
+failure_mode: fail_safe_not_silent
+description: >
+  If write agent changes the schema, read agent breaks visibly.
+  If read agent expects a field that write agent hasn't populated,
+  the publish tier degrades the page to SHELL.
+  Corruption is never served. Degraded content is served with transparency.

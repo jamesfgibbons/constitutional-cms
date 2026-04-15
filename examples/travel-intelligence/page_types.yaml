@@ -1,0 +1,112 @@
+# Travel Intelligence - Page Type Contracts
+# Example based on a flight route monitoring platform
+
+route_page:
+  description: "Intelligence page for a specific origin→destination flight route"
+  url_pattern: "/flights/{origin}-to-{dest}"
+  
+  tiers:
+    FULL:
+      required_fields:
+        - price_usd
+        - carriers[]          # at least one airline with current pricing
+        - flight_duration
+        - narrative_block      # LLM-generated intelligence brief, 800+ words
+        - json_ld_faq          # FAQ schema from deterministic sources
+        - json_ld_flight       # Flight offer schema
+        - best_time_analysis   # Booking window recommendation
+      min_word_count: 800
+      schema_emission: true
+      internal_links: true
+      sitemap_priority: 0.8
+      
+    BASIC:
+      required_fields:
+        - price_usd
+        - carriers[]
+        - flight_duration
+      min_word_count: 200
+      schema_emission: true
+      internal_links: true
+      sitemap_priority: 0.6
+      
+    SHELL:
+      required_fields:
+        - origin_code
+        - destination_code
+        - origin_city
+        - destination_city
+      min_word_count: 0
+      schema_emission: false
+      internal_links: false
+      noindex: true
+      sitemap_priority: 0.1
+      
+    SUPPRESS:
+      trigger: "Route has no pricing observations in 180+ days"
+      action: "Remove from sitemap, return 404"
+
+  degradation_rules:
+    - condition: "price_usd is null OR last_price_observation > 14 days"
+      action: "degrade to SHELL"
+    - condition: "narrative_block is null OR narrative_word_count < 800"
+      action: "cap at BASIC (cannot reach FULL)"
+    - condition: "carriers[] is empty"
+      action: "degrade to SHELL"
+
+hub_page:
+  description: "Aggregate page for all routes from a single airport"
+  url_pattern: "/flights/from/{origin}"
+  
+  tiers:
+    FULL:
+      required_fields:
+        - origin_airport_name
+        - child_routes[]       # at least 10 active route pages
+        - deal_count           # number of routes at DEAL tier or above
+        - narrative_block
+      min_word_count: 400
+      schema_emission: true
+      internal_links: true
+      
+    BASIC:
+      required_fields:
+        - origin_airport_name
+        - child_routes[]       # at least 3 active route pages
+      min_word_count: 100
+      schema_emission: true
+      internal_links: true
+      
+    SHELL:
+      required_fields:
+        - origin_airport_name
+      schema_emission: false
+      internal_links: false
+
+best_time_page:
+  description: "Temporal analysis page for optimal booking/travel windows"
+  url_pattern: "/flights/{origin}-to-{dest}/best-time-to-book"
+  
+  tiers:
+    FULL:
+      required_fields:
+        - booking_window_analysis    # from SQL intelligence view
+        - day_of_week_pricing        # from SQL intelligence view
+        - monthly_seasonality        # from SQL intelligence view
+        - min_observations: 30       # need statistical significance
+      min_word_count: 600
+      schema_emission: true
+      
+    BASIC:
+      required_fields:
+        - booking_window_analysis
+        - min_observations: 10
+      min_word_count: 200
+      schema_emission: true
+      
+    SHELL:
+      required_fields:
+        - origin_code
+        - destination_code
+      schema_emission: false
+      noindex: true

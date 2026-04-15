@@ -1,0 +1,41 @@
+# E-commerce Catalog - Link Graph Rules
+
+rules:
+  - name: no_phantom_links
+    description: "Never emit a link to a URL not in the product registry"
+    applies_to: all_page_types
+    enforcement: hard_block
+
+  - name: shell_isolation
+    description: "SHELL-tier product pages do not emit outbound links"
+    applies_to: pages_at_tier_SHELL
+    enforcement: hard_block
+
+  - name: category_to_products
+    description: "Category pages link to child product pages at BASIC+ tier"
+    applies_to: category_page
+    allowed_targets: [product_page]
+    constraint: "target.category == source.category AND target.tier >= BASIC"
+    enforcement: hard_block
+
+  - name: product_to_category
+    description: "Every product page links back to its parent category"
+    applies_to: product_page
+    allowed_targets: [category_page]
+    constraint: "target.category == source.category"
+    enforcement: hard_block
+
+  - name: comparison_requires_both
+    description: "Comparison pages only exist if both products are BASIC+"
+    applies_to: comparison_page
+    constraint: "product_a.tier >= BASIC AND product_b.tier >= BASIC"
+    enforcement: hard_block
+    rationale: "Can't compare products we don't have data for"
+
+  - name: related_products
+    description: "Product pages can link to related products in same category"
+    applies_to: product_page
+    allowed_targets: [product_page]
+    constraint: "target.category == source.category"
+    max_links: 6
+    enforcement: soft_warn

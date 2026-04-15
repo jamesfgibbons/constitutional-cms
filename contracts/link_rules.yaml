@@ -1,0 +1,38 @@
+# Link Graph Rules
+# Define what pages are allowed to link to.
+# Prevents the most common programmatic SEO failure: broken internal links at scale.
+
+rules:
+  - name: no_phantom_links
+    description: "Never emit a link to a URL that doesn't exist in the page registry"
+    applies_to: all_page_types
+    enforcement: hard_block
+    rationale: "Broken internal links waste crawl budget and damage domain trust"
+
+  - name: shell_isolation
+    description: "SHELL-tier pages do not emit outbound internal links"
+    applies_to: pages_at_tier_SHELL
+    enforcement: hard_block
+    rationale: "Thin pages should not distribute link equity"
+
+  - name: no_inbound_to_shell
+    description: "Healthy pages do not link to SHELL-tier pages"
+    applies_to: pages_at_tier_BASIC_or_above
+    enforcement: hard_block
+    rationale: "Don't send users or crawlers to thin content"
+
+  - name: hub_to_children
+    description: "Hub/category pages link to their child entity pages"
+    applies_to: hub_page
+    allowed_targets: [entity_page]
+    constraint: "target.parent == source.id"
+    enforcement: soft_warn
+
+  - name: sibling_crosslinks
+    description: "Entity pages link to siblings in the same category/group"
+    applies_to: entity_page
+    allowed_targets: [entity_page, hub_page]
+    constraint: "target.group == source.group"
+    max_links: 10
+    rationale: "Controlled crosslinking, not a link farm"
+    enforcement: soft_warn
