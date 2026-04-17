@@ -293,6 +293,18 @@ Constitutional CMS governs **what agents publish**. It does not:
 
 ---
 
+## Runtime Governance
+
+Contracts govern what agents are permitted to publish. Runtimes govern where agents are permitted to work.
+
+The `runtime/` directory defines the container isolation contract for constitutional workstreams. Three invariants address the failure modes observed in multi-agent production systems: dirty-worktree deploys, cross-workstream state contamination, and contract drift.
+
+The specification is implementation-agnostic. Docker, Podman, Firecracker, and Cloudflare Worker isolates are all valid runtimes if they satisfy the invariants.
+
+→ See [`runtime/SPEC.md`](runtime/SPEC.md) for the full specification.
+
+---
+
 ## Production Proof
 
 This framework governs [SERPRadio](https://serpradio.com), a programmatic flight intelligence platform:
