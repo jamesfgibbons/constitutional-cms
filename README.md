@@ -32,17 +32,17 @@ Define what data a page requires to exist at each quality tier.
 
 ```yaml
 # contracts/page_types.yaml
-route_page:
-  description: "A page about a specific origin→destination flight route"
-  url_pattern: "/flights/{origin}-to-{dest}"
+entity_page:
+  description: "A page about a specific entity in your domain"
+  url_pattern: "/entities/{entity-slug}"
 
   tiers:
     FULL:
       required_fields:
-        - price_usd
-        - carriers[]       # at least one airline
-        - flight_duration
-        - narrative_block   # LLM-generated, 800+ words
+        - entity_name
+        - validated_metric  # price, score, rating, availability, etc.
+        - source_snapshot
+        - narrative_block   # LLM-generated, source-backed content
         - json_ld_schema
       min_word_count: 800
       schema_emission: true
@@ -50,27 +50,27 @@ route_page:
 
     BASIC:
       required_fields:
-        - price_usd
-        - carriers[]
+        - entity_name
+        - validated_metric
       min_word_count: 200
       schema_emission: true
       internal_links: true
 
     SHELL:
       required_fields:
-        - origin_code
-        - destination_code
+        - entity_name
       min_word_count: 0
       schema_emission: false    # No structured data on thin pages
       internal_links: false     # No outbound links from shells
-      noindex: true             # Don't waste crawl budget
 
     SUPPRESS:
       description: "Page is removed from sitemap and returns 404"
       trigger: "Entity deprecated or data source permanently unavailable"
 ```
 
-**Why this matters:** WordPress has "draft" and "published." Constitutional CMS has a continuous quality spectrum. Pages graduate from SHELL → BASIC → FULL as data accumulates, and degrade back down when data goes stale. The system handles transitions automatically based on what data exists — not on human editorial judgment.
+**Why this matters:** WordPress has "draft" and "published." Constitutional CMS has a continuous quality spectrum. Pages graduate from SHELL -> BASIC -> FULL as data accumulates, and degrade back down when data goes stale. The system handles transitions automatically based on what data exists, not on human editorial judgment.
+
+Quality tier and indexability are separate dimensions. A degraded but legitimate URL can remain indexable while withholding schema, links, or richer narrative until it earns a higher tier. Emit `noindex` from explicit indexability policy, not from the mere fact that a page is currently in `SHELL`.
 
 ### 2. Enrichment Stage Contracts
 
@@ -136,17 +136,17 @@ rules:
     applies_to: pages_at_tier_SHELL
     enforcement: hard_block
 
-  - name: "hub_to_routes"
-    description: "Hub pages link to their child route pages"
+  - name: "hub_to_children"
+    description: "Hub pages link to their child entity pages"
     applies_to: hub_page
-    allowed_targets: [route_page]
-    constraint: "target.origin == source.origin"
+    allowed_targets: [entity_page]
+    constraint: "target.parent == source.id"
 
-  - name: "route_to_siblings"
-    description: "Route pages link to sibling routes in the same corridor"
-    applies_to: route_page
-    allowed_targets: [route_page, hub_page]
-    constraint: "target.corridor == source.corridor OR target.origin == source.origin"
+  - name: "entity_to_siblings"
+    description: "Entity pages link to siblings in the same collection"
+    applies_to: entity_page
+    allowed_targets: [entity_page, hub_page]
+    constraint: "target.collection == source.collection"
 
   - name: "no_upward_links_from_thin"
     description: "Pages below BASIC tier cannot link to FULL-tier pages"
@@ -196,38 +196,38 @@ description: >
 Define what work is in scope, who owns it, and what "done" means.
 
 ```yaml
-# contracts/sprints/2026-03-29-content-recovery.yaml
+# contracts/sprints/example-quality-recovery.yaml
 sprint:
-  name: "Content Recovery"
-  date: "2026-03-29"
+  name: "Quality Recovery"
+  date: "YYYY-MM-DD"
 
   scope:
     in:
-      - "Fix price contradictions across page types"
-      - "Restore pricing pipeline coverage"
+      - "Fix public claim contradictions across page types"
+      - "Restore source snapshot coverage"
       - "Fix broken internal links"
-      - "Deploy intelligence SQL views"
+      - "Deploy resolver parity checks"
     out:
-      - "Audio layer (deferred to next sprint)"
+      - "New visual experience layer"
       - "New page types (deferred)"
       - "Infrastructure changes (deferred)"
 
   agent_assignments:
-    agent_1_backend:
-      - "PR #539: price authority single source"
-      - "PR #541: intelligence SQL views"
-    agent_2_frontend:
-      - "PR #582: template 404 fix"
-      - "PR #583: shell pages stop leaking stale prices"
+    agent_1_data:
+      - "Unify claim authority"
+      - "Materialize source snapshots"
+    agent_2_rendering:
+      - "Fix template status behavior"
+      - "Stop fallback pages from leaking stale claims"
     agent_3_contracts:
-      - "Eval baseline interpretation"
+      - "Validator baseline interpretation"
       - "Link graph validation"
 
   acceptance_gates:
-    - "Same price shown on route page and best-time page"
+    - "Same public claim shown across page types and APIs"
     - "Zero broken internal links emitted"
-    - "Intelligence views return rows for 10+ entities"
-    - "Pricing pipeline producing accepted observations"
+    - "Resolver and rendered output agree on indexability"
+    - "Source snapshots are fresh enough for public claims"
 
   exit_criteria:
     - "All acceptance gates pass on LIVE SITE"
@@ -235,6 +235,15 @@ sprint:
 ```
 
 **Why this matters:** The sprint is not done when the code merges. It's done when the live site satisfies the contracts. This prevents the gap between "CI passed" and "production works."
+
+---
+
+## Incident-Learned Invariants
+
+Some of the most important rules in this framework were clarified by production failures and operational diagnostics in live multi-agent publishing systems, then generalized for public use.
+
+- [docs/INCIDENT_LEARNED_INVARIANTS.md](docs/INCIDENT_LEARNED_INVARIANTS.md) documents the sanitized invariant set
+- The public repo shares the invariant pattern and implementation guidance, not any proprietary operating playbook
 
 ---
 
@@ -275,7 +284,7 @@ These apply to every agent in the system, regardless of role.
 
 1. **Read the priority stack before starting work.** If Level 1 is broken, don't work on Level 3.
 2. **Read the relevant contract before touching code.** The contract tells you what the system expects.
-3. **Verify against the contract, not against your assumptions.** If `page_types.yaml` says a page needs `carriers[]` for BASIC tier, and your PR removes that check, you're wrong.
+3. **Verify against the contract, not against your assumptions.** If `page_types.yaml` says a page needs `validated_metric` for BASIC tier, and your PR removes that check, you're wrong.
 4. **Never bypass the snapshot boundary.** Write agents write. Read agents read. Never cross.
 5. **Prepare work, don't apply it.** Agents write migrations and PRs. Humans review and merge. This is a security boundary.
 6. **Aspirational language is excluded from specs.** "The page should feel alive" is not a spec. `BPM = 60 + (energy × 100)` is a spec. Every line maps 1:1 to shipped code.
@@ -289,7 +298,7 @@ Constitutional CMS governs **what agents publish**. It does not:
 
 - **Orchestrate agents.** It doesn't route messages or manage tool access. Use CrewAI, LangGraph, Claude Code, Codex, or whatever you want. Constitutional CMS is the governance layer that sits above your agent framework.
 - **Run tests or deploy code.** It defines what the tests should verify and what "deployed correctly" means. Your CI/CD pipeline enforces it.
-- **Depend on any specific tech stack.** The contracts are YAML. The agents can be Claude, GPT, Codex, local models, or humans. The backend, frontend, and hosting are your choice. The production proof below runs on Railway + Supabase + Cloudflare, but nothing in the spec requires that.
+- **Depend on any specific tech stack.** The contracts are YAML. The agents can be Claude, GPT, Codex, local models, or humans. The backend, frontend, database, and hosting are your choice.
 
 ---
 
@@ -305,18 +314,17 @@ The specification is implementation-agnostic. Docker, Podman, Firecracker, and C
 
 ---
 
-## Production Proof
+## Production Pattern
 
-This framework governs [SERPRadio](https://serpradio.com), a programmatic flight intelligence platform:
+This framework was extracted from production use in agent-built publishing systems. The public repository keeps only the generalized patterns:
 
-- **851 pages** returning HTTP 200
-- **54ms** median TTFB
-- **Lighthouse** accessibility 100, SEO 100
-- **~$107/month** total infrastructure (Railway + Supabase + Cloudflare)
-- **Zero hand-written pages** — all agent-produced, human-reviewed, contract-governed
-- **4 AI agents**, 7 repos, 19 PRs merged in a single session with zero audit failures
+- quality tiers that graduate and degrade from source evidence
+- rendered-output validation for search and discovery surfaces
+- materialized artifact metadata for cache safety
+- claim decisions that separate visible facts, structured data, and agent APIs
+- observe-first validators that can later become blocking gates
 
-The agents write the code and produce the content. The human writes the contracts, reviews the PRs, and applies the migrations. The contracts prevent the agents from breaking each other's work.
+The agents write code and produce content. Humans write the contracts, review the changes, and decide what becomes public policy. The contracts prevent independent workstreams from breaking each other's output.
 
 ---
 
@@ -331,6 +339,10 @@ constitutional-cms/
 │   ├── enrichment_stages.yaml         # Pipeline stages and ownership
 │   ├── link_rules.yaml                # What can link to what
 │   ├── snapshot_boundary.yaml         # Write/read agent separation
+│   ├── page_health_resolver.yaml      # URL health semantic split
+│   ├── claim_decision.yaml            # Validated public claim policy
+│   ├── cache_materialization.yaml     # Rendered artifact metadata
+│   ├── mobile_table_card_layout.yaml  # Narrow viewport layout invariant
 │   └── sprints/                       # Sprint-scoped work contracts
 │       └── example-sprint.yaml
 ├── examples/
@@ -343,9 +355,11 @@ constitutional-cms/
 │       ├── enrichment_stages.yaml
 │       └── link_rules.yaml
 ├── scripts/
-│   └── validate_contracts.py          # Validate contract consistency
+│   ├── validate_contracts.py          # Validate contract consistency
+│   └── page_health_validator.py       # Observe-only crawl/render report
 └── docs/
     ├── NOVELTY.md                     # What's new here and what isn't
+    ├── INCIDENT_LEARNED_INVARIANTS.md # Sanitized production-learned rules
     ├── AGENT_COORDINATION.md          # How agents use these contracts
     └── PRIOR_ART.md                   # Honest comparison to existing tools
 ```

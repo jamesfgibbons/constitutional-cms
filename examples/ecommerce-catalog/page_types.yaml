@@ -35,7 +35,6 @@ product_page:
         - category
       schema_emission: false
       internal_links: false
-      noindex: true
       
     SUPPRESS:
       trigger: "Product discontinued AND no pricing in 90+ days"
@@ -94,4 +93,3 @@ comparison_page:
         - product_b_name
       trigger: "Either product is below BASIC tier"
       schema_emission: false
-      noindex: true

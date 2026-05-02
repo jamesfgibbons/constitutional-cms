@@ -197,10 +197,97 @@ def validate_snapshot_boundary(contracts_dir: str) -> list[str]:
     return errors
 
 
+def validate_yaml_syntax(contracts_dir: str) -> list[str]:
+    """Validate every YAML contract can be parsed."""
+    errors = []
+    for filepath in sorted(Path(contracts_dir).rglob("*.yaml")):
+        try:
+            load_yaml(str(filepath))
+        except yaml.YAMLError as exc:
+            errors.append(f"{filepath}: YAML parse error: {exc}")
+    return errors
+
+
+def validate_page_health_resolver(contracts_dir: str) -> list[str]:
+    """Validate page_health_resolver.yaml contains the semantic split flags."""
+    errors = []
+    filepath = os.path.join(contracts_dir, 'page_health_resolver.yaml')
+
+    if not os.path.exists(filepath):
+        return []
+
+    data = load_yaml(filepath)
+    output = data.get('output', {})
+    required = [
+        'body_publishable',
+        'seo_indexable',
+        'claim_publishable',
+        'schema_publishable',
+        'materialized',
+        'fallback_served',
+    ]
+    for field in required:
+        if field not in output:
+            errors.append(f"page_health_resolver: missing output field {field}")
+    return errors
+
+
+def validate_cache_materialization(contracts_dir: str) -> list[str]:
+    """Validate cache_materialization.yaml declares identity metadata."""
+    errors = []
+    filepath = os.path.join(contracts_dir, 'cache_materialization.yaml')
+
+    if not os.path.exists(filepath):
+        return []
+
+    data = load_yaml(filepath)
+    metadata = data.get('required_metadata', {})
+    required = [
+        'rendered_at',
+        'build_id',
+        'deploy_id',
+        'content_hash',
+        'template_family',
+        'url',
+        'indexable',
+        'publishable',
+    ]
+    for field in required:
+        if field not in metadata:
+            errors.append(f"cache_materialization: missing required metadata {field}")
+    return errors
+
+
+def validate_claim_decision(contracts_dir: str) -> list[str]:
+    """Validate claim_decision.yaml exposes public surface rules."""
+    errors = []
+    filepath = os.path.join(contracts_dir, 'claim_decision.yaml')
+
+    if not os.path.exists(filepath):
+        return []
+
+    data = load_yaml(filepath)
+    surfaces = data.get('surfaces', {})
+    for surface in ['visible_text', 'structured_data', 'agent_api']:
+        if surface not in surfaces:
+            errors.append(f"claim_decision: missing surface {surface}")
+    return errors
+
+
 def main():
     parser = argparse.ArgumentParser(description='Validate Constitutional CMS contracts')
     parser.add_argument('--contracts-dir', default='./contracts', help='Path to contracts directory')
-    parser.add_argument('--check', choices=['page_types', 'enrichment', 'links', 'boundary', 'all'], 
+    parser.add_argument('--check', choices=[
+        'syntax',
+        'page_types',
+        'enrichment',
+        'links',
+        'boundary',
+        'page_health',
+        'cache',
+        'claims',
+        'all',
+    ],
                        default='all', help='Which contract to validate')
     args = parser.parse_args()
     
@@ -213,10 +300,14 @@ def main():
     all_errors = []
     
     checks = {
+        'syntax': ('YAML Syntax', validate_yaml_syntax),
         'page_types': ('Page Types', validate_page_types),
         'enrichment': ('Enrichment Stages', validate_enrichment_stages),
         'links': ('Link Rules', validate_link_rules),
         'boundary': ('Snapshot Boundary', validate_snapshot_boundary),
+        'page_health': ('Page Health Resolver', validate_page_health_resolver),
+        'cache': ('Cache Materialization', validate_cache_materialization),
+        'claims': ('Claim Decision', validate_claim_decision),
     }
     
     if args.check == 'all':

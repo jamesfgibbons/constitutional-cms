@@ -2,6 +2,17 @@
 
 All notable changes to Constitutional CMS are documented here. This project follows [Semantic Versioning](https://semver.org/).
 
+## [0.1.2] - 2026-05-02
+
+### Added
+- Sanitized incident-learned invariants for page health, rendered truth, cache warming, registry authority, and public claim suppression.
+- Generic contracts for page health resolution, cache materialization, claim decisions, and mobile table/card layouts.
+- Observe-only page health validator with fixture tests and a sample GitHub Actions workflow.
+
+### Changed
+- Clarified that `SHELL` quality tier does not automatically imply `noindex`.
+- Replaced public README examples with domain-neutral entity examples.
+
 ## [0.1.1] — 2026-04-16
 
 ### Added
