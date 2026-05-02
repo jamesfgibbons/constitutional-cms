@@ -26,7 +26,11 @@ An honest assessment. If you're evaluating this framework, you deserve to know w
 
 Existing CMS platforms have binary states: draft or published. Some have editorial workflows with a few stages (draft → review → published).
 
-Constitutional CMS introduces a **continuous quality spectrum** where pages move between tiers (FULL → BASIC → SHELL → SUPPRESS) based on real-time data quality scores. A page that had pricing data yesterday but lost its data feed today automatically degrades to SHELL — no human intervention, no editorial decision. When the data returns, it graduates back.
+Constitutional CMS introduces a **continuous quality spectrum** where pages move between tiers (FULL -> BASIC -> SHELL -> SUPPRESS) based on real-time data quality scores. A page that had a validated metric yesterday but lost its source feed today automatically degrades to SHELL -- no human intervention, no editorial decision. When the data returns, it graduates back.
+
+Tier is not the same thing as indexability. A degraded but legitimate URL can remain in the index while withholding schema, internal links, or richer narrative until it earns a higher tier again.
+
+For real-world entity systems, tier is also not the same thing as lifecycle. A URL can be low-data because the entity is seasonal, future, historically valid, schedule-restricted, or a seed artifact that never existed. Constitutional CMS treats lifecycle classification as a separate policy input instead of collapsing all low-data states into "unsupported."
 
 This matters because agent-produced content at scale (hundreds or thousands of pages) cannot be governed by human editorial review. The publish tier makes quality governance automatic and continuous.
 
@@ -42,7 +46,7 @@ The system **fails safe, not silent.** This is a specific architectural choice f
 
 ### 3. Link Graph Governance for Programmatic Content
 
-At 10 pages, a human can verify link integrity manually. At 851 pages produced by agents, broken internal links are the most common failure mode in programmatic SEO, and they're invisible until Google reports them weeks later in Search Console.
+At 10 pages, a human can verify link integrity manually. At programmatic scale, broken internal links are one of the most common failure modes in agent-produced SEO systems, and they may stay invisible until external crawlers report them much later.
 
 Constitutional CMS introduces **link rules as declarative contracts**: what page types can link to what, under what conditions, with hard blocks on phantom links (links to URLs that don't exist in the page registry). SHELL-tier pages are automatically isolated from the link graph — they can't emit outbound links, and healthy pages don't link to them.
 

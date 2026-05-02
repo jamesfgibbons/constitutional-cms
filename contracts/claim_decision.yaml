@@ -1,0 +1,73 @@
+# Claim Decision Contract
+# Domain-neutral governance for public facts, prices, scores, ratings, and metrics.
+
+version: "1.0.0"
+status: "reference"
+purpose: >
+  Require every public visible claim to pass through a source-aware decision
+  before it appears in page copy, structured data, feeds, or agent-facing APIs.
+
+claim_decision:
+  required_fields:
+    claim_id: "Stable identifier for the claim"
+    subject_id: "Entity or page the claim describes"
+    claim_type: "price | score | rating | availability | metric | recommendation | other"
+    status: "publish | suppress | hold"
+    source_class: "canonical_snapshot | verified_observation | editorial_review | fallback | unknown"
+    source_id: "Stable source row, document, or artifact identifier"
+    observed_at: "When the underlying evidence was observed"
+    decided_at: "When this decision was made"
+    confidence: "high | medium | low | unknown"
+    reason_codes: "Stable machine-readable reason codes"
+
+surfaces:
+  visible_text:
+    publish_requires:
+      - "status is publish"
+      - "source_class is not fallback or unknown"
+      - "confidence is not unknown"
+    suppress_behavior: "Render explicit limitation or suppression language."
+
+  structured_data:
+    publish_requires:
+      - "status is publish"
+      - "all required schema fields use validated sources"
+    suppress_behavior: "Omit claim-bearing schema fields or the whole graph."
+
+  agent_api:
+    publish_requires:
+      - "status is publish"
+      - "source_id and reason_codes are exposed with the value"
+    suppress_behavior: "Return claim status and reason without inventing a substitute value."
+
+  internal_diagnostics:
+    publish_requires:
+      - "May include suppressed values only when clearly marked non-public"
+    suppress_behavior: "Never let diagnostics become public claims by accident."
+
+decision_rules:
+  - id: fallback_not_public_claim_source
+    rule: "Fallback, extracted, or default values cannot become public claims without validation"
+    severity: P0
+
+  - id: no_silent_claim_omission
+    rule: "If users expect a claim and it is suppressed, show explicit limitation language"
+    severity: P1
+
+  - id: schema_matches_visible_claims
+    rule: "Structured data must not publish a stronger claim than visible text"
+    severity: P0
+
+  - id: agent_api_matches_public_claim_state
+    rule: "Agent-facing APIs must expose the same public claim state as rendered pages"
+    severity: P0
+
+recommended_reason_codes:
+  - source_missing
+  - source_stale
+  - source_unvalidated
+  - source_conflict
+  - insufficient_evidence
+  - confidence_low
+  - fallback_value
+  - editorial_hold

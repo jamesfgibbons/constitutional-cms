@@ -1,0 +1,5 @@
+url,status,quality_tier,indexable,sitemap_eligible,noindex,visible_claim,claim_publishable,suppression_visible,materialized,rendered_at,build_id,deploy_id,content_hash,template_family,internal_link_status,viewport_width,layout_mode
+https://example.com/entities/degraded,200,SHELL,true,true,false,false,false,false,false,not_materialized,not_materialized,not_materialized,not_materialized,entity,,390,card
+https://example.com/entities/claim,200,BASIC,true,true,false,true,false,false,false,not_materialized,not_materialized,not_materialized,not_materialized,entity,,390,card
+https://example.com/entities/materialized,200,FULL,true,true,false,false,false,false,true,2026-05-02T12:00:00Z,,,abc123,entity,,390,card
+https://example.com/entities/mobile,200,FULL,true,true,false,false,false,false,false,not_materialized,not_materialized,not_materialized,not_materialized,entity,200,390,table

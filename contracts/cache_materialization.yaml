@@ -1,0 +1,82 @@
+# Cache Materialization Contract
+# Defines metadata required before rendered artifacts can serve public traffic.
+
+version: "1.0.0"
+status: "reference"
+purpose: >
+  Prevent fallback, stale, or identity-less rendered artifacts from being
+  treated as validated public output.
+
+artifact_types:
+  - html
+  - json
+  - feed
+  - sitemap
+
+required_metadata:
+  rendered_at:
+    type: timestamp
+    reason: "Freshness and warm-cadence checks need a render time."
+  build_id:
+    type: string
+    reason: "Readers need to know which build produced the artifact."
+  deploy_id:
+    type: string
+    reason: "Operators need to correlate artifacts to deployed code."
+  content_hash:
+    type: string
+    reason: "Writers and readers need stable content identity."
+  template_family:
+    type: string
+    reason: "Validators need to apply the correct anatomy rules."
+  url:
+    type: string
+    reason: "A cached artifact must declare the URL it represents."
+  indexable:
+    type: boolean
+    reason: "Materialized output must carry explicit search policy."
+  publishable:
+    type: boolean
+    reason: "Materialized output must carry explicit body policy."
+
+freshness_policy:
+  warm_cadence_seconds: "declare per deployment"
+  freshness_ttl_seconds: "must exceed warm_cadence_seconds plus margin"
+  required_margin_seconds: "declare per deployment"
+
+write_contract:
+  accept_when:
+    - "status is successful for the artifact type"
+    - "body is non-empty"
+    - "body is not a known fallback or generic placeholder"
+    - "required_metadata is complete"
+    - "content_hash matches the stored body"
+  reject_when:
+    - "artifact came from a timeout fallback"
+    - "artifact contains known placeholder markers"
+    - "required metadata is missing"
+    - "template_family is unknown"
+    - "content is too small for the declared template family"
+
+warm_contract:
+  required_behavior:
+    - "Warm paths enumerate every production-serving cache they populate."
+    - "Warm results report written, rejected, skipped, and failed counts."
+    - "A new production cache layer must declare its warm producer before launch."
+
+invariants:
+  - id: freshness_exceeds_warm_cadence
+    rule: "freshness_ttl_seconds > warm_cadence_seconds + required_margin_seconds"
+    severity: P0
+
+  - id: all_dependent_caches_warmed
+    rule: "Every production-serving cache has a declared warm producer"
+    severity: P1
+
+  - id: fallback_artifacts_rejected
+    rule: "Fallback or placeholder artifacts must not be written as validated materialized output"
+    severity: P0
+
+  - id: metadata_identity_required
+    rule: "Materialized artifacts must include build, deploy, content, URL, template, publishability, and indexability metadata"
+    severity: P0
