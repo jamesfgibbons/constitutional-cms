@@ -13,7 +13,7 @@ There is no orchestrator. There is no message bus. The contract declares what sh
 Every agent, regardless of framework (Claude, GPT, Codex, local model, human), follows this sequence:
 
 1. **Read the priority stack.** If Level 1 (data truth) is broken, do not work on Level 3 (content depth).
-2. **Read the relevant contract.** If you're building a route page template, read `page_types.yaml`. If you're writing a data pipeline, read `enrichment_stages.yaml`.
+2. **Read the relevant contract.** If you're building an entity page template, read `page_types.yaml`. If you're writing a data pipeline, read `enrichment_stages.yaml`.
 3. **Identify your boundary.** Are you a write agent or a read agent? Check `snapshot_boundary.yaml`. Do not cross.
 
 ## The Snapshot Handshake
