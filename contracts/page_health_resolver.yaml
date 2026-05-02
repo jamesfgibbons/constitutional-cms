@@ -1,0 +1,119 @@
+# Page Health Resolver Contract
+# Classifies crawler-visible URL health without overloading one publishable flag.
+
+version: "1.0.0"
+status: "reference"
+purpose: >
+  Define a domain-neutral resolver shape for public pages whose quality,
+  search inclusion, claims, schema, materialization, and fallback state may
+  move independently.
+
+inputs:
+  - page_type
+  - quality_tier
+  - lifecycle_state
+  - registry_state
+  - rendered_status
+  - rendered_robots
+  - claim_decision
+  - cache_materialization
+  - link_graph_state
+
+output:
+  url: "canonical public URL"
+  quality_tier: "FULL | BASIC | SHELL | SUPPRESS"
+  lifecycle_state: "ACTIVE | HISTORICAL | FUTURE | SEASONAL | RETIRED | UNKNOWN"
+  body_publishable: "Whether the body may be served as public content"
+  seo_indexable: "Whether search engines may index the URL"
+  claim_publishable: "Whether public visible claims may be shown"
+  schema_publishable: "Whether structured data may be emitted"
+  sitemap_eligible: "Whether the URL may appear in discovery surfaces"
+  internal_link_eligible: "Whether other public pages may link to the URL"
+  materialized: "Whether a validated rendered artifact exists"
+  fallback_served: "Whether the current response used a fallback path"
+  reasons: "Stable machine-readable reason codes"
+
+flag_semantics:
+  body_publishable:
+    true_when:
+      - "rendered_status is 200"
+      - "quality_tier is not SUPPRESS"
+      - "body is non-empty and not a generic placeholder"
+    false_when:
+      - "rendered_status is 404 or 410"
+      - "policy explicitly suppresses the URL"
+
+  seo_indexable:
+    true_when:
+      - "body_publishable is true"
+      - "explicit indexability policy allows the URL"
+      - "rendered robots directives do not include noindex"
+    false_when:
+      - "URL is private, retired, suppressed, or intentionally excluded"
+    note: "SHELL does not automatically imply noindex."
+
+  claim_publishable:
+    true_when:
+      - "claim_decision.status is publish"
+      - "claim source is validated for public display"
+    false_when:
+      - "claim_decision.status is suppress or hold"
+
+  schema_publishable:
+    true_when:
+      - "quality_tier is BASIC or FULL"
+      - "all schema fields are backed by validated sources"
+      - "claim_publishable is true for claim-bearing schema"
+    false_when:
+      - "quality_tier is SHELL or SUPPRESS"
+      - "required schema evidence is missing or suppressed"
+
+  materialized:
+    true_when:
+      - "cache artifact passed the cache_materialization contract"
+    false_when:
+      - "artifact is missing, stale, fallback-only, or missing required metadata"
+
+  fallback_served:
+    true_when:
+      - "response came from a declared fallback path"
+    false_when:
+      - "response came from a validated primary or materialized path"
+
+invariants:
+  - id: body_required_for_indexing
+    rule: "seo_indexable=true requires body_publishable=true"
+    severity: P0
+
+  - id: sitemap_requires_indexability
+    rule: "sitemap_eligible=true requires seo_indexable=true"
+    severity: P0
+
+  - id: links_require_rendered_success
+    rule: "internal_link_eligible=true requires rendered_status in [200, 301]"
+    severity: P0
+
+  - id: price_or_claim_suppression_not_noindex
+    rule: "claim_publishable=false does not by itself imply seo_indexable=false"
+    severity: P1
+
+  - id: rendered_truth_authority
+    rule: "Rendered status and robots directives override resolver intent for discovery eligibility"
+    severity: P0
+
+  - id: unknown_is_not_unsupported
+    rule: "timeout or unknown support state must not be collapsed into permanent 404 or 410 policy"
+    severity: P1
+
+recommended_reason_codes:
+  - rendered_non_200
+  - rendered_noindex
+  - fallback_served
+  - missing_materialized_artifact
+  - materialized_metadata_invalid
+  - claim_source_unvalidated
+  - claim_suppressed
+  - schema_evidence_missing
+  - internal_link_target_failed
+  - support_unknown_timeout
+  - explicitly_suppressed

@@ -39,7 +39,6 @@ location_page:
       min_word_count: 0
       schema_emission: false
       internal_links: false
-      noindex: true
       sitemap_priority: 0.1
       
     SUPPRESS:
@@ -109,4 +108,3 @@ analysis_page:
         - location_code
         - region_code
       schema_emission: false
-      noindex: true
