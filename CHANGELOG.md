@@ -2,6 +2,18 @@
 
 All notable changes to Constitutional CMS are documented here. This project follows [Semantic Versioning](https://semver.org/).
 
+## [0.2.0] - 2026-05-04
+
+### Added
+- `docs/V0_2_REFERENCE_PATTERNS.md` documenting four public-safe reference patterns: contract-as-test, page-family render tiers, cache write authority, and the readiness invariant ladder.
+
+### Changed
+- Clarified in the README that Constitutional CMS is the act of making implicit contracts explicit, not a bolt-on product feature.
+- Linked the new v0.2 reference-pattern layer from the main public entrypoint.
+
+### Notes
+- This is a docs-only release. It publishes abstractions and methodology, not private contract details from any single implementation.
+
 ## [0.1.2] - 2026-05-02
 
 ### Added

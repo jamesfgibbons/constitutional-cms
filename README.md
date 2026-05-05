@@ -247,6 +247,16 @@ Some of the most important rules in this framework were clarified by production 
 
 ---
 
+## v0.2 Reference Patterns
+
+The next layer of the framework is about method, not just contract categories.
+
+- [docs/V0_2_REFERENCE_PATTERNS.md](docs/V0_2_REFERENCE_PATTERNS.md) explains how implicit contracts become explicit ones
+- It introduces four portable abstractions: contract-as-test, page-family render tiers, cache write authority, and the readiness invariant ladder
+- These patterns are intentionally public-safe and implementation-agnostic; they are the reference layer, not a dump of one deployment's internal contracts
+
+---
+
 ## The Priority Stack
 
 Not all contracts are equal. When multiple things are broken, this ordering prevents agents from working on the wrong layer.
@@ -360,6 +370,7 @@ constitutional-cms/
 └── docs/
     ├── NOVELTY.md                     # What's new here and what isn't
     ├── INCIDENT_LEARNED_INVARIANTS.md # Sanitized production-learned rules
+    ├── V0_2_REFERENCE_PATTERNS.md     # Portable methods for explicit contract ratchets
     ├── AGENT_COORDINATION.md          # How agents use these contracts
     └── PRIOR_ART.md                   # Honest comparison to existing tools
 ```
