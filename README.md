@@ -343,7 +343,7 @@ The agents write code and produce content. Humans write the contracts, review th
 ```
 constitutional-cms/
 ├── README.md                          # You are here
-├── LICENSE                            # Apache 2.0
+├── LICENSE
 ├── contracts/
 │   ├── page_types.yaml                # What pages require at each tier
 │   ├── enrichment_stages.yaml         # Pipeline stages and ownership
@@ -382,9 +382,9 @@ constitutional-cms/
 
 ---
 
-## License
+## What's Open vs What's Yours
 
-Apache 2.0. The spec and pattern are open. Your domain-specific contracts (which entities matter, what your compression axes are, what your narrative voice sounds like) are your competitive advantage.
+The spec and pattern are open. Your domain-specific contracts — which entities matter, what your compression axes are, what your narrative voice sounds like — are your competitive advantage.
 
 ---
 

@@ -1,7 +1,6 @@
 # Runtime Specification
 
 **Status:** Proposed for v0.2.0
-**License:** Apache 2.0
 
 ---
 
@@ -140,6 +139,6 @@ Changes to this specification follow semver:
 
 ## Contributing
 
-This specification is maintained under Apache 2.0 and welcomes adoption, critique, and alternative implementations. Proposed changes follow the same constitutional discipline the repository advocates: a feature branch, a pull request, a statement of what novel property the change introduces or what existing property it clarifies.
+This specification welcomes adoption, critique, and alternative implementations. Proposed changes follow the same constitutional discipline the repository advocates: a feature branch, a pull request, a statement of what novel property the change introduces or what existing property it clarifies.
 
 The specification is more valuable when multiple independent runtime implementations exist and remain interoperable. Forks that maintain the three invariants are welcome contributions to the category, not competitors to the reference work.
