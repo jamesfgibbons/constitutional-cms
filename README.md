@@ -6,6 +6,8 @@ CMS used to mean Content Management System — software for humans who write pag
 
 WordPress, Webflow, Drupal, and Shopify were designed for human authors. They still work for that. Constitutional CMS is designed for the gap that opens when **agents become the authors** — and nobody is checking whether the 400th page they generated has valid data, working links, or enough substance to deserve a spot in Google's index.
 
+This the framework for [httpss](https://serpradio.com/) is modeled after this repo.
+
 ---
 
 ## The Problem
