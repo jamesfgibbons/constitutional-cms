@@ -259,6 +259,29 @@ The next layer of the framework is about method, not just contract categories.
 
 ---
 
+## Constitutional Cybernetics
+
+The next layer treats Constitutional CMS as a control system for the agentic web.
+
+Traditional CMS software manages authored content. Constitutional CMS manages
+feedback loops between sensors, materialized state, contract controllers,
+renderers, discovery surfaces, agents, and human proof. This cybernetic frame is
+what lets the same governed state safely project into HTML, APIs, structured
+data, dashboards, agent manifests, audio, spatial interfaces, or other ambient
+renderers without letting any consuming layer invent truth.
+
+- [docs/CONSTITUTIONAL_CYBERNETICS.md](docs/CONSTITUTIONAL_CYBERNETICS.md) defines the sensors/state/controllers/actuators/dampers/proof model
+- `contracts/signal_projection.yaml` governs one canonical state projected into many renderers
+- `contracts/proof_ledger.yaml` defines evidence-gated done
+- `contracts/sensor_integrity.yaml` prevents stale or failed observation sources from becoming false zeroes
+- `contracts/agent_operating_envelope.yaml` defines safe autonomy tiers and data-plane idempotency
+
+VIBEnet-style sensory feedback is one inspiration for this layer: governed
+state can become sound, light, motion, or spatial atmosphere. It is not required
+for adoption. The public contract is medium-neutral.
+
+---
+
 ## The Priority Stack
 
 Not all contracts are equal. When multiple things are broken, this ordering prevents agents from working on the wrong layer.
@@ -334,6 +357,9 @@ This framework was extracted from production use in agent-built publishing syste
 - rendered-output validation for search and discovery surfaces
 - materialized artifact metadata for cache safety
 - claim decisions that separate visible facts, structured data, and agent APIs
+- proof ledgers that make machine-readable evidence govern completion claims
+- sensor integrity rules that distinguish world silence from source failure
+- signal projection rules that keep ambient and agentic renderers downstream of canonical state
 - observe-first validators that can later become blocking gates
 
 The agents write code and produce content. Humans write the contracts, review the changes, and decide what becomes public policy. The contracts prevent independent workstreams from breaking each other's output.
@@ -355,6 +381,10 @@ constitutional-cms/
 │   ├── claim_decision.yaml            # Validated public claim policy
 │   ├── cache_materialization.yaml     # Rendered artifact metadata
 │   ├── mobile_table_card_layout.yaml  # Narrow viewport layout invariant
+│   ├── proof_ledger.yaml              # Evidence-gated done
+│   ├── signal_projection.yaml         # One state projected into many renderers
+│   ├── sensor_integrity.yaml          # Sensor health before metric claims
+│   ├── agent_operating_envelope.yaml  # Safe autonomy and idempotency tiers
 │   └── sprints/                       # Sprint-scoped work contracts
 │       └── example-sprint.yaml
 ├── examples/
@@ -373,6 +403,7 @@ constitutional-cms/
     ├── NOVELTY.md                     # What's new here and what isn't
     ├── INCIDENT_LEARNED_INVARIANTS.md # Sanitized production-learned rules
     ├── V0_2_REFERENCE_PATTERNS.md     # Portable methods for explicit contract ratchets
+    ├── CONSTITUTIONAL_CYBERNETICS.md  # Control-system frame for the agentic web
     ├── AGENT_COORDINATION.md          # How agents use these contracts
     └── PRIOR_ART.md                   # Honest comparison to existing tools
 ```

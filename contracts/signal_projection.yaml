@@ -1,0 +1,107 @@
+# Signal Projection Contract
+# Governs how canonical state may project into human, machine, and ambient surfaces.
+
+version: "1.0.0"
+status: "reference"
+purpose: >
+  Allow one canonical state object to render across HTML, APIs, structured
+  data, audio, AR, dashboards, and other surfaces without letting any renderer
+  invent truth.
+
+principle: "Renderers project canonical state; they do not create canonical truth."
+
+canonical_state_requirements:
+  required_fields:
+    entity_id: "Stable entity identifier."
+    entity_type: "Domain-specific entity family."
+    state_id: "Stable materialized state or decision identifier."
+    observed_at: "When the source evidence was observed."
+    decided_at: "When the canonical decision was made."
+    source_ref: "Source row, endpoint, document, or artifact."
+    confidence: "high | medium | low | unknown"
+    freshness_status: "fresh | stale | pending | unavailable | invalid"
+    public_status: "publish | suppress | hold | degrade"
+
+projection_surfaces:
+  html:
+    allowed_role: "Visible user-facing representation."
+    must_derive_from: canonical_state
+  structured_data:
+    allowed_role: "Machine-readable facts for crawlers and assistants."
+    must_derive_from: canonical_state
+  agent_api:
+    allowed_role: "Action or retrieval payload for agentic consumers."
+    must_derive_from: canonical_state
+  feed_or_sitemap:
+    allowed_role: "Discovery and distribution."
+    must_derive_from: canonical_state
+  dashboard:
+    allowed_role: "Operational observation and inspection."
+    must_derive_from: canonical_state
+  audio:
+    allowed_role: "Ambient or sonified awareness."
+    must_derive_from: canonical_state
+  spatial_or_environmental:
+    allowed_role: "AR, lighting, room, physical, or peripheral rendering."
+    must_derive_from: canonical_state
+
+projection_payload:
+  required_fields:
+    projection_id: "Stable projection identifier."
+    state_id: "Canonical state being projected."
+    surface: "One of projection_surfaces."
+    transform_id: "Named transform from state to surface."
+    rendered_at: "When the projection was produced."
+    public_status: "Copied or derived from canonical state."
+    provenance: "Inspectable source and transform receipt."
+
+honest_absence_states:
+  not_observed:
+    meaning: "No observation exists."
+    renderer_behavior: "Show low-confidence or empty state; do not imply current activity."
+  stale:
+    meaning: "Observation exists but is too old for current claims."
+    renderer_behavior: "Show stale status and source age; suppress current claims."
+  pending:
+    meaning: "A decision or observation is awaited."
+    renderer_behavior: "Show pending or tuning state; do not present as resolved."
+  unavailable:
+    meaning: "The sensor or source cannot currently be queried."
+    renderer_behavior: "Show source availability problem; do not report zero as truth."
+  invalid:
+    meaning: "A contract, source, or provenance check failed."
+    renderer_behavior: "Suppress or mark invalid; expose safe reason codes."
+
+provenance_required_fields:
+  - state_id
+  - source_ref
+  - observed_at
+  - decided_at
+  - transform_id
+  - rendered_at
+  - freshness_status
+
+invariants:
+  - id: canonical_state_precedes_projection
+    rule: "Every factual projection must reference canonical state."
+    severity: P0
+  - id: renderer_cannot_upgrade_confidence
+    rule: "A renderer may not present stronger freshness, confidence, or public status than canonical state allows."
+    severity: P0
+  - id: absence_states_are_distinct
+    rule: "Not observed, stale, pending, unavailable, and invalid must not collapse into one generic live-looking state."
+    severity: P1
+  - id: one_state_many_renderers
+    rule: "Multiple surfaces may render the same state differently, but they must not disagree on the underlying public status."
+    severity: P0
+  - id: ambient_surfaces_are_downstream
+    rule: "Audio, spatial, light, and environmental renderers are awareness surfaces, not source authorities."
+    severity: P1
+
+recommended_reason_codes:
+  - canonical_state_missing
+  - projection_without_provenance
+  - renderer_confidence_upgrade
+  - absence_state_collapsed
+  - surface_status_disagreement
+  - ambient_surface_used_as_authority

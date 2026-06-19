@@ -274,6 +274,128 @@ def validate_claim_decision(contracts_dir: str) -> list[str]:
     return errors
 
 
+def validate_proof_ledger(contracts_dir: str) -> list[str]:
+    """Validate proof_ledger.yaml declares evidence-gated completion rules."""
+    errors = []
+    filepath = os.path.join(contracts_dir, 'proof_ledger.yaml')
+
+    if not os.path.exists(filepath):
+        return []
+
+    data = load_yaml(filepath)
+    authority = data.get('authority', {})
+    if authority.get('machine_readable_artifact') != 'governs':
+        errors.append("proof_ledger: machine_readable_artifact must govern")
+    if authority.get('markdown_summary') != 'display_only':
+        errors.append("proof_ledger: markdown_summary must be display_only")
+
+    required = [
+        'schema_version',
+        'proof_id',
+        'created_at',
+        'subject',
+        'status',
+        'authority_sources',
+        'checks',
+        'evidence',
+    ]
+    fields = data.get('proof_json_required_fields', [])
+    for field in required:
+        if field not in fields:
+            errors.append(f"proof_ledger: missing proof_json_required_field {field}")
+
+    invariant_ids = {item.get('id') for item in data.get('invariants', [])}
+    if 'evidence_gated_done' not in invariant_ids:
+        errors.append("proof_ledger: missing evidence_gated_done invariant")
+    return errors
+
+
+def validate_signal_projection(contracts_dir: str) -> list[str]:
+    """Validate signal_projection.yaml keeps renderers downstream of state."""
+    errors = []
+    filepath = os.path.join(contracts_dir, 'signal_projection.yaml')
+
+    if not os.path.exists(filepath):
+        return []
+
+    data = load_yaml(filepath)
+    state_fields = data.get('canonical_state_requirements', {}).get('required_fields', {})
+    for field in ['entity_id', 'state_id', 'source_ref', 'public_status']:
+        if field not in state_fields:
+            errors.append(f"signal_projection: missing canonical state field {field}")
+
+    surfaces = data.get('projection_surfaces', {})
+    for surface in ['html', 'structured_data', 'agent_api', 'audio', 'spatial_or_environmental']:
+        if surface not in surfaces:
+            errors.append(f"signal_projection: missing projection surface {surface}")
+        elif surfaces[surface].get('must_derive_from') != 'canonical_state':
+            errors.append(f"signal_projection: {surface} must derive from canonical_state")
+
+    absence = data.get('honest_absence_states', {})
+    for state in ['not_observed', 'stale', 'pending', 'unavailable', 'invalid']:
+        if state not in absence:
+            errors.append(f"signal_projection: missing honest absence state {state}")
+    return errors
+
+
+def validate_sensor_integrity(contracts_dir: str) -> list[str]:
+    """Validate sensor_integrity.yaml prevents false zero reporting."""
+    errors = []
+    filepath = os.path.join(contracts_dir, 'sensor_integrity.yaml')
+
+    if not os.path.exists(filepath):
+        return []
+
+    data = load_yaml(filepath)
+    statuses = data.get('source_status_vocabulary', {})
+    for status in ['healthy', 'partial', 'stale', 'unattributed', 'failed']:
+        if status not in statuses:
+            errors.append(f"sensor_integrity: missing source status {status}")
+
+    if statuses.get('failed', {}).get('reporting_allowed') is not False:
+        errors.append("sensor_integrity: failed source status must block reporting")
+    if statuses.get('unattributed', {}).get('reporting_allowed') is not False:
+        errors.append("sensor_integrity: unattributed source status must block reporting")
+
+    rule_ids = {item.get('id') for item in data.get('reporting_rules', [])}
+    if 'no_silent_zeroes' not in rule_ids:
+        errors.append("sensor_integrity: missing no_silent_zeroes reporting rule")
+    return errors
+
+
+def validate_agent_operating_envelope(contracts_dir: str) -> list[str]:
+    """Validate agent_operating_envelope.yaml declares autonomy tiers and idempotency."""
+    errors = []
+    filepath = os.path.join(contracts_dir, 'agent_operating_envelope.yaml')
+
+    if not os.path.exists(filepath):
+        return []
+
+    data = load_yaml(filepath)
+    tiers = data.get('tiers', {})
+    for tier in ['L0_read_only', 'L1_prepare_and_prove', 'L2_scoped_mutation', 'L3_high_risk_mutation']:
+        if tier not in tiers:
+            errors.append(f"agent_operating_envelope: missing tier {tier}")
+
+    throughput = data.get('throughput_report_required_fields', [])
+    for field in ['run_id', 'tier_authorized', 'tier_executed', 'proof_packet_ref']:
+        if field not in throughput:
+            errors.append(f"agent_operating_envelope: missing throughput field {field}")
+
+    immutability_rules = {
+        item.get('id')
+        for item in data.get('data_plane_immutability', {}).get('rules', [])
+    }
+    for rule in [
+        'manifest_before_external_call',
+        'idempotency_ledger_required',
+        'no_ingestion_retry_on_verifier_failure',
+    ]:
+        if rule not in immutability_rules:
+            errors.append(f"agent_operating_envelope: missing data-plane rule {rule}")
+    return errors
+
+
 def main():
     parser = argparse.ArgumentParser(description='Validate Constitutional CMS contracts')
     parser.add_argument('--contracts-dir', default='./contracts', help='Path to contracts directory')
@@ -286,6 +408,10 @@ def main():
         'page_health',
         'cache',
         'claims',
+        'proof_ledger',
+        'signal_projection',
+        'sensor_integrity',
+        'agent_envelope',
         'all',
     ],
                        default='all', help='Which contract to validate')
@@ -308,6 +434,10 @@ def main():
         'page_health': ('Page Health Resolver', validate_page_health_resolver),
         'cache': ('Cache Materialization', validate_cache_materialization),
         'claims': ('Claim Decision', validate_claim_decision),
+        'proof_ledger': ('Proof Ledger', validate_proof_ledger),
+        'signal_projection': ('Signal Projection', validate_signal_projection),
+        'sensor_integrity': ('Sensor Integrity', validate_sensor_integrity),
+        'agent_envelope': ('Agent Operating Envelope', validate_agent_operating_envelope),
     }
     
     if args.check == 'all':

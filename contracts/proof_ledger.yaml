@@ -1,0 +1,97 @@
+# Proof Ledger Contract
+# Defines evidence-gated done for agent-built publishing systems.
+
+version: "1.0.0"
+status: "reference"
+purpose: >
+  Require completion claims to be backed by same-update, machine-readable
+  evidence from the authoritative source. Narrative summaries are display
+  companions, not authority.
+
+authority:
+  machine_readable_artifact: "governs"
+  markdown_summary: "display_only"
+  chat_report: "non_authoritative"
+  precedence_rule: "If narrative and structured evidence disagree, structured evidence wins."
+
+required_artifacts:
+  proof_json:
+    description: "Machine-readable evidence packet."
+    required: true
+  proof_markdown:
+    description: "Human-readable companion summary."
+    required: true
+  source_authority_map:
+    description: "Mapping from each claim to the source that is allowed to answer it."
+    required: true
+
+proof_json_required_fields:
+  - schema_version
+  - proof_id
+  - created_at
+  - subject
+  - status
+  - authority_sources
+  - checks
+  - evidence
+  - blockers
+  - next_action
+
+status_vocabulary:
+  - drafted
+  - verified_local
+  - preview_verified
+  - live_verified
+  - blocked
+  - failed
+  - inconclusive
+
+check_shape:
+  required_fields:
+    id: "Stable check identifier."
+    question: "The operational question being answered."
+    authority: "The source allowed to answer the question."
+    observed_value: "The actual observed result."
+    status: "pass | fail | blocked | inconclusive"
+    evidence_ref: "Pointer to command output, URL, artifact path, or structured payload."
+    checked_at: "Timestamp for the observation."
+
+narrative_rules:
+  - id: no_narrative_without_data
+    rule: "Every completion claim in markdown must reference a check id or evidence_ref from proof_json."
+    severity: P0
+  - id: no_done_without_authority
+    rule: "A subject may not be marked live_verified unless the authority source for live state passed in the same proof packet."
+    severity: P0
+  - id: inconclusive_on_missing_evidence
+    rule: "If the authority source is unavailable, report inconclusive or blocked instead of inferring success."
+    severity: P0
+  - id: markdown_cannot_upgrade_status
+    rule: "Markdown may not describe a stronger status than proof_json.status."
+    severity: P0
+
+source_authority_requirements:
+  - "Name the source that answers each operational question."
+  - "Declare forbidden substitutes for each authority when useful."
+  - "Keep derived dashboards separate from canonical evidence."
+  - "Treat unavailable authority as an evidence gap, not as implicit success."
+
+invariants:
+  - id: evidence_gated_done
+    rule: "Done means authority-backed evidence, not merge, deploy, or agent assertion."
+    severity: P0
+  - id: json_governs_markdown
+    rule: "Structured proof governs human-readable summaries."
+    severity: P0
+  - id: same_update_verification
+    rule: "Completion claims require verification collected in the same reporting update."
+    severity: P1
+
+recommended_reason_codes:
+  - authority_unavailable
+  - evidence_missing
+  - narrative_exceeds_json
+  - stale_proof
+  - derived_surface_only
+  - verification_failed
+  - human_ratification_required

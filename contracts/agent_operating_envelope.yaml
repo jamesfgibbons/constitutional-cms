@@ -1,0 +1,133 @@
+# Agent Operating Envelope Contract
+# Defines safe autonomy tiers, evidence requirements, and ingestion idempotency.
+
+version: "1.0.0"
+status: "reference"
+purpose: >
+  Let autonomous agents work inside explicit bounds while preserving human
+  ratification for high-risk changes, production mutations, and public policy.
+
+tiers:
+  L0_read_only:
+    description: "Diagnostics, code reading, logs, probes, and reports that do not mutate governed state."
+    allowed:
+      - inspect_code
+      - run_static_analysis
+      - run_read_only_probe
+      - produce_report
+    forbidden:
+      - write_public_state
+      - deploy
+      - mutate_database
+      - call_external_provider_for_new_observations
+  L1_prepare_and_prove:
+    description: "Small backward-compatible code or contract-adjacent changes prepared for human review."
+    allowed:
+      - edit_local_files
+      - add_tests
+      - open_pull_request
+      - run_ci
+      - produce_proof_packet
+    hard_stop_before:
+      - merge
+      - deploy
+      - production_mutation
+  L2_scoped_mutation:
+    description: "Pre-approved bounded mutation with exact scope, dry-run, cap, and rollback."
+    required_envelope:
+      - exact_subject_list_or_derivation_rule
+      - maximum_subject_count
+      - dry_run_before_live
+      - count_match_between_dry_run_and_live
+      - rollback_or_remediation_path
+    forbidden:
+      - broad_materialization
+      - registry_expansion
+      - sitemap_expansion
+      - threshold_change
+      - unbounded_provider_calls
+  L3_high_risk_mutation:
+    description: "Broad production, provider, registry, discovery, infrastructure, or policy changes."
+    requires:
+      - explicit_human_approval
+      - written_scope
+      - proof_plan
+      - rollback_plan
+
+verification_block_required_for_claims:
+  file_claims:
+    - path
+    - byte_size
+    - content_hash
+  commit_claims:
+    - commit_sha
+    - changed_files
+    - diff_stat
+  branch_claims:
+    - branch_name
+    - base_ref
+    - head_sha
+  deployment_claims:
+    - deploy_id
+    - deployed_ref
+    - live_probe_evidence
+  data_mutation_claims:
+    - dry_run_count
+    - live_count
+    - affected_subjects
+    - rollback_ref
+
+throughput_report_required_fields:
+  - run_id
+  - started_at
+  - ended_at
+  - tier_authorized
+  - tier_executed
+  - files_changed
+  - lines_added
+  - lines_deleted
+  - checks_run
+  - proof_packet_ref
+  - blockers
+
+data_plane_immutability:
+  rules:
+    - id: manifest_before_external_call
+      rule: "Batch work that can create new observations must write a manifest before any external provider call."
+      severity: P0
+    - id: freeze_executable_during_batch
+      rule: "The executable script or transform path is frozen once a live batch begins."
+      severity: P0
+    - id: idempotency_ledger_required
+      rule: "Provider wrappers must check a durable idempotency ledger before making network calls."
+      severity: P0
+    - id: no_ingestion_retry_on_verifier_failure
+      rule: "Verifier failure triggers verify-only remediation, not another observation-producing run."
+      severity: P0
+    - id: duplicate_observation_veto
+      rule: "Duplicate same-window observations for the same subject trigger a hard stop."
+      severity: P0
+
+invariants:
+  - id: autonomy_requires_bounds
+    rule: "Agent autonomy is allowed only inside a declared tier and scope."
+    severity: P0
+  - id: human_ratifies_high_risk_changes
+    rule: "Agents may prepare and prove high-risk changes; humans ratify them."
+    severity: P0
+  - id: verifier_failure_does_not_create_new_truth
+    rule: "A system must not create new observations while trying to verify old ones."
+    severity: P0
+  - id: throughput_is_structured
+    rule: "Long-running autonomous work reports structured throughput, not only narrative progress."
+    severity: P1
+
+recommended_reason_codes:
+  - tier_violation
+  - scope_missing
+  - dry_run_missing
+  - count_mismatch
+  - verification_block_missing
+  - idempotency_ledger_missing
+  - duplicate_observation_detected
+  - human_ratification_required
