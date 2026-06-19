@@ -2,8 +2,8 @@
 
 This document is the master narrative frame that underlies the contracts, invariants, and reference patterns in this repository. It is published so that adopters can place individual rules in a coherent worldview rather than treating governance as a checklist.
 
-Version: 0.1
-Last updated: 2026-05-25
+Version: 0.2
+Last updated: 2026-06-19
 
 ---
 
@@ -59,6 +59,30 @@ Different surfaces, same structural law: protect the load-bearing signal at the 
 
 ---
 
+## The cybernetic doctrine
+
+> **Govern the loop, not just the artifact.**
+
+The agentic web is not only a publishing surface. It is a feedback system.
+Machines observe public state, compress it, reason over it, act on it, and feed
+their outputs back into the next cycle of discovery and decision.
+
+That makes Constitutional CMS a cybernetic layer:
+
+- **Sensors** collect logs, crawls, probes, analytics, user feedback, and agent traces.
+- **State** compresses observations into snapshots, registries, resolver decisions, and proof artifacts.
+- **Controllers** apply contracts, gates, source authority, and claim policy.
+- **Actuators** emit HTML, schema, sitemaps, APIs, manifests, cache artifacts, dashboards, sound, light, or spatial renderings.
+- **Dampers** hold, suppress, degrade, rate-limit, or require human ratification when the loop loses confidence.
+- **Proof** closes the loop by showing whether the actuator matched the governed state.
+
+This frame connects Constitutional CMS to VIBEnet-style sensory thinking without
+making any one sensory surface mandatory. The same governed state can become a
+page, an API payload, an agent-readable manifest, an audio cue, or an ambient
+interface. Those are renderers. The truth still lives upstream.
+
+---
+
 ## The four realms
 
 Every published essay, invariant, contract, and product surface in our work maps to one of four realms:
@@ -107,6 +131,7 @@ This repository is the Realm 4 surface. It publishes:
 - **Contracts** in `contracts/` — declarative YAML defining what a renderer, gate, or surface must guarantee before serving public output.
 - **Invariants** in `docs/INCIDENT_LEARNED_INVARIANTS.md` — governance rules clarified by live failures, rewritten as portable patterns.
 - **Reference patterns** in `docs/V0_2_REFERENCE_PATTERNS.md` — implementation guidance for adopting the contracts.
+- **Cybernetic framing** in `docs/CONSTITUTIONAL_CYBERNETICS.md` — a control-system model for sensors, state, controllers, actuators, dampers, and proof.
 - **Examples** in `examples/` — domain-specific applications of the framework.
 
 Each artifact ties back to one of the four realms. The contracts and invariants exist because the consuming layer cannot be allowed to invent the truth the rest of the system depends on. The reference patterns exist because operators need a path from "we agree with this principle" to "we have it running in production."
@@ -125,5 +150,6 @@ Each artifact ties back to one of the four realms. The contracts and invariants 
 
 - Universe law in action: [`docs/INCIDENT_LEARNED_INVARIANTS.md`](INCIDENT_LEARNED_INVARIANTS.md) — every invariant is an application of "do not let the consuming layer invent truth."
 - Implementation patterns: [`docs/V0_2_REFERENCE_PATTERNS.md`](V0_2_REFERENCE_PATTERNS.md).
+- Cybernetic frame: [`docs/CONSTITUTIONAL_CYBERNETICS.md`](CONSTITUTIONAL_CYBERNETICS.md).
 - Agent coordination boundary: [`docs/AGENT_COORDINATION.md`](AGENT_COORDINATION.md).
 - Novelty and prior-art context: [`docs/NOVELTY.md`](NOVELTY.md), [`docs/PRIOR_ART.md`](PRIOR_ART.md).

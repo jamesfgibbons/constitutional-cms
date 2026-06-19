@@ -1,0 +1,109 @@
+# Sensor Integrity Contract
+# Prevents stale or failed observation sources from being reported as world truth.
+
+version: "1.0.0"
+status: "reference"
+purpose: >
+  Keep logs, probes, crawler data, analytics, and other observation sources from
+  silently becoming false public claims when their own health is stale, partial,
+  unattributed, or failed.
+
+sensor_classes:
+  - application_log
+  - edge_log
+  - crawler_probe
+  - synthetic_check
+  - analytics_event
+  - search_console_export
+  - external_api
+  - human_review
+  - agent_trace
+
+sensor_record_required_fields:
+  - sensor_id
+  - sensor_class
+  - source_name
+  - observed_at
+  - ingested_at
+  - subject_scope
+  - source_status
+  - coverage_state
+  - trust_state
+  - latest_success_at
+  - integrity_flags
+
+source_status_vocabulary:
+  healthy:
+    meaning: "Fresh, attributed, and complete enough for the declared scope."
+    reporting_allowed: true
+  partial:
+    meaning: "Data exists, but required fields, attribution, or coverage are incomplete."
+    reporting_allowed: true
+    requirement: "Show a warning and name the incomplete fields."
+  stale:
+    meaning: "Latest usable data is older than the freshness SLA."
+    reporting_allowed: true
+    requirement: "Use stale labeling; do not describe current reality."
+  unattributed:
+    meaning: "Rows or events exist but cannot be safely tied to the declared subject."
+    reporting_allowed: false
+    requirement: "Block trend conclusions for the subject."
+  failed:
+    meaning: "No usable source exists or the source cannot be queried."
+    reporting_allowed: false
+    requirement: "Show dependency failure; do not render flat zero charts."
+
+coverage_states:
+  - complete
+  - sampled
+  - partial
+  - unknown
+  - unavailable
+
+reporting_rules:
+  - id: no_silent_zeroes
+    rule: "A stale, partial, unattributed, or failed sensor must not be rendered as a true zero observation."
+    severity: P0
+  - id: label_observed_not_inferred
+    rule: "Reports must distinguish observed counts from inferred totals."
+    severity: P1
+  - id: source_health_visible
+    rule: "Every trend report must include source_status, coverage_state, latest_success_at, and integrity_flags."
+    severity: P0
+  - id: sensor_failure_not_world_silence
+    rule: "Sensor failure is evidence of lost visibility, not evidence that the measured world is quiet."
+    severity: P0
+  - id: canonical_promotion_requires_reconciliation
+    rule: "A new sensor becomes canonical only after freshness, coverage, and reconciliation checks pass."
+    severity: P1
+
+trend_output_required_fields:
+  - metric_name
+  - metric_label
+  - value
+  - source_name
+  - source_status
+  - coverage_state
+  - trust_state
+  - latest_success_at
+  - integrity_flags
+
+invariants:
+  - id: sensor_integrity_precedes_metric_claim
+    rule: "Metric claims require a healthy or explicitly caveated sensor state."
+    severity: P0
+  - id: failed_sensor_blocks_zero_claim
+    rule: "A failed or unattributed sensor blocks claims that activity is zero."
+    severity: P0
+  - id: partial_sensor_requires_caveat
+    rule: "Partial sensor coverage may be reported only with visible caveats."
+    severity: P1
+
+recommended_reason_codes:
+  - source_stale
+  - source_partial
+  - source_failed
+  - subject_unattributed
+  - coverage_unknown
+  - reconciliation_missing
+  - zero_claim_blocked
