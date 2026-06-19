@@ -84,11 +84,12 @@ class CyberneticContractsTest(unittest.TestCase):
             ROOT / "docs" / "CONSTITUTIONAL_CYBERNETICS.md",
         ]
         forbidden = [
-            "serpradio-cms/",
-            "tgflightsfromnyc/",
-            "serpradio-frontend/",
-            "JG HUB/",
-            "Targeted Impressions Hub/",
+            "/Users/",
+            "/Documents/",
+            ".env",
+            "ADMIN_SECRET",
+            "RAILWAY_TOKEN",
+            "SUPABASE_SERVICE_ROLE",
         ]
 
         for doc_path in docs_to_check:
