@@ -1,0 +1,152 @@
+# Route Utility Document Contract (RouteUtilityDocumentV1)
+# The CMS compiles ONE ordered, declarative claim set per route page. Every surface — visible HTML,
+# JSON-LD, WebMCP/agent API, audio transcript — PROJECTS that claim set and never composes its own
+# truth. This is the read-boundary fix at the document layer: the frontend stops writing sentences.
+#
+# Founding fixture: the EWR-AMS route dossier, which (pre-compiler) rendered `live_publishable` with a
+# real fare while its body printed "not currently reported" 14x, "Limited-data mode", and "Monitoring"
+# — a page with data and no editorial authority. Phase-A coherence gates stopped the contradiction;
+# THIS contract makes the page a quote-ready utility document, not merely not-broken.
+
+version: "1.0.0"
+status: "reference"
+purpose: >
+  Require every route page to render a single CMS-owned RouteUtilityDocumentV1: an ordered set of
+  self-contained utility statements, each a governed claim (per claim_decision.yaml) bound to the same
+  RouteDecision. No body/FAQ/schema/audio/WebMCP/React surface may independently infer a fare, a
+  value position, a best day/month, a booking window, or a "Monitoring" state.
+
+references:
+  claim_decision: "claim_decision.yaml — every statement IS a claim_decision (claim_id, status, source_class, source_id, observed_at, confidence, reason_codes) and obeys its per-surface publish/suppress rules and P0 parity rules."
+  page_types: "page_types.yaml — document_state is derived from the page tier machinery (FULL/BASIC/SHELL) plus the governed price decision; this contract does not re-derive tiers."
+  cache_materialization: "cache_materialization.yaml — the compiled document is attached in the single shared seal and persisted by the single writer; the baked shell carries the identical document + decision_hash."
+
+# ---------------------------------------------------------------------------------------------------
+# document_state — the ONE governed state that selects which statements render. Derived from the
+# backend RouteDecision, never re-inferred by a consuming surface.
+# ---------------------------------------------------------------------------------------------------
+document_state:
+  priced:
+    when: "RouteDecision.price_publishable = true (validated public_price_usd + accepted provenance, per producer invariant #1337)"
+    renders_fare: true
+  monitoring:
+    when: "route is legitimate + service-supported, but no publishable current fare (typed absence: no_accepted_observation | provider_rate_limited | stale | observed_but_low_confidence)"
+    renders_fare: false
+  unsupported:
+    when: "no nonstop/direct service or route not governed for this origin-destination (hard suppressor)"
+    renders_fare: false
+  thin:
+    when: "legitimate route below content-depth floor; indexable on its own content, fare suppressed"
+    renders_fare: false
+
+# ---------------------------------------------------------------------------------------------------
+# The ordered claim spine. The frontend renders these IN THIS ORDER and renders nothing claim-bearing
+# outside them. `?` = optional slot (present only when its evidence qualifies).
+# ---------------------------------------------------------------------------------------------------
+claim_slots:
+  - id: primary_answer
+    order: 1
+    required_in: [priced, monitoring, unsupported, thin]
+    asserts: "One quote-ready opening sentence naming the route (origin+destination cities/airports), the service fact, and the current pricing status — answers the page in its first 100 words."
+    binds: "route identity + service_statement + fare_statement/document_state"
+
+  - id: fare_statement
+    order: 2
+    required_in: [priced]
+    forbidden_in: [monitoring, unsupported, thin]   # no dollar amount when not priced — anywhere
+    asserts: "Exactly one dated fare claim: '<carrier/marketplace> shows <route> from $<amount> as of <date>, based on <N accepted fares / M distinct prices in the 14-day window>.' Two-ticket routes disclose the separate-ticket construction."
+    binds: "RouteDecision.public_price_usd + observed_at + evidence counts"
+
+  - id: service_statement
+    order: 3
+    required_in: [priced, monitoring, unsupported, thin]
+    asserts: "Named-carrier service relationship: '<Carrier> operates nonstop <ORIGIN>->​<DEST>' (or 'no nonstop service; nearest one-stop via <hub>'). A relationship, never a bare entity name."
+    binds: "carrier_metadata + route_legitimacy_reason"
+
+  - id: timing_statement
+    order: 4
+    required_in: []        # optional; gated on timing evidence, NOT on the current fare (Phase C)
+    renders_when: "booking_window.state = ready OR weekday_pattern.state = ready (timing_evidence_state_v1)"
+    asserts: "Purchase- or departure-timing relationship with its support depth: 'Fares to <DEST> are typically lowest <N-M> days before departure (<support_count> observations).' Never a current price."
+    binds: "timing_evidence_state_v1"
+
+  - id: evidence_statement
+    order: 5
+    required_in: [priced, monitoring, thin]
+    asserts: "States the evidence depth actually held — '<N> accepted fare records (14-day window)' — and OMITS unknown counts. Never narrates an absence ('does not currently report' is banned in public prose)."
+    binds: "accepted_count_14d / distinct_prices_14d (whichever are known)"
+
+  - id: next_action_statement
+    order: 6
+    required_in: []        # optional; present in monitoring to set an honest expectation
+    renders_when: "document_state = monitoring"
+    asserts: "One honest next-step under the SLA, without inventing a completion timestamp: 'This route is queued for the next collection cycle; a fare publishes once a fresh accepted observation clears the gate.'"
+    binds: "next_collection_action"
+
+  - id: facts
+    order: 7
+    required_in: [priced, monitoring, unsupported, thin]
+    cardinality: "list"
+    asserts: "Ordered declarative data points (airport pair, duration, carriers, cabin, distance, timezone offset) — each a self-contained sentence with a named subject and an explicit relationship. Density over length; unknowns omitted, not listed as 'not reported'."
+    binds: "route facts from RouteDecision + airport/corridor metadata"
+
+  - id: related_actions
+    order: 8
+    required_in: [priced, monitoring, thin]
+    cardinality: "list"
+    asserts: "Claim-anchored internal links (companion timing pages, corridor/related routes), each anchored to a real claim, not decoration."
+    binds: "governed route graph"
+
+# ---------------------------------------------------------------------------------------------------
+# Sentence rules — the eikhart utility-writing formula, enforced per statement.
+# ---------------------------------------------------------------------------------------------------
+sentence_rules:
+  formula: "named_subject + explicit_relationship + result + condition + evidence(date_or_depth)"
+  self_contained: "Every statement must survive alone — no unresolved 'it / this / the gate / the corridor' without a named route."
+  relationship_required: "Every public claim states a relationship ('United operates nonstop EWR->AMS'), never a bare entity ('United Airlines')."
+  omit_unknowns: "Unknown metrics are OMITTED, never narrated. 'Not reported' / 'not currently reported' / 'count unavailable' are diagnostics, forbidden in public prose."
+  density: "Primary route intelligence ~350-600 useful words; methodology sits behind disclosure, not in the spine."
+  quote_ready_opening: "The first 100 words answer route, service, duration, and pricing status."
+
+# ---------------------------------------------------------------------------------------------------
+# Cross-surface parity — the same compiled document projects everywhere.
+# ---------------------------------------------------------------------------------------------------
+parity:
+  decision_hash: "Every surface carries the document's decision_hash + claim_ids; none re-derives a claim."
+  surfaces: [visible_html, json_ld, webmcp_agent_api, audio_transcript]
+  fare_coupling: "document_state != priced => NO dollar amount in ANY surface (HTML, JSON-LD, WebMCP, metadata, audio)."
+
+# ---------------------------------------------------------------------------------------------------
+# Conformance rules = the 8 acceptance tests, as governance rules with severities.
+# ---------------------------------------------------------------------------------------------------
+decision_rules:
+  - id: no_unknown_metric_narration
+    rule: "No 'not reported' / null / 'count unavailable' in any public surface; unknowns are omitted, not narrated."
+    severity: P0
+  - id: one_state_one_explanation
+    rule: "A state (e.g. 'Monitoring') and its suppression reason appear once in the primary spine; may be reused in schema/WebMCP but not repeated visibly."
+    severity: P1
+  - id: no_contradictory_fare
+    rule: "price_publishable=false => no dollar amount in HTML/JSON-LD/WebMCP/metadata/audio; price_publishable=true => exactly one dated fare statement with matching provenance."
+    severity: P0
+  - id: every_sentence_stands_alone
+    rule: "No unresolved pronoun/reference without a named route."
+    severity: P1
+  - id: every_claim_has_a_relationship
+    rule: "Public claims state a relationship, not a bare entity name."
+    severity: P1
+  - id: one_quote_ready_opening
+    rule: "First 100 words answer route, service, duration, pricing status."
+    severity: P1
+  - id: cms_parity
+    rule: "Human HTML = Googlebot HTML = FAQ = JSON-LD = WebMCP = audio carry the same claim_ids + decision_hash."
+    severity: P0
+  - id: density_floor
+    rule: "Primary route intelligence ~350-600 useful words; methodology behind disclosure."
+    severity: P2
+
+# The frontend becomes a dumb projector: it MAY choose layout/emphasis, it MUST NOT invent, re-derive,
+# or contradict any statement, state, amount, or count in the compiled document.
+constraints:
+  no_threshold_change: "This contract changes no pricing threshold, readiness rule, indexability rule, or route-collection."
+  regression_fixture: "EWR-AMS is the exact regression fixture; JFK-LHR book/fly is the Phase-C timing fixture."
