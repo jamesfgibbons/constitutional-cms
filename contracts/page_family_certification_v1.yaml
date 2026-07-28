@@ -1,0 +1,239 @@
+# Page Family Certification Contract
+# Domain-neutral framework: how a family of governed public pages graduates
+# from "renders" to "certified". Ratified from the operator's Governed
+# Page-Family Certification Framework v1 (2026-07-25).
+
+version: "1.0.0"
+status: "normative"
+contract_id: page_family_certification_v1
+purpose: >
+  Replace "is this page done?" with one machine-answerable question: which
+  page families are G5 certified, and which exact invariant prevents the
+  others from graduating? The unit of governance is a PAGE FAMILY, not a
+  template. Every governed page instance flows through four layers in order —
+  semantic facts, claim decisions, a compiled utility document, and
+  projections — and the same claim identities are visible on every serving
+  surface. Governance is declared before runtime; the consuming layer may
+  project truth but may not invent it.
+
+finish_line: >
+  Every governed page instance in a page family is generated from one
+  semantic fact layer, one decision layer, one compiled utility document, and
+  one projection contract — and the same claim identities are visible in SSR
+  HTML, agent context (WebMCP), structured data, navigation data, edge cache,
+  human responses, and crawler responses.
+
+# ---------------------------------------------------------------------------
+# 1. Family registration
+# ---------------------------------------------------------------------------
+family_registration:
+  location: "contracts/page_families/{family_id}.yaml (in the operating repo's CMS)"
+  required_declarations:
+    - url_ownership              # url_pattern the family exclusively owns
+    - governed_entity            # entity type each instance describes
+    - fact_authority             # canonical fact producer (Layer 1)
+    - decision_contract          # claim-decision contract (Layer 2)
+    - document_contract          # compiled utility-document contract (Layer 3)
+    - allowed_public_claims      # claim slots the family may publish
+    - forbidden_public_claims    # claims the family must never publish
+    - required_evidence_by_claim # evidence bar per claim slot
+    - document_states            # closed enum of document states
+    - indexability_rules
+    - sitemap_rules
+    - agent_tools                # WebMCP (or equivalent) tool inventory
+    - structured_data_types      # JSON-LD types the family emits
+    - ssr_projection_requirements
+    - monitoring_and_acceptance  # gates, census cadence, sighted-cycle rules
+  sibling_bundles: >
+    Instances that share an entity identity but answer different questions
+    form a sibling bundle. Siblings share entity and evidence-source
+    identities but NEVER share claim ownership: each claim slot has exactly
+    one owning page. Siblings may differ in question; they must never
+    contradict on shared evidence or freshness.
+
+# ---------------------------------------------------------------------------
+# 2. The four layers (order is mandatory)
+# ---------------------------------------------------------------------------
+layers:
+  layer_1_semantic_facts: >
+    Facts are typed entity relationships and measurements, not prose:
+    subject (typed entity id) + predicate + object (+ qualifiers), each with
+    evidence {source_id, observed_at, confidence}. A measurement fact carries
+    enough qualifiers to survive independently (dates, cabin, construction,
+    counts).
+  layer_2_claim_decisions: >
+    A fact does not automatically become a public claim. The decision layer
+    assigns claim_id, status (publish|suppress|hold), reason_codes, and
+    per-surface permissions (html / agent / structured-data / audio /
+    offer-schema). Freshness, confidence, support depth, entity legitimacy,
+    indexability, price publishability and offer eligibility are decided
+    HERE and nowhere downstream.
+  layer_3_utility_document: >
+    A compiler converts approved claims into an ordered, self-contained
+    claim set with stable claim_ids and a tamper-evident document hash.
+    Unknown values are omitted, never narrated. Document state is a pure
+    derivation of the decision layer.
+  layer_4_projections: >
+    Serving surfaces render the document; none writes a new claim. Surfaces
+    include at minimum: SSR HTML, client navigation data, edge-cached
+    shells, agent context, structured data, FAQ, metadata, audio
+    transcript, human responses and crawler responses.
+
+# ---------------------------------------------------------------------------
+# 3. Hard blockers — a score cannot override any of these
+# ---------------------------------------------------------------------------
+p0_blockers:
+  P0-1_missing_authority: "A public claim exists without a claim id, evidence source, and governing contract."
+  P0-2_consuming_layer_invention: "A projection surface creates a sentence from raw flags rather than projecting a compiled claim."
+  P0-3_state_divergence: "Governed state and served experience disagree (live + suppression prose; suppressed + amount; header vs island; sibling contradiction)."
+  P0-4_identity_mismatch: "page_decision_hash, utility_document_hash, or contract SHA differs across surfaces of one flowed instance."
+  P0-5_evidence_fabrication: "Missing values rendered as zeroes, 'not reported', inferred facts, or generic folklore. Unknown values are omitted."
+  P0-6_ssr_incompleteness: "The first HTML response does not contain enough visible text to answer the page's primary question."
+  P0-7_agent_divergence: "The agent surface returns a price, recommendation, or explanation not present in the governed document."
+  P0-8_corpus_incompleteness: "The family was certified from a sample while one or more governed instances failed."
+
+# ---------------------------------------------------------------------------
+# 4. Certification rubric (100 points; >=95 to certify; zero P0s; 100% of
+#    instances; two consecutive sighted production cycles)
+# ---------------------------------------------------------------------------
+rubric:
+  constitutional_authority:
+    weight: 10
+    evidence: "Normative CMS contract; URL scope; allowed/forbidden claims; contract SHA."
+  semantic_facts_and_provenance:
+    weight: 15
+    evidence: "Typed entities, relationships, timestamps, support, source ids, confidence."
+  one_decision_model:
+    weight: 15
+    evidence: "One canonical state; all flags are projections; no independently stored duplicates."
+  utility_document_compiler:
+    weight: 15
+    evidence: "Ordered claim set, claim ids, omission rules, utility language, document hash."
+  ssr_and_edge_projection:
+    weight: 15
+    evidence: "Full answer in first response; HTML/cache/data/headers carry matching identities."
+  agent_projection:
+    weight: 15
+    evidence: "Same document, claims, facts, pricing, timing, provenance; no independent prose."
+  search_and_answer_engine_semantics:
+    weight: 10
+    evidence: "Entity-rich headings, direct answers, structured data, canonical, internal claim links."
+  corpus_proof_and_monitoring:
+    weight: 5
+    evidence: "100% family census, two clean sighted cycles, runbook, nightly join gate."
+
+certification_states:
+  G0: "Unregistered"
+  G1: "Constitutionally governed (family registered, contract normative)"
+  G2: "Fact and decision complete (Layers 1-2 canonical)"
+  G3: "Utility document compiled (Layer 3 authoritative for public prose)"
+  G4: "Projected across all surfaces (Layer 4 identity-carrying)"
+  G5: "Corpus-certified and continuously monitored"
+  note: "A page is not done at G3. It becomes publicly reliable at G5."
+
+# ---------------------------------------------------------------------------
+# 5. Projection identity requirements
+# ---------------------------------------------------------------------------
+identity_requirements:
+  agent_envelope_required_fields:
+    - version
+    - family_id
+    - page_id
+    - canonical_url
+    - cms_contract_sha
+    - page_decision_hash
+    - utility_document_hash
+    - status            # ready | holding | unsupported | thin
+    - subject           # typed entity ref
+    - claims            # utility claims, verbatim from the document
+    - facts             # semantic facts with provenance
+    - actions
+  agent_rules:
+    - "summary equals the primary answer claim text"
+    - "public explanation comes from a claim id"
+    - "pricing/timing prose is never created in the projection builder"
+    - "every returned value includes provenance"
+    - "operator traces live in a separate private diagnostic channel"
+    - "tools read the same envelope; they do not recompute"
+  ssr_required_headers:
+    - x-page-family
+    - x-cms-contract-sha
+    - x-page-decision-hash
+    - x-utility-document-hash
+    - x-data-as-of
+    - x-materialized-at
+    - x-bake-version
+  ssr_required_html:
+    - "article element carrying data-page-family, data-page-decision-hash, data-utility-document-hash"
+    - "governed-document JSON island"
+    - "agent-context JSON island"
+  hash_semantics: >
+    Document hashes include compile time; parity is asserted WITHIN one
+    flowed instance (composite -> data -> SSR attribute -> meta mirror),
+    never across independent compiles.
+
+# ---------------------------------------------------------------------------
+# 6. Utility-writing rules (blocking)
+# ---------------------------------------------------------------------------
+utility_writing:
+  sentence_formula: "named subject + explicit relationship + result + condition + evidence date or depth"
+  blocking_rules:
+    - "Answer first: the first 100 words answer the page's primary query."
+    - "Name the entity; avoid unresolved pronouns and placeholders."
+    - "State the relationship; never list entities without a predicate."
+    - "Preserve the condition (date, horizon, cabin, evidence requirement) when material."
+    - "Attach evidence to every quantitative claim (observed_at, support, or source)."
+    - "Omit unknowns; never print 'not reported'."
+    - "One claim, one visible statement; no repeated suppression explanations."
+    - "No internal machinery vocabulary in public text."
+    - "No unsupported travel folklore (day/month/window guidance without qualifying evidence)."
+    - "Every paragraph must survive outside the page (extractable)."
+    - "Headings state the answer or relationship (entity-rich)."
+    - "FAQ, structured data and agent surfaces reuse the same claim ids."
+
+# ---------------------------------------------------------------------------
+# 7. Release process per family
+# ---------------------------------------------------------------------------
+release_process:
+  step_1_register: "Create contracts/page_families/{family_id}.yaml in the operating CMS."
+  step_2_compile_fixtures: "Minimum states: ready/live, monitoring/holding, unsupported, thin, stale/degraded."
+  step_3_project_canaries: "Verify backend composite, edge cache, SSR, navigation data, agent context, structured data, human HTML, crawler HTML."
+  step_4_full_family_census: "Sampling is allowed before merge; certification is corpus-wide."
+  step_5_two_sighted_cycles: >
+    A workflow exit code is insufficient. Each cycle must produce a report
+    artifact containing instance count, claim count, violation breakdown,
+    contract SHA, decision/document hash mismatches, agent parity, and SSR
+    parity.
+  step_6_promote: "Only then: include in sitemap, permit index, mark family certified, enable blocking governance."
+
+# ---------------------------------------------------------------------------
+# 8. The acceptance artifact
+# ---------------------------------------------------------------------------
+certification_report:
+  artifact: page_family_certification_report_v1.json
+  required_fields:
+    - family_id
+    - contract_version
+    - cms_contract_sha
+    - governed_instances
+    - instances_checked      # must equal governed_instances for certification
+    - score
+    - p0_failures            # must be 0
+    - hash_mismatches
+    - agent_mismatches
+    - ssr_mismatches
+    - unsupported_claims
+    - utility_writing_failures
+    - status                 # certified | blocked | in_progress
+  enforcement: >
+    The nightly join gate consumes family registrations and emits this
+    report per family. The gate's own sight is verified by a dead-man that
+    requires the report artifact, never the exit code.
+
+definition_of_done: >
+  A family is done when: every governed URL in the family is generated from
+  the same constitutional contract, semantic facts, claim decisions and
+  compiled utility document; the first server response answers the page's
+  question; the agent surface exposes the same claims and complete governed
+  pricing or timing data; every serving surface carries the same identities;
+  and the full family passes twice without retries.
