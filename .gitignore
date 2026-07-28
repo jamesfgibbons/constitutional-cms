@@ -1,6 +1,9 @@
 __pycache__/
 *.pyc
 .env
+# Bare pattern (no trailing slash) so git ignores a node_modules SYMLINK
+# (mode 120000) as well as the directory; `node_modules/` only matches dirs.
+node_modules
 .DS_Store
 *.swp
 *.swo
