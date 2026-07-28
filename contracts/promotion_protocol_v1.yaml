@@ -1,0 +1,143 @@
+# Promotion Protocol — reference currency for governed generations
+# Ratified operating doctrine: "Content addressing proves what an
+# artifact is. Evaluation proves whether it is acceptable. Promotion proves
+# which acceptable world is current."
+
+version: "1.0.0"
+status: "normative"
+contract_id: promotion_protocol_v1
+purpose: >
+  Close the gap the week's incidents proved: valid immutable artifacts can all
+  exist while the mutable references selecting them are wrong. Content
+  addressing reduces mutation risk; it does not prove reference currency. This
+  contract defines the PROMOTED GENERATION — the one additional object in the
+  traceability chain — and the only lawful way the authoritative pointer moves.
+  The motivating failure classes (a deployment alias serving an unpromoted
+  artifact; surfaces attesting hashes their references no longer matched; a
+  compile-contract change with no owned backfill mechanism) are recorded with
+  their receipts in the operating estate's private incident catalog.
+
+core_invariant: >
+  A surface may not present a claim unless it can attest to the promoted
+  generation from which that claim was rendered.
+
+single_pointer_ruling: >
+  Atomic promotion means ONE authoritative decision, not distributed atomic
+  mutation. Every immutable candidate artifact is published and verified
+  first; then exactly one authoritative promoted_generation_id moves in the
+  control plane; every renderer proves it holds the matching artifact before
+  serving it, and serves the previous generation — or fails closed — when it
+  cannot.
+
+healing_ruling: >
+  Serve-time detection may INITIATE a candidate repair generation; it may not
+  mutate or repoint the promoted generation outside this protocol. The lawful
+  self-heal is: detect violation -> open repair work order -> compile
+  candidate generation -> evaluate the complete affected cohort -> promote
+  through the normal protocol. Never: detect violation -> mutate one row
+  behind the currently promoted generation. Per-row in-place healing was the
+  right medicine for a mutable-row world and is retired as an author once
+  generation promotion exists; its detection capability is retained.
+
+promotion_sequence:
+  - publish every immutable candidate artifact
+  - verify each artifact and required hash is retrievable
+  - write the complete candidate manifest
+  - run cohort-level certification
+  - atomically move the one authoritative promoted_generation_id
+  - renderers prove artifact possession before serving; else previous generation or fail closed
+  - probe served outputs (byte parity from the wire)
+  - record the promotion receipt; retain the prior generation as rollback target
+
+manifest_schema:
+  objective:
+  candidate_generation_id:
+  parent_generation_id:
+  compiler:
+    commit:
+    schema_version:
+    contract_versions:
+  source_boundary:
+    source_cutoff:
+    cohort_predicate:
+    cohort_count:
+    cohort_hash:
+  artifacts:
+    - surface:
+      uri:
+      content_hash:
+      claim_content_hash:
+      evidence_hash:
+      generation_id:
+  writer_completion:
+    requested:
+    compiled:
+    resealed:
+    unchanged:
+    refused:
+    refusal_reasons:
+    manifest_hash:
+  evaluation:
+    rubric_id:
+    expected_denominator:
+    observed_denominator:
+    passed:
+    failed:
+    unavailable:
+    receipt_ids:
+  promotion:
+    pointer_before:
+    pointer_after:
+    promoted_at:
+    promotion_receipt_id:
+    rollback_generation_id:
+  runtime_certification:
+    served_surfaces:
+    generation_parity:
+    claim_parity:
+    byte_parity:
+    probe_receipt_id:
+
+non_negotiable_rules:
+  - "No zero-denominator success: an evaluation whose cohort is empty certifies nothing."
+  - "No partial cohort silently represented as complete: writer completion counts persistence, never dispatch."
+  - "No pointer movement before all required artifacts and evaluation receipts exist and are retrievable."
+
+repair_vs_promotion_distinction: >
+  A clean census achieved by manual or borrowed transition (aged rows, observer
+  side-effect sweeps, unrelated jobs' selection) is CORPUS REPAIR SUCCESSFUL —
+  it proves the incident was repaired. Only a supervised recompile with
+  completion manifest, cohort certification, pointer movement, and served-byte
+  probes is PROMOTION MECHANISM PROVEN. The two must never be conflated in an
+  acceptance record; instances are recorded in the operating estate's private
+  ledger.
+
+relation_ladder_invariant: >
+  PLANNED, REFERENCED, IMPLEMENTED, PUBLISHED, PROMOTED, and SERVED are
+  distinct relations. None implies the next without an artifact or evaluation
+  receipt. A work-DAG fact (something was specified, referenced, attempted, or
+  planned) is never proof of an evidence-graph fact (a deployable component
+  currently exists and is retrievable). Governs scripts, endpoints, datasets,
+  routes, manifests, audio files, CMS contracts, and public pages alike
+  (the registered-but-absent failure class).
+
+surface_attestation:
+  required_identity_on_every_surface:
+    - "API payload: generation_id"
+    - "HTTP header: generation identity"
+    - "HTML metadata: generation + claim_content_hash"
+    - "KV metadata: generation declared before content is served"
+    - "MCP response: dataset generation + edge identifiers"
+    - "audio manifest: generation + current variant"
+    - "console stream: generation carried by the initial snapshot"
+
+sequence_naming: >
+  Stage-1 adoption renames the existing route-root closeout; it does not open
+  a parallel initiative. M0 = canonical claim and provenance (a published fare
+  claim binds amount, accepted-fare evidence, observation date, carrier, trip
+  type/cabin where relevant, claim state, claim ids, content and evidence
+  hashes; no derived statistic presented as an observed fare). M1 = identity,
+  writer completion, and surface attestation. Then: seed (supervised recompile
+  with manifest) -> gate (candidate certification) -> transition (authoritative
+  promotion) -> proof (served-byte parity from the wire) -> recovery (retained
+  prior generation and tested rollback).

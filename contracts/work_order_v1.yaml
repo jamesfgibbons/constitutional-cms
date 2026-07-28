@@ -1,0 +1,81 @@
+# Work Order — the typed objective that replaces loose agent prompts
+# Ratified operating doctrine. "Programming the program": every
+# meaningful task begins with a durable work order, not a chat request. This
+# formalizes what the PR-intent card has been approximating.
+
+version: "1.0.0"
+status: "normative"
+contract_id: work_order_v1
+purpose: >
+  Make work lineage explicit enough that no agent can silently enlarge its
+  scope, certify its own output, or promote it through the same authority
+  path. An interrupted or failed run must be resumable or explicable without
+  replaying its transcript. Stale or unsafe repair vehicles are closed and
+  rebuilt from current truth — a superseded work order links its successor,
+  its base commit, and what invalidated it, making the failure useful rather
+  than disposable.
+
+schema:
+  objective:
+  business_reason:
+  lineage:
+    repository:
+    exact_base_commit:      # exact-head ancestry; never a stale checkout
+    parent_work_order:
+    supersedes:             # SUPERSEDED_BY / INVALIDATED_BY links, not silent closure
+  scope:
+    mutable_paths:
+    protected_paths:        # protected surfaces named up front (DDL, prod mutation, deploy lanes)
+    allowed_tools:
+    forbidden_operations:
+  inputs:
+    required_generation:    # the promoted generation this work reads from
+    artifacts:
+    source_receipts:
+  success:
+    deterministic_criteria:
+    runtime_criteria:       # served-byte probes, not only local tests
+    cohort_and_denominator: # no zero-denominator success; denominator declared before work starts
+    required_evidence:
+  budget:
+    wall_clock:
+    retries:
+    model_calls:
+    database_writes:
+    financial_cost:
+  outputs:
+    required_artifacts:
+    required_manifest:      # writer completion counts persistence, never dispatch
+    evaluation_receipts:
+  authority:
+    implementation_agent:
+    evaluator:              # never the implementation agent
+    promotion_authority:    # never the implementation agent
+    human_gate:
+  recovery:
+    rollback_rule:
+    exhaustion_rule:
+    escalation_conditions:
+
+separation_of_powers: >
+  The implementing agent may not enlarge its own scope, may not certify its
+  own work, and may not promote its own output. Implementation, evaluation,
+  and promotion are three authorities; at most one may be the same actor as
+  another only when the human gate explicitly says so on the order.
+
+operating_loop:
+  - read current state, exact-head lineage, incidents, and prior evaluations
+  - propose one motivated change
+  - work in an isolated branch or worktree
+  - produce the implementation artifact
+  - run deterministic checks
+  - run an independent reviewer against the explicit criteria
+  - retain the candidate only when the multi-metric gate improves
+  - otherwise revert or mark the lineage rejected
+  - publish the run, evidence, cost, and unresolved questions
+
+coherence_exception: >
+  Tightly coupled architecture, product design, narrative, and musical
+  judgment retain one coherent context rather than fragmenting into a swarm.
+  Swarms are for genuinely independent tasks with the reducer, deduplication
+  rules, and final gate defined BEFORE fan-out.
