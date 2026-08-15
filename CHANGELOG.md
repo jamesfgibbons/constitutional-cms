@@ -14,6 +14,18 @@ All notable changes to Constitutional CMS are documented here. This project foll
 ### Notes
 - Docs/contract release. Promotion protocol core invariant is unchanged: one authoritative `promoted_generation_id`.
 
+## [0.3.0] - 2026-08-14
+
+### Changed
+- Rewrote the public README as a scannable constitution: table of contents, five-contract index, grammar fixes, and a homepage link to [constitutionalcms.com](https://constitutionalcms.com).
+- Clarified that SERP Radio is modeled after this repo.
+
+### Added
+- CONTRIBUTING.md encoding the human-review boundary, contract-as-test cadence, and what belongs in the public repo.
+
+### Notes
+- Docs-only release. No contract schema changes.
+
 ## [0.2.0] - 2026-05-04
 
 ### Added
