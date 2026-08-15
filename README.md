@@ -19,6 +19,7 @@ SERP Radio is modeled after this repo.
 - [The problem](#the-problem)
 - [The five contracts](#the-five-contracts)
 - [Incident-learned invariants](#incident-learned-invariants)
+- [Every crossing needs an authority](#every-crossing-needs-an-authority)
 - [v0.2 reference patterns](#v02-reference-patterns)
 - [Constitutional cybernetics](#constitutional-cybernetics)
 - [The priority stack](#the-priority-stack)
@@ -278,6 +279,28 @@ Some of the most important rules in this framework were clarified by production 
 
 - [`docs/INCIDENT_LEARNED_INVARIANTS.md`](docs/INCIDENT_LEARNED_INVARIANTS.md) documents the sanitized invariant set
 - The public repo shares the invariant pattern and implementation guidance, not any proprietary operating playbook
+
+---
+
+## Every crossing needs an authority
+
+The governing doctrine of the framework is that **every crossing needs an authority**. A system may move from one valid state to another through many paths. The destination does not tell you which path was chosen, when the decision became irreversible, or whose judgment the transition contains.
+
+Four public artifacts make the doctrine executable:
+
+- **The Transition Authority Contract** names the authority for each crossing class: source to consumer, state to state, human to machine, private to public, production to certification. The source owns truth. The transition needs an author. The renderer owns expression, not semantics. The receipt owns proof.
+- **The Troubadour Protocol** separates authorship from performance. Trobar authors. Canso preserves. Joglar performs. Razo proves. A machine that touches the artifact does not become its originating author.
+- **Signal Contract vNext — Transition Record** is a proposed extension to Signal Contract v1 that makes the movement between states explicit. State equality does not imply transition equality.
+- **The Receipt That Runs** is a sanitized demonstration of the receipt shape. Proof is a crossing, not a report. The producing layer cannot certify itself.
+
+Each artifact publishes the grammar of a crossing. None publishes the tuning: the pivot functions, the selection heuristics, the thresholds, or the protected source material. The public sees the shape. The private repos hold the authored decisions.
+
+Read them on [constitutionalcms.com](https://constitutionalcms.com):
+
+- [Transition Record](https://constitutionalcms.com/transition-record)
+- [Troubadour Protocol](https://constitutionalcms.com/troubadour-protocol)
+- [Transition Authority](https://constitutionalcms.com/transition-authority)
+- [Receipt Demonstration](https://constitutionalcms.com/receipt-demonstration)
 
 ---
 
