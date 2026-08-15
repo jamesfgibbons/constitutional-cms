@@ -1,0 +1,24 @@
+[
+  {
+    "canonical_url": "https://example.com/docs",
+    "exists": true,
+    "page_family": "documentation",
+    "publication_tier": "FULL",
+    "indexable": true,
+    "inbound_eligible": true,
+    "outbound_eligible": true,
+    "observed_at": "2026-08-15T12:00:00Z",
+    "authority_id": "synthetic-static-routes"
+  },
+  {
+    "canonical_url": "https://example.com/draft",
+    "exists": true,
+    "page_family": "documentation",
+    "publication_tier": "SHELL",
+    "indexable": false,
+    "inbound_eligible": false,
+    "outbound_eligible": false,
+    "observed_at": "2026-08-15T12:00:00Z",
+    "authority_id": "synthetic-static-routes"
+  }
+]

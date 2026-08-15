@@ -16,6 +16,7 @@ WordPress, Webflow, Drupal, and Shopify were designed for human authors. They st
 
 - [The problem](#the-problem)
 - [The five contracts](#the-five-contracts)
+- [Web conformance](docs/WEB_CONFORMANCE.md)
 - [Canonical protocol map](docs/PROTOCOL_MAP.md)
 - [Incident-learned invariants](#incident-learned-invariants)
 - [Every crossing needs an authority](#every-crossing-needs-an-authority)
@@ -384,7 +385,7 @@ These apply to every agent in the system, regardless of role.
 Constitutional CMS governs **what agents publish**. It does not:
 
 - **Orchestrate agents.** It does not route messages or manage tool access. Use CrewAI, LangGraph, Claude Code, Codex, or whatever you want. Constitutional CMS is the governance layer that sits above your agent framework.
-- **Run tests or deploy code.** It defines what the tests should verify and what “deployed correctly” means. Your CI/CD pipeline enforces it.
+- **Crawl or deploy your production system.** The public evaluator consumes normalized evidence without network access. Your collectors, CI/CD pipeline, and private adapters gather evidence and enforce promotion.
 - **Depend on any specific tech stack.** The contracts are YAML. The agents can be Claude, GPT, Codex, local models, or humans. The backend, frontend, database, and hosting are your choice.
 
 ---
@@ -413,6 +414,9 @@ The public repository contains generalized, implementation-agnostic patterns:
 - sensor integrity rules that distinguish world silence from source failure
 - signal projection rules that keep ambient and agentic renderers downstream of canonical state
 - observe-first validators that can later become blocking gates
+- a versioned web-conformance catalog with Foundation, Search, Answer/AI Retrieval, and Agentic Web profiles
+- evidence and receipt schemas that preserve `UNMEASURED` and keep lab performance distinct from field Core Web Vitals
+- public adapter shapes that make private route and readiness authorities testable without publishing them
 
 The agents write code and produce content. Humans write the contracts, review the changes, and decide what becomes public policy. The contracts prevent independent workstreams from breaking each other’s output.
 
@@ -438,31 +442,47 @@ constitutional-cms/
 │   ├── signal_projection.yaml         # One state projected into many renderers
 │   ├── sensor_integrity.yaml          # Sensor health before metric claims
 │   ├── agent_operating_envelope.yaml  # Safe autonomy and idempotency tiers
+│   ├── standards_registry_v1.yaml      # External, platform, constitutional, and experimental authorities
+│   ├── check_catalog_v1.yaml           # Reproducible checks across four profiles
+│   ├── evidence_bundle_v1.yaml         # Normalized observation boundary
+│   ├── constitutional_site_manifest_v1.yaml # Public-safe implementation configuration
+│   ├── conformance_receipt_v1.yaml     # Verdict and evidence-coverage grammar
 │   └── sprints/                       # Sprint-scoped work contracts
 │       └── example-sprint.yaml
 ├── examples/
 │   ├── location-intelligence/         # Location intelligence example
-│   └── ecommerce-catalog/             # Product page example
+│   ├── ecommerce-catalog/             # Product page example
+│   ├── manifests/                     # Public-safe configuration examples
+│   └── link-targets/                  # Normalized link-authority examples
+├── schemas/                           # JSON Schemas for portable interfaces
 ├── scripts/
 │   ├── validate_contracts.py          # Validate contract consistency
+│   ├── validate_web_conformance.py    # Validate schemas, authority refs, and public safety
+│   ├── conformance_evaluator.py       # Offline reference evaluator
 │   └── page_health_validator.py       # Observe-only crawl/render report
 └── docs/
     ├── NOVELTY.md                     # What's new here and what isn't
     ├── INCIDENT_LEARNED_INVARIANTS.md # Portable rules and generalized scenarios
     ├── PROTOCOL_MAP.md                # Which scheme answers which question
     ├── SOURCE_BOUNDARY.md             # Public authority and private implementation boundary
+    ├── WEB_CONFORMANCE.md             # Profiles, verdicts, and reproducible evaluation
+    ├── ADAPTER_BOUNDARY.md             # Public normalized records/private authorities
     ├── V0_2_REFERENCE_PATTERNS.md     # Portable methods for explicit contract ratchets
     ├── CONSTITUTIONAL_CYBERNETICS.md  # Control-system frame for the agentic web
     ├── AGENT_COORDINATION.md          # How agents use these contracts
     └── PRIOR_ART.md                   # Honest comparison to existing tools
 ```
 
-1. Copy the `contracts/` directory into your project.
-2. Edit the YAML files to match your domain (entity types, required fields, tier thresholds).
-3. Point your agents at the contracts before they write code.
-4. Build validation scripts that check live output against contracts.
+1. Copy or pin the released contracts and schemas.
+2. Edit the domain contracts and create a public-safe `ConstitutionalSiteManifestV1`.
+3. Point agents at the contracts before they write code.
+4. Map collector output or a private authority into `EvidenceBundleV1`.
+5. Run `python scripts/conformance_evaluator.py --evidence <bundle.yaml>` and enforce the receipt in CI.
 
-More detail lives in [`docs/AGENT_COORDINATION.md`](docs/AGENT_COORDINATION.md) and on [constitutionalcms.com](https://constitutionalcms.com).
+More detail lives in [`docs/WEB_CONFORMANCE.md`](docs/WEB_CONFORMANCE.md),
+[`docs/ADAPTER_BOUNDARY.md`](docs/ADAPTER_BOUNDARY.md),
+[`docs/AGENT_COORDINATION.md`](docs/AGENT_COORDINATION.md), and on
+[constitutionalcms.com](https://constitutionalcms.com).
 
 ---
 

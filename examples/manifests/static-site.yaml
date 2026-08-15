@@ -1,0 +1,22 @@
+schema_version: ConstitutionalSiteManifestV1
+canonical_origin: https://example.com
+route_sources:
+  - type: sitemap
+    url: https://example.com/sitemap-index.xml
+    authority_id: public-sitemap
+  - type: static_manifest
+    path: ./routes.json
+    authority_id: build-route-manifest
+page_families:
+  - id: marketing
+    path_patterns: ["/", "/about", "/contact"]
+  - id: documentation
+    path_patterns: ["/docs/*"]
+crawler_policy:
+  search: allow
+  user_retrieval: allow
+  training: disallow
+schema_expectations:
+  marketing: [WebPage, Organization]
+  documentation: [TechArticle, BreadcrumbList]
+agent_actions: []

@@ -1,0 +1,15 @@
+schema_version: EvidenceBundleV1
+subject: {url: https://example.com/failing}
+collected_at: "2026-08-15T12:00:00Z"
+collector: {name: synthetic-fixture, version: "1.0.0"}
+scopes:
+  - {name: public_static, mutation_class: pure_read}
+  - {name: public_rendered, mutation_class: pure_read}
+  - {name: declared_config, mutation_class: pure_read}
+observations:
+  http: {status: 503}
+  search: {canonical: /relative}
+  answer: {primary_answer_present: false}
+  agent: {actions_typed: false}
+limitations:
+  - This fixture intentionally supplies one falsifying observation per profile.

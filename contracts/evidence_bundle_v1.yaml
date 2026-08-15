@@ -1,0 +1,36 @@
+schema_version: EvidenceBundleV1
+status: normative
+purpose: Normalize observations without exposing implementation-specific authorities.
+
+required_fields:
+  - schema_version
+  - subject
+  - collected_at
+  - collector
+  - scopes
+  - observations
+  - limitations
+
+evidence_scopes:
+  public_static: One bounded HTML response and its headers.
+  public_rendered: A browser-rendered document and interaction observations.
+  public_crawl: A bounded same-origin multi-URL crawl.
+  declared_config: A public-safe implementation manifest.
+  private_authority: Signed normalized evidence supplied by a private adapter.
+  field_observation: Real-user or platform field observations.
+
+rules:
+  - id: missing_is_unmeasured
+    statement: A required observation that is absent resolves to UNMEASURED, never PASS or zero.
+  - id: collector_identity_required
+    statement: Every bundle names and versions its collector.
+  - id: raw_private_state_prohibited
+    statement: Bundles contain normalized observations and hashes, never credentials, queries, or private schemas.
+  - id: lab_is_not_field
+    statement: Lab performance evidence cannot satisfy field-observation checks.
+  - id: mutation_class_required
+    statement: Each collected scope declares the probe mutation class.
+
+artifact_hashes:
+  algorithm: sha256
+  raw_artifact_storage: optional_and_out_of_band

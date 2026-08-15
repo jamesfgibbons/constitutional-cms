@@ -19,6 +19,7 @@ import yaml
 import sys
 import os
 import argparse
+import subprocess
 from pathlib import Path
 
 
@@ -396,6 +397,21 @@ def validate_agent_operating_envelope(contracts_dir: str) -> list[str]:
     return errors
 
 
+def validate_web_conformance() -> list[str]:
+    """Run the versioned schema and catalog-reference validator."""
+    script = Path(__file__).with_name('validate_web_conformance.py')
+    result = subprocess.run(
+        [sys.executable, str(script)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode == 0:
+        return []
+    output = (result.stdout + result.stderr).strip()
+    return [output or 'web conformance validation failed without output']
+
+
 def main():
     parser = argparse.ArgumentParser(description='Validate Constitutional CMS contracts')
     parser.add_argument('--contracts-dir', default='./contracts', help='Path to contracts directory')
@@ -412,6 +428,7 @@ def main():
         'signal_projection',
         'sensor_integrity',
         'agent_envelope',
+        'web_conformance',
         'all',
     ],
                        default='all', help='Which contract to validate')
@@ -438,6 +455,10 @@ def main():
         'signal_projection': ('Signal Projection', validate_signal_projection),
         'sensor_integrity': ('Sensor Integrity', validate_sensor_integrity),
         'agent_envelope': ('Agent Operating Envelope', validate_agent_operating_envelope),
+        'web_conformance': (
+            'Web Conformance',
+            lambda _contracts_dir: validate_web_conformance(),
+        ),
     }
     
     if args.check == 'all':
