@@ -172,6 +172,14 @@ It is not closed when an agent says it is done.
 The loop closes when evidence from the correct authority shows that the public
 actuator reflects the governed state.
 
+That is delivery proof, not automatically outcome proof. A merge, deployment,
+promotion, or served-identity receipt can prove that the intended world reached
+the wire. It cannot prove that the external objective changed. Implementations
+capture those results separately using
+[`outcome_record.yaml`](../contracts/outcome_record.yaml), including
+`not_observed`, `unmeasured`, `blocked`, and `inconclusive` states. Missing
+outcome evidence never becomes an actual value of zero.
+
 That evidence should be machine-readable first and narrative second. Markdown
 can explain a result, but JSON or equivalent structured evidence should govern
 the result. If the narrative and the evidence disagree, the evidence wins.

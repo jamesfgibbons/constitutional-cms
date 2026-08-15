@@ -67,6 +67,19 @@ class CyberneticContractsTest(unittest.TestCase):
         self.assertIn("no_ingestion_retry_on_verifier_failure", rules)
         self.assertIn("duplicate_observation_veto", rules)
 
+    def test_outcome_record_preserves_unmeasured_and_delivery_distinction(self):
+        contract = load_contract("outcome_record.yaml")
+        states = contract["state_vocabulary"]
+        rules = {rule["id"] for rule in contract["storage_rules"]}
+        invariants = {rule["id"] for rule in contract["invariants"]}
+
+        self.assertIn("unmeasured", states)
+        self.assertFalse(states["unmeasured"]["actual_required"])
+        self.assertIn("no_synthetic_zero", rules)
+        self.assertIn("proof_and_outcome_are_distinct", rules)
+        self.assertIn("outcome_capture_precedes_calibration", invariants)
+        self.assertIn("delivery_is_not_outcome", invariants)
+
     def test_public_docs_link_to_existing_repo_files(self):
         docs_to_check = [
             ROOT / "README.md",

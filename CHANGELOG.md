@@ -10,6 +10,7 @@ All notable changes to Constitutional CMS are documented here. This project foll
 - Explicit synthetic provenance documentation for examples and test fixtures.
 - Probe `mutation_class` vocabulary: `pure_read`, `read_with_side_effect`, and `active_perturbation`.
 - `UNMEASURED` output when page-health probe inputs are absent.
+- Portable `outcome_record.yaml` for append-only external results, with delivery proof kept distinct from outcome proof.
 
 ### Changed
 - Contract validation and unit tests are blocking on pull requests and `main`.

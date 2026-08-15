@@ -324,6 +324,7 @@ Traditional CMS software manages authored content. Constitutional CMS manages fe
 - [`docs/CONSTITUTIONAL_CYBERNETICS.md`](docs/CONSTITUTIONAL_CYBERNETICS.md) defines the sensors / state / controllers / actuators / dampers / proof model
 - `contracts/signal_projection.yaml` — one canonical state, many renderers
 - `contracts/proof_ledger.yaml` — evidence-gated done
+- `contracts/outcome_record.yaml` — append-only external outcomes, kept separate from delivery proof
 - `contracts/sensor_integrity.yaml` — stale or failed sources cannot become false zeroes
 - `contracts/agent_operating_envelope.yaml` — safe autonomy tiers and data-plane idempotency
 - Every probe declares `mutation_class`; missing required inputs resolve to `UNMEASURED`, never PASS
@@ -433,6 +434,7 @@ constitutional-cms/
 │   ├── cache_materialization.yaml     # Rendered artifact metadata
 │   ├── mobile_table_card_layout.yaml  # Narrow viewport layout invariant
 │   ├── proof_ledger.yaml              # Evidence-gated done
+│   ├── outcome_record.yaml            # External outcomes, append-only
 │   ├── signal_projection.yaml         # One state projected into many renderers
 │   ├── sensor_integrity.yaml          # Sensor health before metric claims
 │   ├── agent_operating_envelope.yaml  # Safe autonomy and idempotency tiers

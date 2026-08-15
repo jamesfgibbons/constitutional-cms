@@ -26,5 +26,7 @@ page tier is not conformance. A release gate is not priority. A repair layer is 
 5. **Ordering:** use the repair stack inside one surface; use a control priority class across unlike interventions.
 6. **Release gate and receipt:** promotion depends on independently checkable evidence, not the priority label.
 
-The framework does not yet publish a heavyweight control-decision receipt. Outcome capture should precede decision
-calibration; otherwise an ex-ante form adds overhead without evidence that forecasts can be evaluated.
+The framework does not yet publish a heavyweight control-decision receipt. The lightweight
+[`outcome_record.yaml`](../contracts/outcome_record.yaml) comes first: it preserves append-only actuals and keeps
+delivery proof distinct from external outcomes. Decision calibration waits until enough precommitted expectations and
+observed actuals exist to evaluate it.

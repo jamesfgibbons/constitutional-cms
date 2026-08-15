@@ -1,0 +1,85 @@
+# Outcome Record Contract
+# Captures external results before adding heavyweight decision-calibration overhead.
+
+version: "1.0.0"
+status: "reference"
+purpose: >
+  Preserve append-only observations of what happened after an intervention so
+  expected-versus-actual calibration remains possible. A proof receipt shows
+  that an action or delivery occurred; an outcome record shows whether the
+  external objective changed.
+
+record_required_fields:
+  - schema_version
+  - outcome_id
+  - observed_at
+  - subject
+  - metric
+  - expected
+  - actual
+  - state
+  - evidence_refs
+  - intervention_ref
+  - promotion_ref
+  - notes
+
+state_vocabulary:
+  observed:
+    meaning: "The declared authority produced a usable observation."
+    actual_required: true
+  not_observed:
+    meaning: "No observation was scheduled or captured for the outcome."
+    actual_required: false
+  unmeasured:
+    meaning: "Required inputs or authority were unavailable, so no result may be inferred."
+    actual_required: false
+  blocked:
+    meaning: "A named dependency prevented observation."
+    actual_required: false
+  inconclusive:
+    meaning: "Evidence exists but cannot support the declared conclusion."
+    actual_required: false
+
+storage_rules:
+  - id: append_only
+    rule: "Outcome records are appended; a later observation does not rewrite an earlier one."
+    severity: P0
+  - id: no_synthetic_zero
+    rule: "Missing, failed, or unavailable outcome evidence must not be stored as actual zero."
+    severity: P0
+  - id: evidence_replayable
+    rule: "Every observed outcome names evidence sufficient to replay or independently inspect the observation."
+    severity: P0
+  - id: proof_and_outcome_are_distinct
+    rule: "Proof that an intervention shipped does not prove that its external objective changed."
+    severity: P0
+  - id: expected_is_precommitted
+    rule: "When supplied, expected is captured before the outcome and is never backfilled from actual."
+    severity: P1
+  - id: personal_data_excluded
+    rule: "Outcome records contain no credentials, raw personal data, or private user records."
+    severity: P0
+
+calibration_rule: >
+  Introduce a control-decision receipt only after enough precommitted expected
+  values and observed actuals exist to evaluate calibration. Until then, keep
+  outcome capture cheaper than the intervention it measures.
+
+invariants:
+  - id: outcome_capture_precedes_calibration
+    rule: "Irrecoverable outcomes are captured before decision-form complexity is added."
+    severity: P1
+  - id: unmeasured_is_not_failure
+    rule: "An unmeasured outcome is an evidence gap, not a failed objective and not a pass."
+    severity: P0
+  - id: delivery_is_not_outcome
+    rule: "Merge, deployment, promotion, and served identity cannot substitute for external outcome evidence."
+    severity: P0
+
+recommended_reason_codes:
+  - authority_unavailable
+  - observation_not_scheduled
+  - evidence_missing
+  - dependency_blocked
+  - sample_inconclusive
+  - outcome_window_open
