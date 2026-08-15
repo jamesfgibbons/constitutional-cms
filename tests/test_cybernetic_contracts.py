@@ -36,6 +36,15 @@ class CyberneticContractsTest(unittest.TestCase):
         self.assertIn("no_silent_zeroes", rule_ids)
         self.assertIn("sensor_failure_not_world_silence", rule_ids)
 
+        self.assertEqual(
+            set(contract["mutation_class_vocabulary"]),
+            {"pure_read", "read_with_side_effect", "active_perturbation"},
+        )
+        self.assertIn("UNMEASURED", contract["measurement_states"])
+        measurement_rule_ids = {rule["id"] for rule in contract["measurement_rules"]}
+        self.assertIn("missing_inputs_are_unmeasured", measurement_rule_ids)
+        self.assertIn("observation_side_effects_are_declared", measurement_rule_ids)
+
     def test_signal_projection_surfaces_derive_from_canonical_state(self):
         contract = load_contract("signal_projection.yaml")
 

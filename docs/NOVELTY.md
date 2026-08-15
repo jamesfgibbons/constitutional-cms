@@ -82,4 +82,6 @@ Nobody else has the combination of continuous publish-tier lifecycle + snapshot 
 
 ## The Honest Summary
 
-Constitutional CMS is a novel *application* of established *principles* to a *new problem*. The principles (policy-as-code, separation of concerns, quality gates) are proven. The problem (governing multi-agent web content production with continuous data-driven quality tiers) is new. The specific combination — publish-tier graduation/degradation, snapshot boundaries, link graph rules, contract-based agent coordination — doesn't exist anywhere else as a portable spec, and it's proven in production with measurable results.
+Constitutional CMS is an application of established principles to agent-built publishing. The public claim is the
+portable combination: publish-tier graduation and degradation, snapshot boundaries, link graph rules, and
+contract-based agent coordination. This document does not claim independently verified production outcomes.

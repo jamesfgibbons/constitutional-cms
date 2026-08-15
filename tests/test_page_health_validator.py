@@ -103,6 +103,41 @@ class PageHealthValidatorTest(unittest.TestCase):
         self.assertEqual(findings[0].code, "mobile_table_requires_card_layout")
         self.assertEqual(findings[0].severity, "P2")
 
+    def test_missing_probe_inputs_are_unmeasured_not_pass(self):
+        rows = [{"url": "https://example.com/entities/example-f", "status": "200"}]
+        findings = page_health_validator.analyze_rows(rows)
+        gaps = page_health_validator.analyze_unmeasured(rows)
+        summary = page_health_validator.summarize(findings, gaps)
+
+        self.assertEqual(summary["measurement_state"], "UNMEASURED")
+        self.assertGreater(summary["total_unmeasured"], 0)
+        self.assertIn("claim_integrity", {gap.probe_id for gap in gaps})
+
+    def test_complete_clean_probe_row_can_pass(self):
+        rows = [
+            {
+                "url": "https://example.com/entities/example-g",
+                "status": "200",
+                "quality_tier": "FULL",
+                "indexable": "true",
+                "sitemap_eligible": "true",
+                "noindex": "false",
+                "visible_claim": "false",
+                "claim_publishable": "false",
+                "suppression_visible": "false",
+                "materialized": "false",
+                "fallback_served": "false",
+                "internal_link_status": "200",
+                "viewport_width": "390",
+                "layout_mode": "card",
+            }
+        ]
+        summary = page_health_validator.summarize(
+            page_health_validator.analyze_rows(rows),
+            page_health_validator.analyze_unmeasured(rows),
+        )
+        self.assertEqual(summary["measurement_state"], "PASS")
+
 
 if __name__ == "__main__":
     unittest.main()

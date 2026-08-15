@@ -2,6 +2,24 @@
 
 All notable changes to Constitutional CMS are documented here. This project follows [Semantic Versioning](https://semver.org/).
 
+## [0.3.2] - 2026-08-15
+
+### Added
+- Canonical protocol map declaring which taxonomy answers which question.
+- Public/private release and source boundary.
+- Explicit synthetic provenance documentation for examples and test fixtures.
+- Probe `mutation_class` vocabulary: `pure_read`, `read_with_side_effect`, and `active_perturbation`.
+- `UNMEASURED` output when page-health probe inputs are absent.
+
+### Changed
+- Contract validation and unit tests are blocking on pull requests and `main`.
+- The sample page-health report runs as a separate non-blocking observer job.
+- GitHub Actions dependencies are pinned to immutable commit SHAs.
+- Public language no longer relies on private incident detail or unsourced implementation outcomes.
+
+### Notes
+- Portable contracts remain authoritative in this repository. Private mappings, thresholds, incidents, and operating receipts remain outside the public release.
+
 ## [0.3.1] - 2026-08-14
 
 ### Added

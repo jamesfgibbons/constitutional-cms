@@ -27,15 +27,19 @@ Every governed publishing system has the same loop:
    editorial inputs, human review, and synthetic audits.
 2. **State** compresses those observations into materialized snapshots,
    registries, resolver decisions, and source-authority records.
-3. **Controllers** apply contracts: publishability gates, claim decisions,
-   freshness rules, link graph rules, indexability policy, and cost boundaries.
-4. **Actuators** change the outside world: rendered HTML, structured data,
+3. **Comparators** apply invariants and contracts to observed state. Required
+   inputs that are absent produce `UNMEASURED`, never PASS.
+4. **Priority resolvers** select the next admissible intervention. Hard
+   constitutional constraints filter first; Pareto allocates attention among
+   what remains.
+5. **Actuators** change the outside world: rendered HTML, structured data,
    sitemaps, cache writes, feeds, agent APIs, notifications, audio, light, and
    spatial interfaces.
-5. **Dampers** prevent runaway behavior: suppression, hold, degrade, explicit
+6. **Dampers** prevent runaway behavior: suppression, hold, degrade, explicit
    uncertainty, rate limits, scoped mutation envelopes, and human ratification.
-6. **Proof** closes the loop: machine-readable evidence shows whether the
-   actuator actually reflected the governed state.
+7. **Wire, receipts, and outcomes** close the loop: machine-readable evidence
+   shows whether the actuator reflected governed state and whether the external
+   objective changed.
 
 If any part of that loop is implicit, an agent will eventually fill the gap
 with a plausible story. Constitutional CMS exists to make the loop explicit.
@@ -56,6 +60,51 @@ that the control loop has lost visibility.
 This is why Constitutional CMS treats source authority and sensor integrity as
 first-class contracts. "No observations" and "observation source failed" are
 different states, and they must produce different public behavior.
+
+## The Observer Is Inside The System
+
+A probe can change the corpus it is trying to measure. A nominally passive page
+census may trigger a read-through cache, self-heal missing state, or write an
+access-derived artifact. The observation then becomes an intervention.
+
+> A metric that responds to observation cannot certify convergence.
+
+The minimum viable probe contract is one required field:
+
+```yaml
+mutation_class: pure_read | read_with_side_effect | active_perturbation
+```
+
+- `pure_read` is not expected to change measured state.
+- `read_with_side_effect` may trigger cache fill, repair, logging, or another write.
+- `active_perturbation` deliberately changes the system to test its response.
+
+"GET request" is not a mutation class. A receipt must disclose the class, the
+declared denominator, observation order, and known blind spots. Probe logic and
+mutation policy stay pinned for the observation window: do not recalibrate the
+instrument mid-measurement.
+
+## Requisite Variety
+
+A regulator cannot preserve distinctions that its contract has already erased.
+Publishability, indexability, claim permission, schema permission,
+materialization, fallback, stale, unknown, and unavailable are different states
+because they require different responses. The signal may compress detail; it may
+not erase a distinction that changes the lawful action.
+
+This is why missing probe inputs produce `UNMEASURED` rather than a convenient
+PASS, and why no-volume is not a true zero.
+
+## Pareto Allocates Attention; Invariants Protect The Tail
+
+The repair stack orders dependent layers within one publishing surface. Control
+priority classes order unlike interventions after constitutional filtering.
+Neither is a numeric score, and neither can waive a rare constitutional failure
+because it affects a small denominator.
+
+See [`PROTOCOL_MAP.md`](PROTOCOL_MAP.md) for the canonical routing between
+contracts, invariants, conformance levels, release gates, repair layers, and
+control priority classes.
 
 ## State Is The Compression Layer
 

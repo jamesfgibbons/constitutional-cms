@@ -30,6 +30,14 @@ class Finding:
     message: str
 
 
+@dataclass(frozen=True)
+class Unmeasured:
+    probe_id: str
+    url: str
+    missing_fields: tuple[str, ...]
+    message: str
+
+
 def parse_bool(value: object) -> bool:
     if isinstance(value, bool):
         return value
@@ -175,23 +183,71 @@ def analyze_rows(rows: Iterable[dict[str, str]]) -> list[Finding]:
     return findings
 
 
-def summarize(findings: Iterable[Finding]) -> dict[str, object]:
+def analyze_unmeasured(rows: Iterable[dict[str, str]]) -> list[Unmeasured]:
+    """Name probe questions that cannot be answered from the supplied columns."""
+    probe_fields = {
+        "page_and_sitemap_state": ("status", "quality_tier", "sitemap_eligible", "noindex"),
+        "indexability_state": ("status", "indexable"),
+        "claim_integrity": ("visible_claim", "claim_publishable", "suppression_visible"),
+        "materialization_state": ("materialized",),
+        "fallback_state": ("fallback_served", "materialized"),
+        "internal_link_state": ("internal_link_status",),
+        "mobile_layout_state": ("viewport_width", "layout_mode"),
+    }
+    gaps: list[Unmeasured] = []
+    for row in rows:
+        url = row.get("url") or row.get("page_url") or "(unknown URL)"
+        for probe_id, fields in probe_fields.items():
+            missing = tuple(field for field in fields if not str(row.get(field, "")).strip())
+            if missing:
+                gaps.append(
+                    Unmeasured(
+                        probe_id,
+                        url,
+                        missing,
+                        "Required probe inputs were not supplied; no pass state may be inferred.",
+                    )
+                )
+        if parse_bool(row.get("materialized")):
+            missing = tuple(missing_materialization_fields(row))
+            if missing:
+                gaps.append(
+                    Unmeasured(
+                        "materialization_identity",
+                        url,
+                        missing,
+                        "Materialized identity cannot be fully measured from the supplied row.",
+                    )
+                )
+    return gaps
+
+
+def summarize(
+    findings: Iterable[Finding], unmeasured: Iterable[Unmeasured] = ()
+) -> dict[str, object]:
     finding_list = list(findings)
+    unmeasured_list = list(unmeasured)
     counts = Counter(finding.severity for finding in finding_list)
+    state = "FAIL" if finding_list else "UNMEASURED" if unmeasured_list else "PASS"
     return {
+        "measurement_state": state,
         "total_findings": len(finding_list),
+        "total_unmeasured": len(unmeasured_list),
         "counts": {severity: counts.get(severity, 0) for severity in ["P0", "P1", "P2", "P3"]},
         "findings": [asdict(finding) for finding in finding_list],
+        "unmeasured": [asdict(gap) for gap in unmeasured_list],
     }
 
 
 def write_markdown(summary: dict[str, object], path: Path) -> None:
     counts = summary["counts"]
     findings = summary["findings"]
+    unmeasured = summary["unmeasured"]
     lines = [
         "# Page Health Validator Report",
         "",
         "Observe-only report. Finding counts are evidence for review, not an automatic deploy block.",
+        f"Measurement state: **{summary['measurement_state']}**",
         "",
         "| Severity | Count |",
         "| --- | ---: |",
@@ -208,6 +264,17 @@ def write_markdown(summary: dict[str, object], path: Path) -> None:
             lines.append(
                 f"- **{finding['severity']} {finding['code']}** `{finding['url']}` - {finding['message']}"
             )
+    lines.append("")
+    lines.append("## Unmeasured probe questions")
+    lines.append("")
+    if not unmeasured:
+        lines.append("None. All declared probe inputs were supplied.")
+    else:
+        for gap in unmeasured:
+            missing = ", ".join(gap["missing_fields"])
+            lines.append(
+                f"- **UNMEASURED {gap['probe_id']}** `{gap['url']}` - missing: {missing}."
+            )
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
@@ -220,7 +287,8 @@ def main() -> int:
     input_paths = [Path(value) for value in args.input]
     rows = read_rows(input_paths)
     findings = analyze_rows(rows)
-    report = summarize(findings)
+    unmeasured = analyze_unmeasured(rows)
+    report = summarize(findings, unmeasured)
 
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -229,7 +297,8 @@ def main() -> int:
 
     print(
         "[page_health_validator] "
-        f"rows={len(rows)} findings={report['total_findings']} out_dir={out_dir}"
+        f"rows={len(rows)} state={report['measurement_state']} "
+        f"findings={report['total_findings']} unmeasured={report['total_unmeasured']} out_dir={out_dir}"
     )
     return 0
 

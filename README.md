@@ -2,13 +2,11 @@
 
 **A governance framework for AI agents that build websites.**
 
-[Website](https://constitutionalcms.com) · [SERP Radio](https://serpradio.com) · [Targeted Impressions Labs](https://targetedimpressions.com) · Apache 2.0
+[Website](https://constitutionalcms.com) · [Source boundary](docs/SOURCE_BOUNDARY.md) · Apache 2.0
 
 CMS used to mean Content Management System — software for humans who write pages. Constitutional CMS manages the *contracts* that govern what AI agents are permitted to publish. Same acronym, different era.
 
-WordPress, Webflow, Drupal, and Shopify were designed for human authors. They still work for that. Constitutional CMS is designed for the gap that opens when **agents become the authors** — and nobody is checking whether the 400th page they generated has valid data, working links, or enough substance to deserve a spot in Google's index.
-
-SERP Radio is modeled after this repo.
+WordPress, Webflow, Drupal, and Shopify were designed for human authors. They still work for that. Constitutional CMS is designed for the gap that opens when **agents become the authors** — and nobody is checking whether each generated page has valid data, working links, or enough substance to deserve publication.
 
 **Skills make agents capable. Contracts make agents trustworthy.**
 
@@ -18,6 +16,7 @@ SERP Radio is modeled after this repo.
 
 - [The problem](#the-problem)
 - [The five contracts](#the-five-contracts)
+- [Canonical protocol map](docs/PROTOCOL_MAP.md)
 - [Incident-learned invariants](#incident-learned-invariants)
 - [Every crossing needs an authority](#every-crossing-needs-an-authority)
 - [v0.2 reference patterns](#v02-reference-patterns)
@@ -25,6 +24,7 @@ SERP Radio is modeled after this repo.
 - [The priority stack](#the-priority-stack)
 - [Agent rules](#agent-rules)
 - [Scope](#scope)
+- [Release and source boundary](docs/SOURCE_BOUNDARY.md)
 - [Runtime governance](#runtime-governance)
 - [Production pattern](#production-pattern)
 - [Getting started](#getting-started)
@@ -275,7 +275,8 @@ The sprint is not done when the code merges. It is done when the live site satis
 
 ## Incident-learned invariants
 
-Some of the most important rules in this framework were clarified by production failures and operational diagnostics in live multi-agent publishing systems, then generalized for public use.
+The invariant set expresses portable rules through generalized failure scenarios. Public documentation does not assert
+private incident detail or implementation outcomes as public proof.
 
 - [`docs/INCIDENT_LEARNED_INVARIANTS.md`](docs/INCIDENT_LEARNED_INVARIANTS.md) documents the sanitized invariant set
 - The public repo shares the invariant pattern and implementation guidance, not any proprietary operating playbook
@@ -325,6 +326,7 @@ Traditional CMS software manages authored content. Constitutional CMS manages fe
 - `contracts/proof_ledger.yaml` — evidence-gated done
 - `contracts/sensor_integrity.yaml` — stale or failed sources cannot become false zeroes
 - `contracts/agent_operating_envelope.yaml` — safe autonomy tiers and data-plane idempotency
+- Every probe declares `mutation_class`; missing required inputs resolve to `UNMEASURED`, never PASS
 
 VIBEnet-style sensory feedback is one inspiration for this layer: governed state can become sound, light, motion, or spatial atmosphere. It is not required for adoption. The public contract is medium-neutral.
 
@@ -332,7 +334,8 @@ VIBEnet-style sensory feedback is one inspiration for this layer: governed state
 
 ## The priority stack
 
-Not all contracts are equal. When multiple things are broken, this ordering prevents agents from working on the wrong layer.
+This stack orders dependent repairs inside one publishing surface. It is not the portfolio-wide controller for unlike
+work. Read [`docs/PROTOCOL_MAP.md`](docs/PROTOCOL_MAP.md) before applying any numbered scheme.
 
 ```
 LEVEL 1 — DATA TRUTH (blocks everything)
@@ -399,7 +402,7 @@ See [`runtime/SPEC.md`](runtime/SPEC.md) for the full specification.
 
 ## Production pattern
 
-This framework was extracted from production use in agent-built publishing systems. The public repository keeps only the generalized patterns:
+The public repository contains generalized, implementation-agnostic patterns:
 
 - quality tiers that graduate and degrade from source evidence
 - rendered-output validation for search and discovery surfaces
@@ -443,7 +446,9 @@ constitutional-cms/
 │   └── page_health_validator.py       # Observe-only crawl/render report
 └── docs/
     ├── NOVELTY.md                     # What's new here and what isn't
-    ├── INCIDENT_LEARNED_INVARIANTS.md # Sanitized production-learned rules
+    ├── INCIDENT_LEARNED_INVARIANTS.md # Portable rules and generalized scenarios
+    ├── PROTOCOL_MAP.md                # Which scheme answers which question
+    ├── SOURCE_BOUNDARY.md             # Public authority and private implementation boundary
     ├── V0_2_REFERENCE_PATTERNS.md     # Portable methods for explicit contract ratchets
     ├── CONSTITUTIONAL_CYBERNETICS.md  # Control-system frame for the agentic web
     ├── AGENT_COORDINATION.md          # How agents use these contracts
@@ -471,7 +476,9 @@ See [`docs/PRIOR_ART.md`](docs/PRIOR_ART.md) for the full comparison. The short 
 | WordPress / Drupal | Human editorial workflow | Multi-agent production at programmatic scale |
 | Anthropic Skills | What agents know how to do | What agents are *not allowed* to do |
 
-The novelty is not in any single component. It is in the **continuous lifecycle** — pages that automatically graduate and degrade between quality tiers based on data freshness, governed by contracts that coordinate multiple agents through snapshot boundaries and link graph rules, proven in production with measurable SEO outcomes.
+The novelty claim is about the **continuous lifecycle** — pages that graduate and degrade between quality tiers based
+on evidence freshness, governed by contracts that coordinate multiple agents through snapshot boundaries and link
+graph rules. It is a framework claim, not a public performance claim.
 
 An honest assessment of what is and is not new lives in [`docs/NOVELTY.md`](docs/NOVELTY.md).
 
@@ -483,4 +490,4 @@ Apache 2.0. The spec and pattern are open. Your domain-specific contracts — wh
 
 ---
 
-*Targeted Impressions Labs — [targetedimpressions.com](https://targetedimpressions.com)*
+*Targeted Impressions — [targetedimpressions.com](https://targetedimpressions.com)*

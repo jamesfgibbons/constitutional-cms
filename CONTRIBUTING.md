@@ -1,5 +1,7 @@
 # Contributing
 
+**Publication classification: public-governance**
+
 Constitutional CMS is a governance spec, not a product feature. The public repo holds the portable pattern. Domain mappings, thresholds, and operating playbooks stay private.
 
 ## The security boundary
@@ -12,9 +14,10 @@ Agents prepare work. Humans review and merge.
 
 ## Before you write code
 
-1. Read the [priority stack](README.md#the-priority-stack). If Level 1 is broken, do not work on Level 3.
-2. Read the relevant contract in `contracts/` before touching anything it governs.
-3. Identify your boundary in `contracts/snapshot_boundary.yaml`. Write agents write. Read agents read. Do not cross.
+1. Read the [canonical protocol map](docs/PROTOCOL_MAP.md). Select the scheme that owns the question before ordering work.
+2. Use the [priority stack](README.md#the-priority-stack) only for dependent repairs inside one publishing surface. If Level 1 is broken, do not work on Level 3.
+3. Read the relevant contract in `contracts/` before touching anything it governs.
+4. Identify your boundary in `contracts/snapshot_boundary.yaml`. Write agents write. Read agents read. Do not cross.
 
 ## What belongs here
 
@@ -25,6 +28,7 @@ Agents prepare work. Humans review and merge.
 - Improving validators and observe-first probes
 - Documenting incident-learned invariants without leaking private mappings
 - Domain-neutral examples that help someone adopt the pattern
+- Source-boundary and taxonomy-routing clarification
 
 **Out of scope**
 
@@ -61,6 +65,10 @@ python -m pytest
 ```
 
 The page-health validator is observe-only by default. It reports. It does not silently become a blocking gate.
+Missing required inputs resolve to `UNMEASURED`, never PASS. Every probe must declare whether it is a
+`pure_read`, `read_with_side_effect`, or `active_perturbation`.
+
+See [`docs/SOURCE_BOUNDARY.md`](docs/SOURCE_BOUNDARY.md) before proposing public material derived from another repository.
 
 ## Voice
 

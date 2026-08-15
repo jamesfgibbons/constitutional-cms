@@ -1,6 +1,9 @@
 # Incident-Learned Invariants
 
-This document captures governance rules clarified by failures and operational diagnostics in a live multi-agent publishing system, then rewritten for public use.
+**Provenance mode: synthetic**
+
+This document expresses portable governance rules through generalized failure scenarios. It does not publish private
+incident details or claim that a listed outcome was independently certified on a production system.
 
 The point is to share portable implementation patterns, not the private operating details behind any one deployment.
 
@@ -80,7 +83,7 @@ The point is to share portable implementation patterns, not the private operatin
 
 **Statement:** When a single rendered URL contains a suppression block ("no public claim is currently published") and a concrete claim block ("from $199") for the same data domain, the page is broken even if both blocks are individually valid.
 
-**Failure mode prevented:** A renderer applies suppression to one module (typically pre-baked narrative paragraphs) while leaving adjacent modules — FAQ generators, structured-data emitters, signal-preview blocks, airline price tables, percentile derivations — to read a separate upstream series (legacy baselines, historical extracts, fallback minimums) and emit confident claims. The page passes a partial gate; agents and humans see a contradiction. The suppression layer denies what the body asserts. Worse, the asserted figure may not even match the source of record, demonstrating that the consuming layer has invented truth from an unauthorized substrate.
+**Failure mode prevented:** A renderer applies suppression to one module while leaving adjacent modules — FAQ generators, structured-data emitters, summary blocks, or derivative tables — to read a separate upstream and emit confident claims. The page passes a partial gate while presenting a contradiction. The consuming layer has invented truth from an unauthorized substrate.
 
 **Public implementation guidance:** Route every claim-emitting module on the page — body paragraphs, FAQ, structured data, agent-facing payloads, derivative metrics — through one resolver. Treat suppression as a property of the page, not of individual modules. If the resolver says suppress, every speaker is silent. Add a pre-deploy contradiction probe that fails the build when suppression copy and concrete claim tokens coexist on the same rendered URL.
 

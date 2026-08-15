@@ -1,7 +1,7 @@
 # Sensor Integrity Contract
 # Prevents stale or failed observation sources from being reported as world truth.
 
-version: "1.0.0"
+version: "1.1.0"
 status: "reference"
 purpose: >
   Keep logs, probes, crawler data, analytics, and other observation sources from
@@ -31,6 +31,31 @@ sensor_record_required_fields:
   - trust_state
   - latest_success_at
   - integrity_flags
+  - mutation_class
+
+mutation_class_vocabulary:
+  pure_read:
+    meaning: "Observation is not expected to change the measured system."
+  read_with_side_effect:
+    meaning: "Observation can trigger cache fill, self-healing, logging, or another write."
+  active_perturbation:
+    meaning: "The probe deliberately changes the system to test its response."
+
+measurement_states:
+  - PASS
+  - FAIL
+  - UNMEASURED
+
+measurement_rules:
+  - id: missing_inputs_are_unmeasured
+    rule: "A probe missing any input required for its authority question reports UNMEASURED, never PASS."
+    severity: P0
+  - id: observation_side_effects_are_declared
+    rule: "Every probe declares mutation_class before observation begins."
+    severity: P0
+  - id: instrument_not_recalibrated_mid_measurement
+    rule: "Probe logic and mutation policy remain pinned for the declared observation window."
+    severity: P1
 
 source_status_vocabulary:
   healthy:

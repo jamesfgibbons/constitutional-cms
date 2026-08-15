@@ -8,3 +8,4 @@ node_modules
 *.swp
 *.swo
 reports/page-health-validator/
+.codex-worktrees/
