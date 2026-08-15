@@ -2,6 +2,18 @@
 
 All notable changes to Constitutional CMS are documented here. This project follows [Semantic Versioning](https://semver.org/).
 
+## [0.3.1] - 2026-08-14
+
+### Added
+- `contracts/deploy_cadence.yaml` — time-indexes scheduled enrichment windows and promoted generations. Empty days are `not_observed`, never a zero.
+- Calendar projection surface on `contracts/signal_projection.yaml` (v1.1.0). Daily multi-level deploys project through the same canonical state as HTML, APIs, and audio.
+
+### Changed
+- Signal projection principle now names calendar as a first-class renderer. The calendar cannot invent deploys, advance the relation ladder, or treat a scheduled stage as a promotion.
+
+### Notes
+- Docs/contract release. Promotion protocol core invariant is unchanged: one authoritative `promoted_generation_id`.
+
 ## [0.2.0] - 2026-05-04
 
 ### Added

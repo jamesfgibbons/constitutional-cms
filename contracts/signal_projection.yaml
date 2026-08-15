@@ -1,12 +1,12 @@
 # Signal Projection Contract
 # Governs how canonical state may project into human, machine, and ambient surfaces.
 
-version: "1.0.0"
+version: "1.1.0"
 status: "reference"
 purpose: >
   Allow one canonical state object to render across HTML, APIs, structured
-  data, audio, AR, dashboards, and other surfaces without letting any renderer
-  invent truth.
+  data, audio, AR, dashboards, calendars, and other surfaces without letting
+  any renderer invent truth.
 
 principle: "Renderers project canonical state; they do not create canonical truth."
 
@@ -38,6 +38,15 @@ projection_surfaces:
   dashboard:
     allowed_role: "Operational observation and inspection."
     must_derive_from: canonical_state
+  calendar:
+    allowed_role: "Time-indexed observation of promotions and scheduled cadence windows."
+    must_derive_from: canonical_state
+    unit: "promoted_generation | scheduled_stage"
+    binding: contracts/deploy_cadence.yaml
+    note: >
+      Daily deploys across priority-stack levels project here. A filled mark
+      requires a promotion receipt. A scheduled enrichment window is an outline.
+      An empty day is not_observed, never a zero.
   audio:
     allowed_role: "Ambient or sonified awareness."
     must_derive_from: canonical_state
@@ -97,6 +106,9 @@ invariants:
   - id: ambient_surfaces_are_downstream
     rule: "Audio, spatial, light, and environmental renderers are awareness surfaces, not source authorities."
     severity: P1
+  - id: calendar_is_downstream
+    rule: "The calendar renderer is an awareness surface. It may not invent deploys, advance the relation ladder, or treat a scheduled stage as a promoted generation."
+    severity: P0
 
 recommended_reason_codes:
   - canonical_state_missing
@@ -105,3 +117,5 @@ recommended_reason_codes:
   - absence_state_collapsed
   - surface_status_disagreement
   - ambient_surface_used_as_authority
+  - calendar_invented_deploy
+  - scheduled_marked_as_promoted

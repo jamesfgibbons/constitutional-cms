@@ -1,0 +1,114 @@
+# Deploy Cadence Contract
+# Time-indexes scheduled stages and promoted generations without inventing deploys.
+
+version: "1.0.0"
+status: "normative"
+contract_id: deploy_cadence_v1
+purpose: >
+  Close the gap created by daily, multi-level deploys: a valid artifact can
+  exist, a pipeline can have run, and a calendar can still lie. This contract
+  binds the public calendar to the promotion protocol and the signal
+  projection contract. The calendar is a renderer. It is not a source of truth.
+
+principle: >
+  A calendar day may display only (a) a scheduled stage declared by
+  enrichment_stages.yaml or (b) a promotion receipt from
+  promotion_protocol_v1. An empty day is not_observed, never a zero.
+
+unit:
+  scheduled_stage: "A clock-driven enrichment window. Does not move the pointer."
+  promoted_generation: "An atomic promotion_receipt. The only lawful 'shipped' mark."
+
+level_axis: "priority_stack"
+levels:
+  "01":
+    name: "Data truth"
+    may_mark: [scheduled_stage, promoted_generation]
+  "02":
+    name: "Content truth"
+    may_mark: [promoted_generation]
+  "03":
+    name: "Content depth"
+    may_mark: [scheduled_stage, promoted_generation]
+  "04":
+    name: "Experience"
+    may_mark: [promoted_generation]
+
+scheduled_windows:
+  - stage: snapshot_materialization
+    level: "01"
+    source: contracts/enrichment_stages.yaml
+    relation: scheduled
+    note: "Cadence window. Not a promotion."
+  - stage: narrative_enrichment
+    level: "03"
+    source: contracts/enrichment_stages.yaml
+    relation: scheduled
+    note: "Cadence window. Quality gate must pass before acceptance."
+
+signal_connection:
+  surface: calendar
+  contract: contracts/signal_projection.yaml
+  transform_id: calendar.v1
+  must_copy_from_canonical_state:
+    - public_status
+    - freshness_status
+    - state_id
+    - source_ref
+  forbidden:
+    - "Upgrade freshness, confidence, or public_status in the cell."
+    - "Collapse scheduled and promoted into one 'shipped' mark."
+    - "Render a zero on a day with no observation."
+    - "Advance the relation ladder (planned → served) in the renderer."
+
+promotion_binding:
+  contract: contracts/promotion_protocol_v1.yaml
+  rule: >
+    A filled calendar mark requires a promotion receipt that attests
+    promoted_generation_id. Publish, verify, and certify may appear as
+    unpublished relations. They must not use the filled mark.
+  relation_ladder:
+    - planned
+    - referenced
+    - implemented
+    - published
+    - promoted
+    - served
+  none_implies_the_next: true
+
+honest_absence:
+  not_observed:
+    calendar_behavior: "Empty cell. No implied deploy."
+  stale:
+    calendar_behavior: "Outline mark. Show source age. Suppress current-claim language."
+  pending:
+    calendar_behavior: "Outline mark labeled pending. Do not present as resolved."
+  unavailable:
+    calendar_behavior: "Mark source failure. Do not print zero."
+  invalid:
+    calendar_behavior: "Suppress or mark invalid with a reason code."
+
+invariants:
+  - id: scheduled_is_not_promoted
+    rule: "A scheduled enrichment window must not use the promoted-generation mark."
+    severity: P0
+  - id: empty_day_is_not_zero
+    rule: "not_observed must not collapse into a live-looking empty-success or a numeric zero."
+    severity: P0
+  - id: one_day_many_levels
+    rule: "Multiple priority levels may appear on one day. They must not merge into a single shipped blob."
+    severity: P1
+  - id: calendar_cannot_upgrade_status
+    rule: "The calendar renderer may not present stronger public_status or freshness than canonical state."
+    severity: P0
+  - id: receipt_precedes_filled_mark
+    rule: "A filled mark requires a retrievable promotion receipt."
+    severity: P0
+
+recommended_reason_codes:
+  - scheduled_marked_as_promoted
+  - empty_day_rendered_as_zero
+  - calendar_status_upgrade
+  - missing_promotion_receipt
+  - level_marks_collapsed
+  - relation_advanced_in_renderer
