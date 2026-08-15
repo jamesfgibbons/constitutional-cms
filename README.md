@@ -2,33 +2,66 @@
 
 **A governance framework for AI agents that build websites.**
 
+[Website](https://constitutionalcms.com) · [SERP Radio](https://serpradio.com) · [Targeted Impressions Labs](https://targetedimpressions.com) · Apache 2.0
+
 CMS used to mean Content Management System — software for humans who write pages. Constitutional CMS manages the *contracts* that govern what AI agents are permitted to publish. Same acronym, different era.
 
 WordPress, Webflow, Drupal, and Shopify were designed for human authors. They still work for that. Constitutional CMS is designed for the gap that opens when **agents become the authors** — and nobody is checking whether the 400th page they generated has valid data, working links, or enough substance to deserve a spot in Google's index.
 
-This the framework for [SERP Radio](https://serpradio.com/) is modeled after this repo.
-
----
-
-## The Problem
-
-AI coding agents are remarkably good at additive feature development. They are remarkably bad at maintaining systemic coherence.
-
-Give four agents access to the same codebase and tell them to build pages. Agent 1 adds a column to the database. Agent 3 adds a different column in the same sprint. Both changes are valid individually. Together they create a conflict that no unit test catches.
-
-Agent 2 emits an internal link to a page that Agent 1 deleted. Agent 4 generates a schema markup on a page that doesn't have enough data to support it. The site passes CI. The site is broken.
-
-This isn't a skill problem. The agents are skilled. It's a governance problem. Nobody told them what they *can't* do.
+SERP Radio is modeled after this repo.
 
 **Skills make agents capable. Contracts make agents trustworthy.**
 
 ---
 
-## The Five Contracts
+## Contents
 
-Constitutional CMS defines five contract types. Each is a YAML file that agents read before writing code.
+- [The problem](#the-problem)
+- [The five contracts](#the-five-contracts)
+- [Incident-learned invariants](#incident-learned-invariants)
+- [Every crossing needs an authority](#every-crossing-needs-an-authority)
+- [v0.2 reference patterns](#v02-reference-patterns)
+- [Constitutional cybernetics](#constitutional-cybernetics)
+- [The priority stack](#the-priority-stack)
+- [Agent rules](#agent-rules)
+- [Scope](#scope)
+- [Runtime governance](#runtime-governance)
+- [Production pattern](#production-pattern)
+- [Getting started](#getting-started)
+- [Prior art](#prior-art--honest-positioning)
+- [License](#license)
 
-### 1. Page Type Contracts
+---
+
+## The problem
+
+AI coding agents are remarkably good at additive feature development. They are remarkably bad at maintaining systemic coherence.
+
+Give four agents access to the same codebase and tell them to build pages.
+
+- Agent 1 adds a column to the database. Agent 3 adds a different column in the same sprint. Both changes are valid individually. Together they create a conflict that no unit test catches.
+- Agent 2 emits an internal link to a page that Agent 1 deleted.
+- Agent 4 generates schema markup on a page that does not have enough data to support it.
+
+The site passes CI. The site is broken.
+
+This is not a skill problem. The agents are skilled. It is a governance problem. Nobody told them what they *cannot* do.
+
+---
+
+## The five contracts
+
+Each contract is a YAML file that agents read before writing code.
+
+| # | Contract | File | What it decides |
+|---|----------|------|-----------------|
+| 1 | Page type | [`contracts/page_types.yaml`](contracts/page_types.yaml) | What a page needs at FULL, BASIC, SHELL, and SUPPRESS |
+| 2 | Enrichment stage | [`contracts/enrichment_stages.yaml`](contracts/enrichment_stages.yaml) | Which stage writes which state, and the gate that must pass first |
+| 3 | Link graph | [`contracts/link_rules.yaml`](contracts/link_rules.yaml) | What is allowed to link to what |
+| 4 | Snapshot boundary | [`contracts/snapshot_boundary.yaml`](contracts/snapshot_boundary.yaml) | Write agents write. Read agents read. Drift fails safe. |
+| 5 | Sprint | [`contracts/sprints/`](contracts/sprints/) | Scope, ownership, and what “done” means on the live site |
+
+### 1. Page type contracts
 
 Define what data a page requires to exist at each quality tier.
 
@@ -42,9 +75,9 @@ entity_page:
     FULL:
       required_fields:
         - entity_name
-        - validated_metric  # price, score, rating, availability, etc.
+        - validated_metric  # price, score, rating, availability
         - source_snapshot
-        - narrative_block   # LLM-generated, source-backed content
+        - narrative_block   # LLM-generated, source-backed
         - json_ld_schema
       min_word_count: 800
       schema_emission: true
@@ -62,19 +95,19 @@ entity_page:
       required_fields:
         - entity_name
       min_word_count: 0
-      schema_emission: false    # No structured data on thin pages
-      internal_links: false     # No outbound links from shells
+      schema_emission: false    # no structured data on thin pages
+      internal_links: false     # no outbound links from shells
 
     SUPPRESS:
       description: "Page is removed from sitemap and returns 404"
       trigger: "Entity deprecated or data source permanently unavailable"
 ```
 
-**Why this matters:** WordPress has "draft" and "published." Constitutional CMS has a continuous quality spectrum. Pages graduate from SHELL -> BASIC -> FULL as data accumulates, and degrade back down when data goes stale. The system handles transitions automatically based on what data exists, not on human editorial judgment.
+WordPress has “draft” and “published.” Constitutional CMS has a continuous quality spectrum. Pages graduate from SHELL → BASIC → FULL as data accumulates, and degrade back down when data goes stale. Transitions follow what data exists, not human editorial judgment.
 
 Quality tier and indexability are separate dimensions. A degraded but legitimate URL can remain indexable while withholding schema, links, or richer narrative until it earns a higher tier. Emit `noindex` from explicit indexability policy, not from the mere fact that a page is currently in `SHELL`.
 
-### 2. Enrichment Stage Contracts
+### 2. Enrichment stage contracts
 
 Define the pipeline stages that produce page data, and what each stage is responsible for.
 
@@ -119,9 +152,9 @@ stages:
       - "all schema fields sourced from snapshot, never computed at render time"
 ```
 
-**Why this matters:** Every stage has exactly one owner. No two agents write the same table. The quality gate runs before data is accepted. Bad data is rejected at ingestion, not discovered in production.
+Every stage has exactly one owner. No two agents write the same table. The quality gate runs before data is accepted. Bad data is rejected at ingestion, not discovered in production.
 
-### 3. Link Graph Rules
+### 3. Link graph rules
 
 Define what pages are allowed to link to.
 
@@ -156,9 +189,9 @@ rules:
     enforcement: soft_warn
 ```
 
-**Why this matters:** The most common failure mode in programmatic SEO is broken internal links at scale. When agents generate hundreds of pages, link integrity must be enforced by contract, not by manual review.
+The most common failure mode in programmatic SEO is broken internal links at scale. When agents generate hundreds of pages, link integrity must be enforced by contract, not by manual review.
 
-### 4. Snapshot Boundary Contract
+### 4. Snapshot boundary contract
 
 The rule that prevents the most dangerous class of multi-agent bug.
 
@@ -191,11 +224,11 @@ description: >
   degrades the page to SHELL. The system fails safe, not silent.
 ```
 
-**Why this matters:** In multi-agent development, the #1 failure mode is contract drift — two agents making independent assumptions about the same data boundary. The snapshot boundary makes drift visible and forces safe degradation instead of silent corruption.
+In multi-agent development, the #1 failure mode is contract drift — two agents making independent assumptions about the same data boundary. The snapshot boundary makes drift visible and forces safe degradation instead of silent corruption.
 
-### 5. Sprint Contracts
+### 5. Sprint contracts
 
-Define what work is in scope, who owns it, and what "done" means.
+Define what work is in scope, who owns it, and what “done” means.
 
 ```yaml
 # contracts/sprints/example-quality-recovery.yaml
@@ -236,53 +269,68 @@ sprint:
     - "Not when PRs merge — when production proves it"
 ```
 
-**Why this matters:** The sprint is not done when the code merges. It's done when the live site satisfies the contracts. This prevents the gap between "CI passed" and "production works."
+The sprint is not done when the code merges. It is done when the live site satisfies the contracts. This closes the gap between “CI passed” and “production works.”
 
 ---
 
-## Incident-Learned Invariants
+## Incident-learned invariants
 
 Some of the most important rules in this framework were clarified by production failures and operational diagnostics in live multi-agent publishing systems, then generalized for public use.
 
-- [docs/INCIDENT_LEARNED_INVARIANTS.md](docs/INCIDENT_LEARNED_INVARIANTS.md) documents the sanitized invariant set
+- [`docs/INCIDENT_LEARNED_INVARIANTS.md`](docs/INCIDENT_LEARNED_INVARIANTS.md) documents the sanitized invariant set
 - The public repo shares the invariant pattern and implementation guidance, not any proprietary operating playbook
 
 ---
 
-## v0.2 Reference Patterns
+## Every crossing needs an authority
+
+The governing doctrine of the framework is that **every crossing needs an authority**. A system may move from one valid state to another through many paths. The destination does not tell you which path was chosen, when the decision became irreversible, or whose judgment the transition contains.
+
+Four public artifacts make the doctrine executable:
+
+- **The Transition Authority Contract** names the authority for each crossing class: source to consumer, state to state, human to machine, private to public, production to certification. The source owns truth. The transition needs an author. The renderer owns expression, not semantics. The receipt owns proof.
+- **The Troubadour Protocol** separates authorship from performance. Trobar authors. Canso preserves. Joglar performs. Razo proves. A machine that touches the artifact does not become its originating author.
+- **Signal Contract vNext — Transition Record** is a proposed extension to Signal Contract v1 that makes the movement between states explicit. State equality does not imply transition equality.
+- **The Receipt That Runs** is a sanitized demonstration of the receipt shape. Proof is a crossing, not a report. The producing layer cannot certify itself.
+
+Each artifact publishes the grammar of a crossing. None publishes the tuning: the pivot functions, the selection heuristics, the thresholds, or the protected source material. The public sees the shape. The private repos hold the authored decisions.
+
+Read them on [constitutionalcms.com](https://constitutionalcms.com):
+
+- [Transition Record](https://constitutionalcms.com/transition-record)
+- [Troubadour Protocol](https://constitutionalcms.com/troubadour-protocol)
+- [Transition Authority](https://constitutionalcms.com/transition-authority)
+- [Receipt Demonstration](https://constitutionalcms.com/receipt-demonstration)
+
+---
+
+## v0.2 reference patterns
 
 The next layer of the framework is about method, not just contract categories.
 
-- [docs/V0_2_REFERENCE_PATTERNS.md](docs/V0_2_REFERENCE_PATTERNS.md) explains how implicit contracts become explicit ones
-- It introduces four portable abstractions: contract-as-test, page-family render tiers, cache write authority, and the readiness invariant ladder
-- These patterns are intentionally public-safe and implementation-agnostic; they are the reference layer, not a dump of one deployment's internal contracts
+- [`docs/V0_2_REFERENCE_PATTERNS.md`](docs/V0_2_REFERENCE_PATTERNS.md) explains how implicit contracts become explicit ones
+- Four portable abstractions: contract-as-test, page-family render tiers, cache write authority, and the readiness invariant ladder
+- These patterns are public-safe and implementation-agnostic. They are the reference layer, not a dump of one deployment’s internal contracts.
 
 ---
 
-## Constitutional Cybernetics
+## Constitutional cybernetics
 
 The next layer treats Constitutional CMS as a control system for the agentic web.
 
-Traditional CMS software manages authored content. Constitutional CMS manages
-feedback loops between sensors, materialized state, contract controllers,
-renderers, discovery surfaces, agents, and human proof. This cybernetic frame is
-what lets the same governed state safely project into HTML, APIs, structured
-data, dashboards, agent manifests, audio, spatial interfaces, or other ambient
-renderers without letting any consuming layer invent truth.
+Traditional CMS software manages authored content. Constitutional CMS manages feedback loops between sensors, materialized state, contract controllers, renderers, discovery surfaces, agents, and human proof. This cybernetic frame is what lets the same governed state safely project into HTML, APIs, structured data, dashboards, agent manifests, audio, spatial interfaces, or other ambient renderers without letting any consuming layer invent truth.
 
-- [docs/CONSTITUTIONAL_CYBERNETICS.md](docs/CONSTITUTIONAL_CYBERNETICS.md) defines the sensors/state/controllers/actuators/dampers/proof model
-- `contracts/signal_projection.yaml` governs one canonical state projected into many renderers
-- `contracts/proof_ledger.yaml` defines evidence-gated done
-- `contracts/sensor_integrity.yaml` prevents stale or failed observation sources from becoming false zeroes
-- `contracts/agent_operating_envelope.yaml` defines safe autonomy tiers and data-plane idempotency
+- [`docs/CONSTITUTIONAL_CYBERNETICS.md`](docs/CONSTITUTIONAL_CYBERNETICS.md) defines the sensors / state / controllers / actuators / dampers / proof model
+- `contracts/signal_projection.yaml` — one canonical state, many renderers
+- `contracts/proof_ledger.yaml` — evidence-gated done
+- `contracts/sensor_integrity.yaml` — stale or failed sources cannot become false zeroes
+- `contracts/agent_operating_envelope.yaml` — safe autonomy tiers and data-plane idempotency
 
-VIBEnet-style sensory feedback is one inspiration for this layer: governed
-state can become sound, light, motion, or spatial atmosphere. It is not required
-for adoption. The public contract is medium-neutral.
+VIBEnet-style sensory feedback is one inspiration for this layer: governed state can become sound, light, motion, or spatial atmosphere. It is not required for adoption. The public contract is medium-neutral.
 
 ---
 
-## The Priority Stack
+## The priority stack
 
 Not all contracts are equal. When multiple things are broken, this ordering prevents agents from working on the wrong layer.
 
@@ -308,21 +356,21 @@ LEVEL 3 — CONTENT DEPTH (blocks discoverability)
 
 LEVEL 4 — EXPERIENCE LAYER (the differentiator)
   Design polish, interactivity, advanced features.
-  → Only after Levels 1-3 are stable.
+  → Only after Levels 1–3 are stable.
 ```
 
 ---
 
-## Agent Rules
+## Agent rules
 
 These apply to every agent in the system, regardless of role.
 
-1. **Read the priority stack before starting work.** If Level 1 is broken, don't work on Level 3.
+1. **Read the priority stack before starting work.** If Level 1 is broken, do not work on Level 3.
 2. **Read the relevant contract before touching code.** The contract tells you what the system expects.
-3. **Verify against the contract, not against your assumptions.** If `page_types.yaml` says a page needs `validated_metric` for BASIC tier, and your PR removes that check, you're wrong.
+3. **Verify against the contract, not against your assumptions.** If `page_types.yaml` says a page needs `validated_metric` for BASIC tier, and your PR removes that check, you are wrong.
 4. **Never bypass the snapshot boundary.** Write agents write. Read agents read. Never cross.
-5. **Prepare work, don't apply it.** Agents write migrations and PRs. Humans review and merge. This is a security boundary.
-6. **Aspirational language is excluded from specs.** "The page should feel alive" is not a spec. `BPM = 60 + (energy × 100)` is a spec. Every line maps 1:1 to shipped code.
+5. **Prepare work, do not apply it.** Agents write migrations and PRs. Humans review and merge. This is a security boundary.
+6. **Aspirational language is excluded from specs.** “The page should feel alive” is not a spec. `BPM = 60 + (energy × 100)` is a spec. Every line maps 1:1 to shipped code.
 7. **Cost awareness is mandatory.** Every pipeline that calls an LLM has a per-entity cost. Document it.
 
 ---
@@ -331,25 +379,25 @@ These apply to every agent in the system, regardless of role.
 
 Constitutional CMS governs **what agents publish**. It does not:
 
-- **Orchestrate agents.** It doesn't route messages or manage tool access. Use CrewAI, LangGraph, Claude Code, Codex, or whatever you want. Constitutional CMS is the governance layer that sits above your agent framework.
-- **Run tests or deploy code.** It defines what the tests should verify and what "deployed correctly" means. Your CI/CD pipeline enforces it.
+- **Orchestrate agents.** It does not route messages or manage tool access. Use CrewAI, LangGraph, Claude Code, Codex, or whatever you want. Constitutional CMS is the governance layer that sits above your agent framework.
+- **Run tests or deploy code.** It defines what the tests should verify and what “deployed correctly” means. Your CI/CD pipeline enforces it.
 - **Depend on any specific tech stack.** The contracts are YAML. The agents can be Claude, GPT, Codex, local models, or humans. The backend, frontend, database, and hosting are your choice.
 
 ---
 
-## Runtime Governance
+## Runtime governance
 
 Contracts govern what agents are permitted to publish. Runtimes govern where agents are permitted to work.
 
-The `runtime/` directory defines the container isolation contract for constitutional workstreams. Three invariants address the failure modes observed in multi-agent production systems: dirty-worktree deploys, cross-workstream state contamination, and contract drift.
+The [`runtime/`](runtime/) directory defines the container isolation contract for constitutional workstreams. Three invariants address the failure modes observed in multi-agent production systems: dirty-worktree deploys, cross-workstream state contamination, and contract drift.
 
 The specification is implementation-agnostic. Docker, Podman, Firecracker, and Cloudflare Worker isolates are all valid runtimes if they satisfy the invariants.
 
-→ See [`runtime/SPEC.md`](runtime/SPEC.md) for the full specification.
+See [`runtime/SPEC.md`](runtime/SPEC.md) for the full specification.
 
 ---
 
-## Production Pattern
+## Production pattern
 
 This framework was extracted from production use in agent-built publishing systems. The public repository keeps only the generalized patterns:
 
@@ -362,11 +410,11 @@ This framework was extracted from production use in agent-built publishing syste
 - signal projection rules that keep ambient and agentic renderers downstream of canonical state
 - observe-first validators that can later become blocking gates
 
-The agents write code and produce content. Humans write the contracts, review the changes, and decide what becomes public policy. The contracts prevent independent workstreams from breaking each other's output.
+The agents write code and produce content. Humans write the contracts, review the changes, and decide what becomes public policy. The contracts prevent independent workstreams from breaking each other’s output.
 
 ---
 
-## Getting Started
+## Getting started
 
 ```
 constitutional-cms/
@@ -389,13 +437,7 @@ constitutional-cms/
 │       └── example-sprint.yaml
 ├── examples/
 │   ├── location-intelligence/         # Location intelligence example
-│   │   ├── page_types.yaml
-│   │   ├── enrichment_stages.yaml
-│   │   └── link_rules.yaml
-│   └── ecommerce-catalog/            # Product page example
-│       ├── page_types.yaml
-│       ├── enrichment_stages.yaml
-│       └── link_rules.yaml
+│   └── ecommerce-catalog/             # Product page example
 ├── scripts/
 │   ├── validate_contracts.py          # Validate contract consistency
 │   └── page_health_validator.py       # Observe-only crawl/render report
@@ -408,33 +450,37 @@ constitutional-cms/
     └── PRIOR_ART.md                   # Honest comparison to existing tools
 ```
 
-1. Copy the `contracts/` directory into your project
-2. Edit the YAML files to match your domain (entity types, required fields, tier thresholds)
-3. Point your agents at the contracts before they write code
-4. Build validation scripts that check live output against contracts
+1. Copy the `contracts/` directory into your project.
+2. Edit the YAML files to match your domain (entity types, required fields, tier thresholds).
+3. Point your agents at the contracts before they write code.
+4. Build validation scripts that check live output against contracts.
+
+More detail lives in [`docs/AGENT_COORDINATION.md`](docs/AGENT_COORDINATION.md) and on [constitutionalcms.com](https://constitutionalcms.com).
+
+---
+
+## Prior art & honest positioning
+
+See [`docs/PRIOR_ART.md`](docs/PRIOR_ART.md) for the full comparison. The short version:
+
+| Tool | What it governs | What Constitutional CMS adds |
+|------|-----------------|------------------------------|
+| Microsoft Agent Governance Toolkit | Agent runtime security (permissions, tool access, kill switches) | Content-specific governance: publish tiers, link graphs, schema emission |
+| OPA / Rego | Infrastructure access policies | Content quality and publish-tier gating |
+| OpenAPI | API response shapes | Full page lifecycle from ingestion to indexation |
+| WordPress / Drupal | Human editorial workflow | Multi-agent production at programmatic scale |
+| Anthropic Skills | What agents know how to do | What agents are *not allowed* to do |
+
+The novelty is not in any single component. It is in the **continuous lifecycle** — pages that automatically graduate and degrade between quality tiers based on data freshness, governed by contracts that coordinate multiple agents through snapshot boundaries and link graph rules, proven in production with measurable SEO outcomes.
+
+An honest assessment of what is and is not new lives in [`docs/NOVELTY.md`](docs/NOVELTY.md).
 
 ---
 
 ## License
 
-Apache 2.0. The spec and pattern are open. Your domain-specific contracts (which entities matter, what your compression axes are, what your narrative voice sounds like) are your competitive advantage.
+Apache 2.0. The spec and pattern are open. Your domain-specific contracts — which entities matter, what your compression axes are, what your narrative voice sounds like — are your competitive advantage.
 
 ---
 
-## Prior Art & Honest Positioning
-
-See [docs/PRIOR_ART.md](docs/PRIOR_ART.md) for a detailed comparison. The short version:
-
-| Tool | What it governs | What Constitutional CMS adds |
-|------|----------------|------------------------------|
-| Microsoft Agent Governance Toolkit | Agent runtime security (permissions, tool access, kill switches) | Content-specific governance: publish tiers, link graphs, schema emission |
-| OPA/Rego | Infrastructure access policies | Content quality and publish-tier gating |
-| OpenAPI | API response shapes | Full page lifecycle from ingestion to indexation |
-| WordPress/Drupal | Human editorial workflow | Multi-agent production at programmatic scale |
-| Anthropic Skills | What agents know how to do | What agents are *not allowed* to do |
-
-The novelty is not in any single component. It's in the **continuous lifecycle** — pages that automatically graduate and degrade between quality tiers based on data freshness, governed by contracts that coordinate multiple agents through snapshot boundaries and link graph rules, proven in production with measurable SEO outcomes.
-
----
-
-*Targeted Impressions — [targetedimpressions.com](https://targetedimpressions.com)*
+*Targeted Impressions Labs — [targetedimpressions.com](https://targetedimpressions.com)*
