@@ -8,7 +8,7 @@ scopes:
   - {name: declared_config, mutation_class: pure_read}
 observations:
   http: {status: 503}
-  search: {canonical: /relative}
+  search: {structured_data_visible_parity: false}
   answer: {primary_answer_present: false}
   agent: {actions_typed: false}
 limitations:

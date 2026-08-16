@@ -13,11 +13,37 @@ required_fields:
   - catalog_version
   - subject
   - evaluated_at
+  - evaluation_context
   - checks
   - profile_summaries
   - evidence_coverage
   - limitations
   - certified
+  - result_digest
+
+reason_codes:
+  evidence_missing: A required value is absent.
+  evidence_stale: A required value is explicitly stale or older than the check's maximum age.
+  evidence_invalid: A required value or its normalized record is structurally unusable.
+  source_unavailable: The collector or authority could not supply the required value.
+  applicability_false: Valid applicability evidence proves that the check does not apply.
+  rule_satisfied: Valid, current evidence satisfied the deterministic rule.
+  rule_falsified: Valid, current evidence falsified the deterministic rule.
+
+evaluation_order:
+  - Validate bundle structure.
+  - Resolve applicability evidence.
+  - Return NOT_APPLICABLE when valid applicability evidence is false.
+  - Return UNMEASURED when applicability is indeterminate.
+  - Validate required check evidence and freshness.
+  - Return UNMEASURED when required evidence is missing, stale, invalid, or unavailable.
+  - Evaluate the rule and return PASS or FAIL.
+
+determinism:
+  as_of_default: EvidenceBundleV1 collected_at
+  evaluated_at: Must equal normalized evaluation_context.as_of.
+  canonicalization: docs/CANONICAL_JSON.md
+  result_digest_input: The complete receipt with result_digest omitted.
 
 certification_rules:
   - id: diagnostic_default

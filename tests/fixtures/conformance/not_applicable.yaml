@@ -8,9 +8,7 @@ scopes:
 observations:
   search:
     intended_indexable: false
-    blocked: true
   agent:
     webmcp_declared: false
-    webmcp_coherent: false
 limitations:
   - Indexability and experimental WebMCP checks are intentionally not applicable.

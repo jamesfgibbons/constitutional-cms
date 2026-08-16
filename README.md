@@ -447,6 +447,7 @@ constitutional-cms/
 │   ├── evidence_bundle_v1.yaml         # Normalized observation boundary
 │   ├── constitutional_site_manifest_v1.yaml # Public-safe implementation configuration
 │   ├── conformance_receipt_v1.yaml     # Verdict and evidence-coverage grammar
+│   ├── link_target_v1.yaml             # Public normalized link-authority boundary
 │   └── sprints/                       # Sprint-scoped work contracts
 │       └── example-sprint.yaml
 ├── examples/
@@ -467,6 +468,7 @@ constitutional-cms/
     ├── SOURCE_BOUNDARY.md             # Public authority and private implementation boundary
     ├── WEB_CONFORMANCE.md             # Profiles, verdicts, and reproducible evaluation
     ├── ADAPTER_BOUNDARY.md             # Public normalized records/private authorities
+    ├── CANONICAL_JSON.md               # Cross-language digest and receipt identity
     ├── V0_2_REFERENCE_PATTERNS.md     # Portable methods for explicit contract ratchets
     ├── CONSTITUTIONAL_CYBERNETICS.md  # Control-system frame for the agentic web
     ├── AGENT_COORDINATION.md          # How agents use these contracts
@@ -477,7 +479,7 @@ constitutional-cms/
 2. Edit the domain contracts and create a public-safe `ConstitutionalSiteManifestV1`.
 3. Point agents at the contracts before they write code.
 4. Map collector output or a private authority into `EvidenceBundleV1`.
-5. Run `python scripts/conformance_evaluator.py --evidence <bundle.yaml>` and enforce the receipt in CI.
+5. Run `python scripts/conformance_evaluator.py --evidence <bundle.yaml> --as-of <timestamp>` and enforce the receipt in CI.
 
 More detail lives in [`docs/WEB_CONFORMANCE.md`](docs/WEB_CONFORMANCE.md),
 [`docs/ADAPTER_BOUNDARY.md`](docs/ADAPTER_BOUNDARY.md),

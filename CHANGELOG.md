@@ -2,6 +2,17 @@
 
 All notable changes to Constitutional CMS are documented here. This project follows [Semantic Versioning](https://semver.org/).
 
+## [0.4.1] - 2026-08-15
+
+### Fixed
+- Applicability is evaluated before check evidence, so a valid false declaration returns `NOT_APPLICABLE` even when check evidence is absent.
+- Missing, stale, invalid, and unavailable evidence now return `UNMEASURED` with stable reason codes; wrong-typed evidence can no longer become a policy `FAIL`.
+- Receipt time and identity are deterministic from an explicit `--as-of` value or the bundle's `collected_at`, with canonical catalog, evidence, context, and result digests.
+- The internal-link boundary now validates versioned `LinkGraphEvidenceV1` and `LinkTargetV1` records, canonical-origin membership, freshness, source/target eligibility, redirects, and conflicting duplicates.
+
+### Notes
+- This patch adds no checks and does not change the four profiles. It corrects the existing `ConformanceReceiptV1` semantics.
+
 ## [0.4.0] - 2026-08-15
 
 ### Added

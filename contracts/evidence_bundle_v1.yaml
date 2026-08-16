@@ -22,6 +22,12 @@ evidence_scopes:
 rules:
   - id: missing_is_unmeasured
     statement: A required observation that is absent resolves to UNMEASURED, never PASS or zero.
+  - id: explicit_evidence_state
+    statement: An observation may declare observed, unavailable, invalid, or stale in evidence_states keyed by its dotted path.
+  - id: primitive_state_inheritance
+    statement: A present primitive observation without an explicit state inherits observed, the bundle collector identity and version, and collected_at.
+  - id: unusable_is_unmeasured
+    statement: Unavailable, invalid, and stale evidence resolve to UNMEASURED with a stable reason code; they do not falsify the policy rule.
   - id: collector_identity_required
     statement: Every bundle names and versions its collector.
   - id: raw_private_state_prohibited
@@ -34,3 +40,13 @@ rules:
 artifact_hashes:
   algorithm: sha256
   raw_artifact_storage: optional_and_out_of_band
+
+evidence_state:
+  key: dotted observation or subject path
+  fields:
+    status: observed | unavailable | invalid | stale
+    observed_at: optional RFC 3339 timestamp
+    collector_id: optional nonempty opaque collector identity
+    collector_version: optional nonempty collector version
+    source_digest: optional lowercase SHA-256
+    limitations: optional list of public-safe limitations

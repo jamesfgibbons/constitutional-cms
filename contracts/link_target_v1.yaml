@@ -1,0 +1,30 @@
+schema_version: LinkTargetV1
+status: normative
+purpose: Normalize link authority without exposing product-specific route registries, queries, thresholds, or topology.
+
+required_fields:
+  - canonical_url
+  - exists
+  - page_family
+  - publication_tier
+  - indexable
+  - inbound_eligible
+  - outbound_eligible
+  - observed_at
+  - authority_id
+
+rules:
+  - id: source_target_eligibility_separate
+    statement: Source outbound eligibility and target inbound eligibility are independent assertions and cannot substitute for one another.
+  - id: internal_origin_required
+    statement: Every source, target, and redirect in an internal-link graph belongs to the declared canonical origin.
+  - id: authority_identity_required
+    statement: Every record includes a nonempty opaque authority identifier and the enclosing graph identifies its adapter and version.
+  - id: deterministic_duplicate_resolution
+    statement: Byte-equivalent normalized duplicates are deduplicated by canonical URL; conflicting duplicates make the graph invalid and UNMEASURED.
+  - id: unavailable_is_not_empty
+    statement: Adapter failure is source_unavailable and UNMEASURED; it is never represented as a successful empty target corpus.
+
+wire_schemas:
+  target: schemas/link_target_v1.schema.json
+  graph: schemas/link_graph_evidence_v1.schema.json

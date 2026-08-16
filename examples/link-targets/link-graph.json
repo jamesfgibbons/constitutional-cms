@@ -1,0 +1,28 @@
+{
+  "schema_version": "LinkGraphEvidenceV1",
+  "adapter": {"id": "synthetic-static-routes", "version": "1.0.0"},
+  "source": {
+    "canonical_url": "https://example.com/guide",
+    "exists": true,
+    "page_family": "documentation",
+    "publication_tier": "FULL",
+    "indexable": true,
+    "inbound_eligible": true,
+    "outbound_eligible": true,
+    "observed_at": "2026-08-15T12:00:00Z",
+    "authority_id": "synthetic-static-routes"
+  },
+  "targets": [
+    {
+      "canonical_url": "https://example.com/docs",
+      "exists": true,
+      "page_family": "documentation",
+      "publication_tier": "FULL",
+      "indexable": true,
+      "inbound_eligible": true,
+      "outbound_eligible": true,
+      "observed_at": "2026-08-15T12:00:00Z",
+      "authority_id": "synthetic-static-routes"
+    }
+  ]
+}

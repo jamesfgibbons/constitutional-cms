@@ -1,0 +1,17 @@
+schema_version: EvidenceBundleV1
+subject: {url: https://example.com/stale}
+collected_at: "2026-08-15T12:00:00Z"
+collector: {name: synthetic-fixture, version: "1.0.0"}
+scopes:
+  - {name: public_static, mutation_class: pure_read}
+observations:
+  http: {status: 200}
+evidence_states:
+  observations.http.status:
+    status: stale
+    observed_at: "2026-08-13T12:00:00Z"
+    collector_id: synthetic-fixture
+    collector_version: "1.0.0"
+    limitations: [Synthetic stale-state fixture.]
+limitations:
+  - This fixture is synthetic and exercises evidence_stale.
