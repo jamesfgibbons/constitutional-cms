@@ -9,13 +9,30 @@ identify the question first, then use only the scheme authoritative for that que
 | --- | --- | --- | --- |
 | Five contract families | What part of publishing is governed? | Page types, enrichment stages, link graph, snapshot boundary, sprint acceptance | Maturity, severity, or work priority |
 | Incident-learned invariants | What falsifiable condition must remain true? | Portable rules expressed through generalized failure scenarios | A second set of contract families |
-| Four conformance levels | How completely has an implementation adopted the framework? | Implementation maturity and evidence coverage | A page tier or release certificate |
+| G0-G5 certification states | How completely has a page family adopted and evidenced the framework? | Implementation maturity and evidence coverage | A page publication tier or check-profile score |
 | Eight release gates | What evidence must a release candidate pass? | Publication and verification sequence | Backlog ranking |
 | Four-layer repair stack | Which dependent layer on one surface is repaired first? | Data truth → content truth → depth → experience | Portfolio-wide prioritization |
 | Seven control priority classes | Which admissible intervention deserves attention next? | Constitutional blockers through theory work | A numeric score or repair layer |
 
 Counts are labels, not identities. A five-item invariant release and the five contract families are unrelated sets. A
 page tier is not conformance. A release gate is not priority. A repair layer is not a control class.
+
+Only two schemes order work: the four-layer repair stack orders dependent repairs on one surface, and the seven
+control priority classes order unlike interventions. Contract families, invariants, check profiles, publication tiers,
+certification states, and release gates classify other objects; they do not create additional priority queues.
+
+## Taxonomy admission rule
+
+A proposed scheme does not enter the protocol until it declares all of the following:
+
+1. the single canonical question it answers;
+2. the object it governs;
+3. whether it classifies, orders, or certifies;
+4. its relationship to every existing scheme that could appear to answer the same question; and
+5. which existing scheme, if any, it retires.
+
+The four web-conformance profiles are selectable evidence groupings, not levels, scores, or an ordering scheme.
+G0-G5 remains the only adoption and certification sequence.
 
 ## Routing sequence
 

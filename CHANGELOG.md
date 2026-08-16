@@ -2,6 +2,22 @@
 
 All notable changes to Constitutional CMS are documented here. This project follows [Semantic Versioning](https://semver.org/).
 
+## [0.4.0] - 2026-08-15
+
+### Added
+- One web-conformance standard with Web Foundation, Search, Answer and AI Retrieval, and Agentic Web profiles.
+- Versioned standards registry, check catalog, evidence bundle, public-safe site manifest, and conformance receipt contracts.
+- JSON Schemas, offline Python reference evaluator, deterministic synthetic verdict fixtures, and private-adapter boundary.
+- Reproducible internal-link evidence through normalized `LinkTargetV1` records.
+
+### Changed
+- G0-G5 is now explicitly the sole adoption and certification sequence; profiles and publication tiers are not maturity levels.
+- The protocol map now admits new taxonomies only when their canonical question, governed object, role, and retirement relationship are declared.
+- Lab performance, field Core Web Vitals, platform eligibility, and experimental agent interfaces use distinct evidence and claim language.
+
+### Notes
+- The evaluator performs no network access and does not certify a page family. Private implementations collect evidence and retain their route authorities, schemas, thresholds, and credentials.
+
 ## [0.3.2] - 2026-08-15
 
 ### Added

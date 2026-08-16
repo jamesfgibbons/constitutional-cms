@@ -103,7 +103,7 @@ Neither is a numeric score, and neither can waive a rare constitutional failure
 because it affects a small denominator.
 
 See [`PROTOCOL_MAP.md`](PROTOCOL_MAP.md) for the canonical routing between
-contracts, invariants, conformance levels, release gates, repair layers, and
+contracts, invariants, G0-G5 certification states, release gates, repair layers, and
 control priority classes.
 
 ## State Is The Compression Layer

@@ -1,0 +1,98 @@
+schema_version: StandardsRegistryV1
+status: normative
+last_verified: "2026-08-15"
+
+authority_classes:
+  external_standard:
+    description: A formal standard published by a recognized standards body.
+    may_block_stable_conformance: true
+  platform_guidance:
+    description: Published behavior or eligibility guidance from a named platform.
+    may_block_stable_conformance: true
+    limitation: Compliance never guarantees crawling, indexing, ranking, citation, or inclusion.
+  constitutional_rule:
+    description: A portable Constitutional CMS invariant with falsifiable evidence.
+    may_block_stable_conformance: true
+  experimental:
+    description: An emerging practice or draft that may change without compatibility guarantees.
+    may_block_stable_conformance: false
+
+sources:
+  wcag_2_2:
+    authority_class: external_standard
+    title: Web Content Accessibility Guidelines (WCAG) 2.2
+    publisher: W3C
+    version: "2.2"
+    url: https://www.w3.org/TR/WCAG22/
+  core_web_vitals_2025:
+    authority_class: platform_guidance
+    title: Core Web Vitals thresholds
+    publisher: Google web.dev
+    version: "2025-05-07"
+    url: https://web.dev/articles/defining-core-web-vitals-thresholds
+  google_search_technical:
+    authority_class: platform_guidance
+    title: Google Search technical requirements
+    publisher: Google Search Central
+    version: current
+    url: https://developers.google.com/search/docs/essentials/technical
+  google_ai_search:
+    authority_class: platform_guidance
+    title: Optimizing for generative AI features on Google Search
+    publisher: Google Search Central
+    version: current
+    url: https://developers.google.com/search/docs/fundamentals/ai-optimization-guide
+  robots_rfc_9309:
+    authority_class: external_standard
+    title: Robots Exclusion Protocol
+    publisher: IETF
+    version: RFC 9309
+    url: https://www.ietf.org/rfc/rfc9309.pdf
+  schema_org_30:
+    authority_class: platform_guidance
+    title: Schema.org vocabulary
+    publisher: Schema.org
+    version: "30.0"
+    url: https://schema.org/version/30.0/
+  openai_publishers:
+    authority_class: platform_guidance
+    title: OpenAI publisher and developer crawler guidance
+    publisher: OpenAI
+    version: current
+    url: https://help.openai.com/en/articles/12627856-publishers-and-developers-faq
+  anthropic_crawlers:
+    authority_class: platform_guidance
+    title: Anthropic web crawler controls
+    publisher: Anthropic
+    version: current
+    url: https://support.anthropic.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler
+  webmcp_draft:
+    authority_class: experimental
+    title: WebMCP community-group work
+    publisher: W3C Web Machine Learning Community Group
+    version: draft
+    url: https://github.com/webmachinelearning/webmcp
+  constitutional_sensor_integrity:
+    authority_class: constitutional_rule
+    title: Sensor integrity and honest measurement
+    publisher: Constitutional CMS
+    version: "1"
+    path: contracts/sensor_integrity.yaml
+  constitutional_claim_decision:
+    authority_class: constitutional_rule
+    title: Claim decision boundary
+    publisher: Constitutional CMS
+    version: "1"
+    path: contracts/claim_decision.yaml
+  constitutional_link_graph:
+    authority_class: constitutional_rule
+    title: Link graph boundary
+    publisher: Constitutional CMS
+    version: "1"
+    path: contracts/link_rules.yaml
+  constitutional_projection:
+    authority_class: constitutional_rule
+    title: Signal projection parity
+    publisher: Constitutional CMS
+    version: "1"
+    path: contracts/signal_projection.yaml

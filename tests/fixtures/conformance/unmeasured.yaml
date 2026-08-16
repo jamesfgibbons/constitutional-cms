@@ -1,0 +1,8 @@
+schema_version: EvidenceBundleV1
+subject: {url: https://example.com/unmeasured}
+collected_at: "2026-08-15T12:00:00Z"
+collector: {name: synthetic-fixture, version: "1.0.0"}
+scopes: []
+observations: {}
+limitations:
+  - No observations were collected; missing evidence must not become PASS.

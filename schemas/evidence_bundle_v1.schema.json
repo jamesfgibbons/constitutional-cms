@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constitutionalcms.com/schemas/evidence-bundle-v1.json",
+  "title": "EvidenceBundleV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "subject", "collected_at", "collector", "scopes", "observations", "limitations"],
+  "properties": {
+    "schema_version": {"const": "EvidenceBundleV1"},
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["url"],
+      "properties": {
+        "url": {"type": "string", "format": "uri", "pattern": "^https://"},
+        "canonical_origin": {"type": "string", "format": "uri", "pattern": "^https://"}
+      }
+    },
+    "collected_at": {"type": "string", "format": "date-time"},
+    "collector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {"name": {"type": "string", "minLength": 1}, "version": {"type": "string", "minLength": 1}}
+    },
+    "scopes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "mutation_class"],
+        "properties": {
+          "name": {"enum": ["public_static", "public_rendered", "public_crawl", "declared_config", "private_authority", "field_observation"]},
+          "mutation_class": {"enum": ["pure_read", "read_with_side_effect", "active_perturbation"]}
+        }
+      }
+    },
+    "observations": {"type": "object"},
+    "limitations": {"type": "array", "items": {"type": "string"}},
+    "artifact_hashes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "sha256"],
+        "properties": {"name": {"type": "string"}, "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}}
+      }
+    }
+  }
+}

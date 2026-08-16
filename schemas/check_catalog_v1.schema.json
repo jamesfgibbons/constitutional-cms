@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constitutionalcms.com/schemas/check-catalog-v1.json",
+  "title": "CheckCatalogV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "catalog_version", "framework_release", "status", "profiles", "checks"],
+  "properties": {
+    "schema_version": {"const": "CheckCatalogV1"},
+    "catalog_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "framework_release": {"type": "string", "pattern": "^v[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "status": {"enum": ["normative", "informative", "experimental"]},
+    "profiles": {
+      "type": "object",
+      "required": ["web_foundation", "search", "answer_ai_retrieval", "agentic_web"],
+      "additionalProperties": {
+        "type": "object",
+        "required": ["title", "purpose"],
+        "properties": {"title": {"type": "string"}, "purpose": {"type": "string"}}
+      }
+    },
+    "checks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["check_id", "profile", "title", "authority_refs", "governing_invariant", "required_evidence", "evidence_scope", "mutation_class", "evaluation", "remediation", "certification_eligible"],
+        "properties": {
+          "check_id": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]+$"},
+          "profile": {"enum": ["web_foundation", "search", "answer_ai_retrieval", "agentic_web"]},
+          "title": {"type": "string", "minLength": 1},
+          "authority_refs": {"type": "array", "minItems": 1, "items": {"type": "string"}, "uniqueItems": true},
+          "governing_invariant": {"type": "string", "minLength": 1},
+          "required_evidence": {"type": "array", "minItems": 1, "items": {"type": "string"}, "uniqueItems": true},
+          "evidence_scope": {"enum": ["public_static", "public_rendered", "public_crawl", "declared_config", "private_authority", "field_observation"]},
+          "mutation_class": {"enum": ["pure_read", "read_with_side_effect", "active_perturbation"]},
+          "applicability": {"$ref": "#/$defs/rule"},
+          "evaluation": {"$ref": "#/$defs/rule"},
+          "remediation": {"type": "string", "minLength": 1},
+          "certification_eligible": {"type": "boolean"}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "rule": {
+      "type": "object",
+      "required": ["operator"],
+      "properties": {
+        "path": {"type": "string"},
+        "operator": {"enum": ["equals", "nonempty", "between", "lte", "gte", "https_url", "all", "link_targets_eligible"]},
+        "expected": {},
+        "min": {"type": "number"},
+        "max": {"type": "number"},
+        "rules": {"type": "array", "items": {"$ref": "#/$defs/rule"}}
+      }
+    }
+  }
+}

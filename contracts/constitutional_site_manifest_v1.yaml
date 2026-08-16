@@ -1,0 +1,51 @@
+schema_version: ConstitutionalSiteManifestV1
+status: normative
+purpose: Public-safe configuration that unlocks declared-config and corpus checks.
+
+required_fields:
+  - schema_version
+  - canonical_origin
+  - route_sources
+  - page_families
+  - crawler_policy
+
+allowed_route_source_types:
+  - sitemap
+  - static_manifest
+  - private_adapter
+
+private_adapter_boundary:
+  accepts: LinkTargetV1
+  prohibited:
+    - credentials
+    - connection_strings
+    - database_queries
+    - internal_table_names
+    - private_thresholds
+
+link_target_v1:
+  required_fields:
+    - canonical_url
+    - exists
+    - page_family
+    - publication_tier
+    - indexable
+    - inbound_eligible
+    - outbound_eligible
+    - observed_at
+    - authority_id
+  publication_tiers: [FULL, BASIC, SHELL, SUPPRESS]
+
+secret_key_patterns:
+  - password
+  - secret
+  - token
+  - api_key
+  - private_key
+  - connection_string
+
+rules:
+  - id: public_safe_only
+    statement: A manifest containing a secret-shaped key or credential material is invalid.
+  - id: adapter_emits_normalized_records
+    statement: Private adapters publish only LinkTargetV1 records and evidence hashes.

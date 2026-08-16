@@ -1,0 +1,30 @@
+schema_version: ConformanceReceiptV1
+status: normative
+
+verdicts:
+  PASS: Required evidence was present and satisfied the evaluator.
+  FAIL: Required evidence was present and falsified the check.
+  UNMEASURED: Required evidence was absent, stale, invalid, or unavailable.
+  NOT_APPLICABLE: The check's declared applicability condition was false.
+
+required_fields:
+  - schema_version
+  - framework_release
+  - catalog_version
+  - subject
+  - evaluated_at
+  - checks
+  - profile_summaries
+  - evidence_coverage
+  - limitations
+  - certified
+
+certification_rules:
+  - id: diagnostic_default
+    statement: A page check is diagnostic and certified is false unless the G5 family contract is independently satisfied.
+  - id: experimental_non_blocking
+    statement: Experimental checks cannot block stable-profile conformance or grant certification.
+  - id: platform_no_guarantee
+    statement: A PASS against platform guidance is not a guarantee of crawling, ranking, citation, or inclusion.
+  - id: no_composite_score
+    statement: Profile summaries report verdict counts and evidence coverage, not a synthetic universal score.

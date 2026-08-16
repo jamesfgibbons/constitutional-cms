@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constitutionalcms.com/schemas/conformance-receipt-v1.json",
+  "title": "ConformanceReceiptV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "framework_release", "catalog_version", "subject", "evaluated_at", "checks", "profile_summaries", "evidence_coverage", "limitations", "certified"],
+  "properties": {
+    "schema_version": {"const": "ConformanceReceiptV1"},
+    "framework_release": {"type": "string"},
+    "catalog_version": {"type": "string"},
+    "subject": {"type": "object", "required": ["url"], "properties": {"url": {"type": "string", "format": "uri"}}},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["check_id", "profile", "verdict", "certification_eligible", "evidence_scope", "remediation"],
+        "properties": {
+          "check_id": {"type": "string"},
+          "profile": {"type": "string"},
+          "verdict": {"enum": ["PASS", "FAIL", "UNMEASURED", "NOT_APPLICABLE"]},
+          "certification_eligible": {"type": "boolean"},
+          "evidence_scope": {"type": "string"},
+          "remediation": {"type": "string"},
+          "detail": {"type": "string"}
+        }
+      }
+    },
+    "profile_summaries": {"type": "object"},
+    "evidence_coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["measured", "total_applicable", "ratio"],
+      "properties": {
+        "measured": {"type": "integer", "minimum": 0},
+        "total_applicable": {"type": "integer", "minimum": 0},
+        "ratio": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    },
+    "limitations": {"type": "array", "items": {"type": "string"}},
+    "certified": {"const": false}
+  }
+}

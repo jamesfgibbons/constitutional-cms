@@ -1,0 +1,49 @@
+schema_version: EvidenceBundleV1
+subject:
+  url: https://example.com/guide
+  canonical_origin: https://example.com
+collected_at: "2026-08-15T12:00:00Z"
+collector: {name: synthetic-fixture, version: "1.0.0"}
+scopes:
+  - {name: public_static, mutation_class: pure_read}
+  - {name: public_rendered, mutation_class: pure_read}
+  - {name: public_crawl, mutation_class: pure_read}
+  - {name: declared_config, mutation_class: pure_read}
+  - {name: private_authority, mutation_class: pure_read}
+  - {name: field_observation, mutation_class: pure_read}
+observations:
+  http: {status: 200}
+  document: {lang: en}
+  accessibility: {serious_violation_count: 0}
+  performance:
+    lab: {lcp_ms: 1800}
+    field: {p75_lcp_ms: 2200, p75_inp_ms: 180, p75_cls: 0.08}
+  search:
+    canonical: https://example.com/guide
+    intended_indexable: true
+    blocked: false
+    structured_data_visible_parity: true
+  links:
+    targets:
+      - canonical_url: https://example.com/docs
+        exists: true
+        page_family: documentation
+        publication_tier: FULL
+        indexable: true
+        inbound_eligible: true
+        outbound_eligible: true
+        observed_at: "2026-08-15T12:00:00Z"
+        authority_id: public-static-routes
+  corpus: {complete: true}
+  answer:
+    primary_answer_present: true
+    primary_entity: Constitutional CMS
+    material_claims_sourced: true
+    crawler_policy_explicit: true
+  agent:
+    actions_typed: true
+    side_effects_declared: true
+    mutating_actions_receipted: true
+    webmcp_declared: true
+    webmcp_coherent: true
+limitations: []
