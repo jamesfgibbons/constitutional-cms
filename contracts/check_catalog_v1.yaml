@@ -1,6 +1,6 @@
 schema_version: CheckCatalogV1
-catalog_version: "1.0.0"
-framework_release: "v0.4.0"
+catalog_version: "1.0.1"
+framework_release: "v0.4.1"
 status: normative
 
 profiles:
@@ -24,6 +24,8 @@ checks:
     authority_refs: [google_search_technical]
     governing_invariant: body_publishable
     required_evidence: [observations.http.status]
+    evidence_contracts:
+      observations.http.status: {type: integer, max_age_seconds: 86400}
     evidence_scope: public_static
     mutation_class: pure_read
     evaluation: {path: observations.http.status, operator: between, min: 200, max: 299}
@@ -35,6 +37,8 @@ checks:
     authority_refs: [wcag_2_2]
     governing_invariant: accessible_document
     required_evidence: [observations.document.lang]
+    evidence_contracts:
+      observations.document.lang: {type: string, max_age_seconds: 86400}
     evidence_scope: public_static
     mutation_class: pure_read
     evaluation: {path: observations.document.lang, operator: nonempty}
@@ -46,6 +50,8 @@ checks:
     authority_refs: [wcag_2_2]
     governing_invariant: accessible_document
     required_evidence: [observations.accessibility.serious_violation_count]
+    evidence_contracts:
+      observations.accessibility.serious_violation_count: {type: integer, max_age_seconds: 86400}
     evidence_scope: public_rendered
     mutation_class: pure_read
     evaluation: {path: observations.accessibility.serious_violation_count, operator: equals, expected: 0}
@@ -57,6 +63,8 @@ checks:
     authority_refs: [core_web_vitals_2025]
     governing_invariant: lab_field_separation
     required_evidence: [observations.performance.lab.lcp_ms]
+    evidence_contracts:
+      observations.performance.lab.lcp_ms: {type: number, max_age_seconds: 86400}
     evidence_scope: public_rendered
     mutation_class: pure_read
     evaluation: {path: observations.performance.lab.lcp_ms, operator: lte, expected: 2500}
@@ -71,6 +79,10 @@ checks:
       - observations.performance.field.p75_lcp_ms
       - observations.performance.field.p75_inp_ms
       - observations.performance.field.p75_cls
+    evidence_contracts:
+      observations.performance.field.p75_lcp_ms: {type: number, max_age_seconds: 2592000}
+      observations.performance.field.p75_inp_ms: {type: number, max_age_seconds: 2592000}
+      observations.performance.field.p75_cls: {type: number, max_age_seconds: 2592000}
     evidence_scope: field_observation
     mutation_class: pure_read
     evaluation:
@@ -87,6 +99,8 @@ checks:
     authority_refs: [google_search_technical]
     governing_invariant: canonical_identity
     required_evidence: [observations.search.canonical]
+    evidence_contracts:
+      observations.search.canonical: {type: string, max_age_seconds: 86400}
     evidence_scope: public_static
     mutation_class: pure_read
     evaluation: {path: observations.search.canonical, operator: https_url}
@@ -97,10 +111,15 @@ checks:
     title: Intended indexable page is not blocked
     authority_refs: [robots_rfc_9309, google_search_technical]
     governing_invariant: seo_indexable
-    required_evidence: [observations.search.intended_indexable, observations.search.blocked]
+    required_evidence: [observations.search.blocked]
+    evidence_contracts:
+      observations.search.intended_indexable: {type: boolean, max_age_seconds: 86400}
+      observations.search.blocked: {type: boolean, max_age_seconds: 86400}
     evidence_scope: public_static
     mutation_class: pure_read
-    applicability: {path: observations.search.intended_indexable, operator: equals, expected: true}
+    applicability:
+      required_evidence: [observations.search.intended_indexable]
+      evaluation: {path: observations.search.intended_indexable, operator: equals, expected: true}
     evaluation: {path: observations.search.blocked, operator: equals, expected: false}
     remediation: Align robots and page-level index controls with the declared indexability decision.
     certification_eligible: true
@@ -110,6 +129,8 @@ checks:
     authority_refs: [schema_org_30, constitutional_projection]
     governing_invariant: schema_publishable
     required_evidence: [observations.search.structured_data_visible_parity]
+    evidence_contracts:
+      observations.search.structured_data_visible_parity: {type: boolean, max_age_seconds: 86400}
     evidence_scope: public_static
     mutation_class: pure_read
     evaluation: {path: observations.search.structured_data_visible_parity, operator: equals, expected: true}
@@ -120,10 +141,13 @@ checks:
     title: Emitted internal links resolve to eligible targets
     authority_refs: [constitutional_link_graph]
     governing_invariant: no_phantom_links
-    required_evidence: [observations.links.targets]
+    required_evidence: [subject.canonical_origin, observations.links]
+    evidence_contracts:
+      subject.canonical_origin: {type: https_origin, max_age_seconds: 86400}
+      observations.links: {type: link_graph, max_age_seconds: 86400}
     evidence_scope: declared_config
     mutation_class: pure_read
-    evaluation: {path: observations.links.targets, operator: link_targets_eligible}
+    evaluation: {path: observations.links, operator: link_graph_eligible}
     remediation: Map the implementation route authority to LinkTargetV1 and suppress ineligible targets.
     certification_eligible: true
   - check_id: search.corpus.complete
@@ -132,6 +156,8 @@ checks:
     authority_refs: [constitutional_sensor_integrity]
     governing_invariant: corpus_completeness
     required_evidence: [observations.corpus.complete]
+    evidence_contracts:
+      observations.corpus.complete: {type: boolean, max_age_seconds: 86400}
     evidence_scope: public_crawl
     mutation_class: pure_read
     evaluation: {path: observations.corpus.complete, operator: equals, expected: true}
@@ -143,6 +169,8 @@ checks:
     authority_refs: [google_ai_search]
     governing_invariant: utility_document
     required_evidence: [observations.answer.primary_answer_present]
+    evidence_contracts:
+      observations.answer.primary_answer_present: {type: boolean, max_age_seconds: 86400}
     evidence_scope: public_rendered
     mutation_class: pure_read
     evaluation: {path: observations.answer.primary_answer_present, operator: equals, expected: true}
@@ -154,6 +182,8 @@ checks:
     authority_refs: [google_ai_search, schema_org_30]
     governing_invariant: utility_document
     required_evidence: [observations.answer.primary_entity]
+    evidence_contracts:
+      observations.answer.primary_entity: {type: string, max_age_seconds: 86400}
     evidence_scope: public_rendered
     mutation_class: pure_read
     evaluation: {path: observations.answer.primary_entity, operator: nonempty}
@@ -165,6 +195,8 @@ checks:
     authority_refs: [constitutional_claim_decision, constitutional_sensor_integrity]
     governing_invariant: claim_publishable
     required_evidence: [observations.answer.material_claims_sourced]
+    evidence_contracts:
+      observations.answer.material_claims_sourced: {type: boolean, max_age_seconds: 604800}
     evidence_scope: declared_config
     mutation_class: pure_read
     evaluation: {path: observations.answer.material_claims_sourced, operator: equals, expected: true}
@@ -176,6 +208,8 @@ checks:
     authority_refs: [openai_publishers, anthropic_crawlers]
     governing_invariant: crawler_choice
     required_evidence: [observations.answer.crawler_policy_explicit]
+    evidence_contracts:
+      observations.answer.crawler_policy_explicit: {type: boolean, max_age_seconds: 604800}
     evidence_scope: declared_config
     mutation_class: pure_read
     evaluation: {path: observations.answer.crawler_policy_explicit, operator: equals, expected: true}
@@ -187,6 +221,8 @@ checks:
     authority_refs: [constitutional_projection]
     governing_invariant: agent_action_contract
     required_evidence: [observations.agent.actions_typed]
+    evidence_contracts:
+      observations.agent.actions_typed: {type: boolean, max_age_seconds: 604800}
     evidence_scope: declared_config
     mutation_class: pure_read
     evaluation: {path: observations.agent.actions_typed, operator: equals, expected: true}
@@ -198,6 +234,8 @@ checks:
     authority_refs: [constitutional_sensor_integrity]
     governing_invariant: agent_action_contract
     required_evidence: [observations.agent.side_effects_declared]
+    evidence_contracts:
+      observations.agent.side_effects_declared: {type: boolean, max_age_seconds: 604800}
     evidence_scope: declared_config
     mutation_class: pure_read
     evaluation: {path: observations.agent.side_effects_declared, operator: equals, expected: true}
@@ -209,6 +247,8 @@ checks:
     authority_refs: [constitutional_projection]
     governing_invariant: evidence_gated_done
     required_evidence: [observations.agent.mutating_actions_receipted]
+    evidence_contracts:
+      observations.agent.mutating_actions_receipted: {type: boolean, max_age_seconds: 86400}
     evidence_scope: private_authority
     mutation_class: pure_read
     evaluation: {path: observations.agent.mutating_actions_receipted, operator: equals, expected: true}
@@ -220,9 +260,14 @@ checks:
     authority_refs: [webmcp_draft]
     governing_invariant: experimental_agent_interface
     required_evidence: [observations.agent.webmcp_coherent]
+    evidence_contracts:
+      observations.agent.webmcp_declared: {type: boolean, max_age_seconds: 86400}
+      observations.agent.webmcp_coherent: {type: boolean, max_age_seconds: 86400}
     evidence_scope: public_rendered
     mutation_class: pure_read
-    applicability: {path: observations.agent.webmcp_declared, operator: equals, expected: true}
+    applicability:
+      required_evidence: [observations.agent.webmcp_declared]
+      evaluation: {path: observations.agent.webmcp_declared, operator: equals, expected: true}
     evaluation: {path: observations.agent.webmcp_coherent, operator: equals, expected: true}
     remediation: Follow the current draft carefully and do not represent draft compatibility as stable certification.
     certification_eligible: false

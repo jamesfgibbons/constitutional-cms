@@ -1,0 +1,233 @@
+{
+  "catalog_version": "1.0.1",
+  "certified": false,
+  "checks": [
+    {
+      "certification_eligible": true,
+      "check_id": "web.http.success",
+      "detail": "Required evidence is evidence_missing: observations.http.status.",
+      "evidence_scope": "public_static",
+      "profile": "web_foundation",
+      "reason_code": "evidence_missing",
+      "remediation": "Return a deliberate successful response for publishable public content.",
+      "verdict": "UNMEASURED"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "web.document.language",
+      "detail": "Required evidence is evidence_missing: observations.document.lang.",
+      "evidence_scope": "public_static",
+      "profile": "web_foundation",
+      "reason_code": "evidence_missing",
+      "remediation": "Add a valid lang attribute to the root html element.",
+      "verdict": "UNMEASURED"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "web.accessibility.automated",
+      "detail": "Required evidence is evidence_missing: observations.accessibility.serious_violation_count.",
+      "evidence_scope": "public_rendered",
+      "profile": "web_foundation",
+      "reason_code": "evidence_missing",
+      "remediation": "Repair serious and critical automated accessibility findings, then perform required human evaluation.",
+      "verdict": "UNMEASURED"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "web.performance.lab_lcp",
+      "detail": "Required evidence is evidence_missing: observations.performance.lab.lcp_ms.",
+      "evidence_scope": "public_rendered",
+      "profile": "web_foundation",
+      "reason_code": "evidence_missing",
+      "remediation": "Improve the lab loading path; do not report this result as field Core Web Vitals.",
+      "verdict": "UNMEASURED"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "web.performance.field_cwv",
+      "detail": "Required evidence is evidence_missing: observations.performance.field.p75_lcp_ms.",
+      "evidence_scope": "field_observation",
+      "profile": "web_foundation",
+      "reason_code": "evidence_missing",
+      "remediation": "Use sufficient real-user field data; never substitute Lighthouse or a synthetic zero.",
+      "verdict": "UNMEASURED"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "search.canonical.absolute",
+      "detail": "Required evidence is evidence_missing: observations.search.canonical.",
+      "evidence_scope": "public_static",
+      "profile": "search",
+      "reason_code": "evidence_missing",
+      "remediation": "Emit one absolute HTTPS canonical that represents the page identity.",
+      "verdict": "UNMEASURED"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "search.robots.indexable",
+      "detail": "Declared applicability condition is false.",
+      "evidence_scope": "public_static",
+      "profile": "search",
+      "reason_code": "applicability_false",
+      "remediation": "Align robots and page-level index controls with the declared indexability decision.",
+      "verdict": "NOT_APPLICABLE"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "search.structured_data.visible_parity",
+      "detail": "Required evidence is evidence_missing: observations.search.structured_data_visible_parity.",
+      "evidence_scope": "public_static",
+      "profile": "search",
+      "reason_code": "evidence_missing",
+      "remediation": "Generate visible and machine-readable claims from the same canonical decision.",
+      "verdict": "UNMEASURED"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "search.links.targets_eligible",
+      "detail": "Required evidence is evidence_missing: subject.canonical_origin.",
+      "evidence_scope": "declared_config",
+      "profile": "search",
+      "reason_code": "evidence_missing",
+      "remediation": "Map the implementation route authority to LinkTargetV1 and suppress ineligible targets.",
+      "verdict": "UNMEASURED"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "search.corpus.complete",
+      "detail": "Required evidence is evidence_missing: observations.corpus.complete.",
+      "evidence_scope": "public_crawl",
+      "profile": "search",
+      "reason_code": "evidence_missing",
+      "remediation": "Complete the declared census; a sample cannot certify a page family.",
+      "verdict": "UNMEASURED"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "answer.primary_answer.present",
+      "detail": "Required evidence is evidence_missing: observations.answer.primary_answer_present.",
+      "evidence_scope": "public_rendered",
+      "profile": "answer_ai_retrieval",
+      "reason_code": "evidence_missing",
+      "remediation": "State the page's primary answer clearly in visible, extractable content.",
+      "verdict": "UNMEASURED"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "answer.entity.clear",
+      "detail": "Required evidence is evidence_missing: observations.answer.primary_entity.",
+      "evidence_scope": "public_rendered",
+      "profile": "answer_ai_retrieval",
+      "reason_code": "evidence_missing",
+      "remediation": "Name the primary entity consistently in the title, heading, body, and structured data.",
+      "verdict": "UNMEASURED"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "answer.claims.provenance",
+      "detail": "Required evidence is evidence_missing: observations.answer.material_claims_sourced.",
+      "evidence_scope": "declared_config",
+      "profile": "answer_ai_retrieval",
+      "reason_code": "evidence_missing",
+      "remediation": "Bind material claims to named authority and freshness evidence or suppress them.",
+      "verdict": "UNMEASURED"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "answer.crawlers.choice",
+      "detail": "Required evidence is evidence_missing: observations.answer.crawler_policy_explicit.",
+      "evidence_scope": "declared_config",
+      "profile": "answer_ai_retrieval",
+      "reason_code": "evidence_missing",
+      "remediation": "Declare separate policy choices for search, user-directed retrieval, and model training crawlers.",
+      "verdict": "UNMEASURED"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "agent.actions.typed",
+      "detail": "Required evidence is evidence_missing: observations.agent.actions_typed.",
+      "evidence_scope": "declared_config",
+      "profile": "agentic_web",
+      "reason_code": "evidence_missing",
+      "remediation": "Publish a machine-readable input and output schema for each action.",
+      "verdict": "UNMEASURED"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "agent.actions.side_effects",
+      "detail": "Required evidence is evidence_missing: observations.agent.side_effects_declared.",
+      "evidence_scope": "declared_config",
+      "profile": "agentic_web",
+      "reason_code": "evidence_missing",
+      "remediation": "Declare mutation class, consent, authentication, idempotency, and material side effects.",
+      "verdict": "UNMEASURED"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "agent.actions.receipts",
+      "detail": "Required evidence is evidence_missing: observations.agent.mutating_actions_receipted.",
+      "evidence_scope": "private_authority",
+      "profile": "agentic_web",
+      "reason_code": "evidence_missing",
+      "remediation": "Emit independently checkable, sanitized receipts for every mutating action.",
+      "verdict": "UNMEASURED"
+    },
+    {
+      "certification_eligible": false,
+      "check_id": "agent.webmcp.experimental",
+      "detail": "Declared applicability condition is false.",
+      "evidence_scope": "public_rendered",
+      "profile": "agentic_web",
+      "reason_code": "applicability_false",
+      "remediation": "Follow the current draft carefully and do not represent draft compatibility as stable certification.",
+      "verdict": "NOT_APPLICABLE"
+    }
+  ],
+  "evaluated_at": "2026-08-15T12:00:00Z",
+  "evaluation_context": {
+    "as_of": "2026-08-15T12:00:00Z",
+    "catalog_digest": "918af8c5344009bf4f9d2450588e04860075556dc69c9dedfa038d4fcefe5489",
+    "evaluator_version": "constitutional-cms-reference/0.4.1",
+    "evidence_digest": "5249e5b9ab71fb8d73aecb957ea73e975b07c7e28657eaf82efdcf61309d04d0"
+  },
+  "evidence_coverage": {
+    "measured": 0,
+    "ratio": 0.0,
+    "total_applicable": 16
+  },
+  "framework_release": "v0.4.1",
+  "limitations": [
+    "Indexability and experimental WebMCP checks are intentionally not applicable."
+  ],
+  "profile_summaries": {
+    "agentic_web": {
+      "FAIL": 0,
+      "NOT_APPLICABLE": 1,
+      "PASS": 0,
+      "UNMEASURED": 3
+    },
+    "answer_ai_retrieval": {
+      "FAIL": 0,
+      "NOT_APPLICABLE": 0,
+      "PASS": 0,
+      "UNMEASURED": 4
+    },
+    "search": {
+      "FAIL": 0,
+      "NOT_APPLICABLE": 1,
+      "PASS": 0,
+      "UNMEASURED": 4
+    },
+    "web_foundation": {
+      "FAIL": 0,
+      "NOT_APPLICABLE": 0,
+      "PASS": 0,
+      "UNMEASURED": 5
+    }
+  },
+  "result_digest": "2ad2879707f4763a7a5189294be4ee5a6508157488ccd100e75b120038d726d3",
+  "schema_version": "ConformanceReceiptV1",
+  "subject": {
+    "url": "https://example.com/private-preview"
+  }
+}

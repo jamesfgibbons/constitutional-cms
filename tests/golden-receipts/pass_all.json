@@ -1,0 +1,232 @@
+{
+  "catalog_version": "1.0.1",
+  "certified": false,
+  "checks": [
+    {
+      "certification_eligible": true,
+      "check_id": "web.http.success",
+      "detail": "Required evidence satisfied the catalog rule.",
+      "evidence_scope": "public_static",
+      "profile": "web_foundation",
+      "reason_code": "rule_satisfied",
+      "remediation": "Return a deliberate successful response for publishable public content.",
+      "verdict": "PASS"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "web.document.language",
+      "detail": "Required evidence satisfied the catalog rule.",
+      "evidence_scope": "public_static",
+      "profile": "web_foundation",
+      "reason_code": "rule_satisfied",
+      "remediation": "Add a valid lang attribute to the root html element.",
+      "verdict": "PASS"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "web.accessibility.automated",
+      "detail": "Required evidence satisfied the catalog rule.",
+      "evidence_scope": "public_rendered",
+      "profile": "web_foundation",
+      "reason_code": "rule_satisfied",
+      "remediation": "Repair serious and critical automated accessibility findings, then perform required human evaluation.",
+      "verdict": "PASS"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "web.performance.lab_lcp",
+      "detail": "Required evidence satisfied the catalog rule.",
+      "evidence_scope": "public_rendered",
+      "profile": "web_foundation",
+      "reason_code": "rule_satisfied",
+      "remediation": "Improve the lab loading path; do not report this result as field Core Web Vitals.",
+      "verdict": "PASS"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "web.performance.field_cwv",
+      "detail": "Required evidence satisfied the catalog rule.",
+      "evidence_scope": "field_observation",
+      "profile": "web_foundation",
+      "reason_code": "rule_satisfied",
+      "remediation": "Use sufficient real-user field data; never substitute Lighthouse or a synthetic zero.",
+      "verdict": "PASS"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "search.canonical.absolute",
+      "detail": "Required evidence satisfied the catalog rule.",
+      "evidence_scope": "public_static",
+      "profile": "search",
+      "reason_code": "rule_satisfied",
+      "remediation": "Emit one absolute HTTPS canonical that represents the page identity.",
+      "verdict": "PASS"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "search.robots.indexable",
+      "detail": "Required evidence satisfied the catalog rule.",
+      "evidence_scope": "public_static",
+      "profile": "search",
+      "reason_code": "rule_satisfied",
+      "remediation": "Align robots and page-level index controls with the declared indexability decision.",
+      "verdict": "PASS"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "search.structured_data.visible_parity",
+      "detail": "Required evidence satisfied the catalog rule.",
+      "evidence_scope": "public_static",
+      "profile": "search",
+      "reason_code": "rule_satisfied",
+      "remediation": "Generate visible and machine-readable claims from the same canonical decision.",
+      "verdict": "PASS"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "search.links.targets_eligible",
+      "detail": "Required evidence satisfied the catalog rule.",
+      "evidence_scope": "declared_config",
+      "profile": "search",
+      "reason_code": "rule_satisfied",
+      "remediation": "Map the implementation route authority to LinkTargetV1 and suppress ineligible targets.",
+      "verdict": "PASS"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "search.corpus.complete",
+      "detail": "Required evidence satisfied the catalog rule.",
+      "evidence_scope": "public_crawl",
+      "profile": "search",
+      "reason_code": "rule_satisfied",
+      "remediation": "Complete the declared census; a sample cannot certify a page family.",
+      "verdict": "PASS"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "answer.primary_answer.present",
+      "detail": "Required evidence satisfied the catalog rule.",
+      "evidence_scope": "public_rendered",
+      "profile": "answer_ai_retrieval",
+      "reason_code": "rule_satisfied",
+      "remediation": "State the page's primary answer clearly in visible, extractable content.",
+      "verdict": "PASS"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "answer.entity.clear",
+      "detail": "Required evidence satisfied the catalog rule.",
+      "evidence_scope": "public_rendered",
+      "profile": "answer_ai_retrieval",
+      "reason_code": "rule_satisfied",
+      "remediation": "Name the primary entity consistently in the title, heading, body, and structured data.",
+      "verdict": "PASS"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "answer.claims.provenance",
+      "detail": "Required evidence satisfied the catalog rule.",
+      "evidence_scope": "declared_config",
+      "profile": "answer_ai_retrieval",
+      "reason_code": "rule_satisfied",
+      "remediation": "Bind material claims to named authority and freshness evidence or suppress them.",
+      "verdict": "PASS"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "answer.crawlers.choice",
+      "detail": "Required evidence satisfied the catalog rule.",
+      "evidence_scope": "declared_config",
+      "profile": "answer_ai_retrieval",
+      "reason_code": "rule_satisfied",
+      "remediation": "Declare separate policy choices for search, user-directed retrieval, and model training crawlers.",
+      "verdict": "PASS"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "agent.actions.typed",
+      "detail": "Required evidence satisfied the catalog rule.",
+      "evidence_scope": "declared_config",
+      "profile": "agentic_web",
+      "reason_code": "rule_satisfied",
+      "remediation": "Publish a machine-readable input and output schema for each action.",
+      "verdict": "PASS"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "agent.actions.side_effects",
+      "detail": "Required evidence satisfied the catalog rule.",
+      "evidence_scope": "declared_config",
+      "profile": "agentic_web",
+      "reason_code": "rule_satisfied",
+      "remediation": "Declare mutation class, consent, authentication, idempotency, and material side effects.",
+      "verdict": "PASS"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "agent.actions.receipts",
+      "detail": "Required evidence satisfied the catalog rule.",
+      "evidence_scope": "private_authority",
+      "profile": "agentic_web",
+      "reason_code": "rule_satisfied",
+      "remediation": "Emit independently checkable, sanitized receipts for every mutating action.",
+      "verdict": "PASS"
+    },
+    {
+      "certification_eligible": false,
+      "check_id": "agent.webmcp.experimental",
+      "detail": "Required evidence satisfied the catalog rule.",
+      "evidence_scope": "public_rendered",
+      "profile": "agentic_web",
+      "reason_code": "rule_satisfied",
+      "remediation": "Follow the current draft carefully and do not represent draft compatibility as stable certification.",
+      "verdict": "PASS"
+    }
+  ],
+  "evaluated_at": "2026-08-15T12:00:00Z",
+  "evaluation_context": {
+    "as_of": "2026-08-15T12:00:00Z",
+    "catalog_digest": "918af8c5344009bf4f9d2450588e04860075556dc69c9dedfa038d4fcefe5489",
+    "evaluator_version": "constitutional-cms-reference/0.4.1",
+    "evidence_digest": "4a430b9e15ef20523f95d57d9fa4647a9bbacf63b35b2c11efd8740bf90d5b87"
+  },
+  "evidence_coverage": {
+    "measured": 18,
+    "ratio": 1.0,
+    "total_applicable": 18
+  },
+  "framework_release": "v0.4.1",
+  "limitations": [],
+  "profile_summaries": {
+    "agentic_web": {
+      "FAIL": 0,
+      "NOT_APPLICABLE": 0,
+      "PASS": 4,
+      "UNMEASURED": 0
+    },
+    "answer_ai_retrieval": {
+      "FAIL": 0,
+      "NOT_APPLICABLE": 0,
+      "PASS": 4,
+      "UNMEASURED": 0
+    },
+    "search": {
+      "FAIL": 0,
+      "NOT_APPLICABLE": 0,
+      "PASS": 5,
+      "UNMEASURED": 0
+    },
+    "web_foundation": {
+      "FAIL": 0,
+      "NOT_APPLICABLE": 0,
+      "PASS": 5,
+      "UNMEASURED": 0
+    }
+  },
+  "result_digest": "48fbc18f4dcc716226e0743770fe8a758a4d4a77c7b61b901388180d4659eeb0",
+  "schema_version": "ConformanceReceiptV1",
+  "subject": {
+    "canonical_origin": "https://example.com",
+    "url": "https://example.com/guide"
+  }
+}

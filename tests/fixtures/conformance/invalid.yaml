@@ -1,0 +1,10 @@
+schema_version: EvidenceBundleV1
+subject: {url: https://example.com/invalid}
+collected_at: "2026-08-15T12:00:00Z"
+collector: {name: synthetic-fixture, version: "1.0.0"}
+scopes:
+  - {name: public_static, mutation_class: pure_read}
+observations:
+  http: {status: "200"}
+limitations:
+  - This fixture is synthetic and exercises evidence_invalid through a wrong-typed observation.

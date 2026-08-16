@@ -70,6 +70,12 @@ def validate_catalog() -> list[str]:
         }
         if "experimental" in authority_classes and check["certification_eligible"]:
             errors.append(f"{check_id}: experimental authority cannot be certification eligible")
+        required = set(check["required_evidence"])
+        applicability = set(check.get("applicability", {}).get("required_evidence", []))
+        contracts = set(check["evidence_contracts"])
+        missing_contracts = required.union(applicability) - contracts
+        if missing_contracts:
+            errors.append(f"{check_id}: evidence contracts missing {sorted(missing_contracts)}")
     return errors
 
 
@@ -83,9 +89,25 @@ def main() -> int:
     )
     for fixture in sorted((ROOT / "tests/fixtures/conformance").glob("*.yaml")):
         errors.extend(validate_schema(fixture, ROOT / "schemas/evidence_bundle_v1.schema.json"))
+    for receipt in sorted((ROOT / "tests/golden-receipts").glob("*.json")):
+        errors.extend(validate_schema(receipt, ROOT / "schemas/conformance_receipt_v1.schema.json"))
     for manifest in sorted((ROOT / "examples/manifests").glob("*.yaml")):
         errors.extend(validate_schema(manifest, ROOT / "schemas/constitutional_site_manifest_v1.schema.json"))
         errors.extend(validate_manifest_public_safe(manifest))
+    link_target_schema = ROOT / "schemas/link_target_v1.schema.json"
+    for target in load(ROOT / "examples/link-targets/static-routes.json"):
+        validator = Draft202012Validator(load(link_target_schema), format_checker=FormatChecker())
+        errors.extend(f"examples/link-targets/static-routes.json: {error.message}" for error in validator.iter_errors(target))
+    errors.extend(
+        validate_schema(
+            ROOT / "examples/link-targets/link-graph.json",
+            ROOT / "schemas/link_graph_evidence_v1.schema.json",
+        )
+    )
+    link_graph = load(ROOT / "examples/link-targets/link-graph.json")
+    target_validator = Draft202012Validator(load(link_target_schema), format_checker=FormatChecker())
+    for record in [link_graph["source"], *link_graph["targets"]]:
+        errors.extend(f"examples/link-targets/link-graph.json: {error.message}" for error in target_validator.iter_errors(record))
     errors.extend(validate_catalog())
     if errors:
         print("Web conformance validation failed:")

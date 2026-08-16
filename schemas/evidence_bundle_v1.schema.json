@@ -37,6 +37,23 @@
       }
     },
     "observations": {"type": "object"},
+    "evidence_states": {
+      "type": "object",
+      "propertyNames": {"pattern": "^(subject|observations)(\\.[A-Za-z0-9_-]+)+$"},
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["status"],
+        "properties": {
+          "status": {"enum": ["observed", "unavailable", "invalid", "stale"]},
+          "observed_at": {"type": "string", "format": "date-time"},
+          "collector_id": {"type": "string", "minLength": 1},
+          "collector_version": {"type": "string", "minLength": 1},
+          "source_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+          "limitations": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
     "limitations": {"type": "array", "items": {"type": "string"}},
     "artifact_hashes": {
       "type": "array",

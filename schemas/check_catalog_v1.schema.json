@@ -25,7 +25,7 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["check_id", "profile", "title", "authority_refs", "governing_invariant", "required_evidence", "evidence_scope", "mutation_class", "evaluation", "remediation", "certification_eligible"],
+        "required": ["check_id", "profile", "title", "authority_refs", "governing_invariant", "required_evidence", "evidence_contracts", "evidence_scope", "mutation_class", "evaluation", "remediation", "certification_eligible"],
         "properties": {
           "check_id": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]+$"},
           "profile": {"enum": ["web_foundation", "search", "answer_ai_retrieval", "agentic_web"]},
@@ -33,9 +33,30 @@
           "authority_refs": {"type": "array", "minItems": 1, "items": {"type": "string"}, "uniqueItems": true},
           "governing_invariant": {"type": "string", "minLength": 1},
           "required_evidence": {"type": "array", "minItems": 1, "items": {"type": "string"}, "uniqueItems": true},
+          "evidence_contracts": {
+            "type": "object",
+            "minProperties": 1,
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["type"],
+              "properties": {
+                "type": {"enum": ["integer", "number", "string", "boolean", "array", "object", "https_url", "https_origin", "link_graph"]},
+                "max_age_seconds": {"type": "integer", "minimum": 0}
+              }
+            }
+          },
           "evidence_scope": {"enum": ["public_static", "public_rendered", "public_crawl", "declared_config", "private_authority", "field_observation"]},
           "mutation_class": {"enum": ["pure_read", "read_with_side_effect", "active_perturbation"]},
-          "applicability": {"$ref": "#/$defs/rule"},
+          "applicability": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["required_evidence", "evaluation"],
+            "properties": {
+              "required_evidence": {"type": "array", "minItems": 1, "items": {"type": "string"}, "uniqueItems": true},
+              "evaluation": {"$ref": "#/$defs/rule"}
+            }
+          },
           "evaluation": {"$ref": "#/$defs/rule"},
           "remediation": {"type": "string", "minLength": 1},
           "certification_eligible": {"type": "boolean"}
@@ -49,7 +70,7 @@
       "required": ["operator"],
       "properties": {
         "path": {"type": "string"},
-        "operator": {"enum": ["equals", "nonempty", "between", "lte", "gte", "https_url", "all", "link_targets_eligible"]},
+        "operator": {"enum": ["equals", "nonempty", "between", "lte", "gte", "https_url", "all", "link_graph_eligible"]},
         "expected": {},
         "min": {"type": "number"},
         "max": {"type": "number"},
