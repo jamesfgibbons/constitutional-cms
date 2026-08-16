@@ -46,11 +46,32 @@ only when supplied as sufficient real-user observations at the required percenti
 
 ## Recreating a check
 
-1. Read the stable check definition in `contracts/check_catalog_v1.yaml`.
-2. Collect the listed evidence scope without exceeding its declared mutation class or freshness limit.
-3. Normalize observations into `EvidenceBundleV1`.
-4. Run the reference evaluator.
-5. Verify reason codes and the receipt digest against the synthetic fixture matrix before integrating it into CI.
+Anyone can reproduce a catalog verdict without private infrastructure.
+
+```text
+check_id in contracts/check_catalog_v1.yaml
+  → required_evidence + authority_refs
+  → EvidenceBundleV1 (your observations or tests/fixtures)
+  → python scripts/conformance_evaluator.py
+  → ConformanceReceiptV1 (compare tests/golden-receipts/)
+```
+
+Worked example — `search.canonical.absolute`:
+
+1. Open the check in [`contracts/check_catalog_v1.yaml`](../contracts/check_catalog_v1.yaml). It requires `observations.search.canonical` and evaluates `https_url`.
+2. Collect only that string from the live `<link rel="canonical">` (or a fixture). Do not invent it from a private route table.
+3. Place it in an `EvidenceBundleV1` under `observations.search.canonical` with `collected_at` and `evidence_states`.
+4. Run:
+
+```bash
+python scripts/conformance_evaluator.py \
+  --evidence tests/fixtures/conformance/pass_all.yaml \
+  --as-of 2026-08-15T12:00:00Z
+```
+
+5. Confirm the receipt’s `reason_code` and `result_digest` match the corresponding golden file.
+
+Internal-link checks (`search.links.targets_eligible`) consume **normalized** `LinkTargetV1` records only. Public adapters may come from a sitemap or a static route list (`examples/link-targets/`). A private product adapter (for example a CMS route registry) must emit the same wire shape and must not appear in this repository.
 
 The JSON Schemas in `schemas/` are the portable wire contracts. YAML files in `contracts/` explain the associated
 governance rules and vocabularies.
