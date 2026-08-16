@@ -8,6 +8,7 @@ All notable changes to Constitutional CMS are documented here. This project foll
 - Applicability is evaluated before check evidence, so a valid false declaration returns `NOT_APPLICABLE` even when check evidence is absent.
 - Missing, stale, invalid, and unavailable evidence now return `UNMEASURED` with stable reason codes; wrong-typed evidence can no longer become a policy `FAIL`.
 - Receipt time and identity are deterministic from an explicit `--as-of` value or the bundle's `collected_at`, with canonical catalog, evidence, context, and result digests.
+- Public golden receipts make the Python/JavaScript parity boundary independently reproducible.
 - The internal-link boundary now validates versioned `LinkGraphEvidenceV1` and `LinkTargetV1` records, canonical-origin membership, freshness, source/target eligibility, redirects, and conflicting duplicates.
 
 ### Notes

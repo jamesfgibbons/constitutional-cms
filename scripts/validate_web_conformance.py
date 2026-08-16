@@ -89,6 +89,8 @@ def main() -> int:
     )
     for fixture in sorted((ROOT / "tests/fixtures/conformance").glob("*.yaml")):
         errors.extend(validate_schema(fixture, ROOT / "schemas/evidence_bundle_v1.schema.json"))
+    for receipt in sorted((ROOT / "tests/golden-receipts").glob("*.json")):
+        errors.extend(validate_schema(receipt, ROOT / "schemas/conformance_receipt_v1.schema.json"))
     for manifest in sorted((ROOT / "examples/manifests").glob("*.yaml")):
         errors.extend(validate_schema(manifest, ROOT / "schemas/constitutional_site_manifest_v1.schema.json"))
         errors.extend(validate_manifest_public_safe(manifest))

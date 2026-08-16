@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 from collections import Counter, defaultdict
 from copy import deepcopy
 from datetime import datetime, timezone
@@ -42,9 +43,21 @@ def load_data(path: Path) -> dict[str, Any]:
         return yaml.safe_load(handle)
 
 
+def canonical_value(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {key: canonical_value(child) for key, child in value.items()}
+    if isinstance(value, list):
+        return [canonical_value(child) for child in value]
+    if isinstance(value, float):
+        if not math.isfinite(value):
+            raise ValueError("Canonical JSON prohibits non-finite numbers")
+        return int(value) if value.is_integer() else value
+    return value
+
+
 def canonical_json(value: Any) -> str:
     """Return the documented UTF-8 canonical JSON representation."""
-    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return json.dumps(canonical_value(value), ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False)
 
 
 def digest(value: Any) -> str:

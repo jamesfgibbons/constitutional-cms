@@ -5,15 +5,16 @@ procedure to a parsed JSON-compatible value:
 
 1. encode objects with keys sorted lexicographically by Unicode code point;
 2. preserve array order;
-3. emit JSON primitives without insignificant whitespace;
-4. encode strings as UTF-8 with non-ASCII characters preserved;
-5. hash the resulting UTF-8 bytes with SHA-256 and emit lowercase hexadecimal.
+3. reject non-finite numbers and emit mathematically integral numbers without a decimal fraction;
+4. emit JSON primitives without insignificant whitespace;
+5. encode strings as UTF-8 with non-ASCII characters preserved;
+6. hash the resulting UTF-8 bytes with SHA-256 and emit lowercase hexadecimal.
 
 The Python reference expression is:
 
 ```python
 hashlib.sha256(
-    json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    json.dumps(canonical_value(value), ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")
 ).hexdigest()
 ```
 

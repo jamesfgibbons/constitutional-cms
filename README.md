@@ -456,6 +456,7 @@ constitutional-cms/
 │   ├── manifests/                     # Public-safe configuration examples
 │   └── link-targets/                  # Normalized link-authority examples
 ├── schemas/                           # JSON Schemas for portable interfaces
+├── tests/golden-receipts/             # Deterministic Python/JavaScript parity receipts
 ├── scripts/
 │   ├── validate_contracts.py          # Validate contract consistency
 │   ├── validate_web_conformance.py    # Validate schemas, authority refs, and public safety

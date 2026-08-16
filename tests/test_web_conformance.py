@@ -236,6 +236,16 @@ class WebConformanceTest(unittest.TestCase):
         self.assertNotEqual(first["result_digest"], later["result_digest"])
         self.assertEqual(later["evaluation_context"]["as_of"], "2026-08-15T13:00:00Z")
 
+    def test_canonical_json_normalizes_integral_floats_for_javascript_parity(self):
+        self.assertEqual(conformance_evaluator.canonical_json({"ratio": 1.0, "threshold": 0.1}), '{"ratio":1,"threshold":0.1}')
+
+    def test_python_evaluator_matches_public_golden_receipts(self):
+        for path in sorted((ROOT / "tests/golden-receipts").glob("*.json")):
+            with self.subTest(receipt=path.name):
+                expected = json.loads(path.read_text(encoding="utf-8"))
+                actual = self.evaluate_fixture(path.stem)
+                self.assertEqual(actual, expected)
+
     def test_experimental_authority_cannot_certify(self):
         experimental = {
             source_id
