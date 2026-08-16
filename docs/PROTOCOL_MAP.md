@@ -34,6 +34,20 @@ A proposed scheme does not enter the protocol until it declares all of the follo
 The four web-conformance profiles are selectable evidence groupings, not levels, scores, or an ordering scheme.
 G0-G5 remains the only adoption and certification sequence.
 
+## Adjacent awareness protocol
+
+VIBEnet Signal Contract is a separate public protocol for renderer-facing
+awareness events. It is not a fifth Constitutional CMS profile and it is not a
+G0-G5 substitute.
+
+- Canonical question: what may a renderer notice about agent or system state?
+- Public source: [vibenet-signal-contract](https://github.com/jamesfgibbons/vibenet-signal-contract)
+- Live schema: [vibenet.ai/protocol](https://vibenet.ai/protocol)
+
+A conformance receipt may cite a Signal Contract event as evidence that a
+human-facing renderer was honest. It may not treat sonification, attention
+mix, or an adapter profile as page-family certification.
+
 ## Routing sequence
 
 1. **Contract family:** which publishing boundary owns the change?

@@ -2,6 +2,20 @@
 
 All notable changes to Constitutional CMS are documented here. This project follows [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+- Documented VIBEnet Signal Contract as the adjacent renderer-facing awareness layer, not a fifth web-conformance profile.
+
+## [0.4.2] - 2026-08-16
+
+### Added
+- Public recreate-a-check path: catalog → EvidenceBundle → evaluator → golden receipt.
+- Explicit LinkTarget / private-adapter boundary so product route registries stay out of the public protocol.
+
+### Notes
+- No new catalog checks. Site diagnostics remain uncertified.
+
 ## [0.4.1] - 2026-08-15
 
 ### Fixed

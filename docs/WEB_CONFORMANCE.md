@@ -73,5 +73,11 @@ python scripts/conformance_evaluator.py \
 
 Internal-link checks (`search.links.targets_eligible`) consume **normalized** `LinkTargetV1` records only. Public adapters may come from a sitemap or a static route list (`examples/link-targets/`). A private product adapter (for example a CMS route registry) must emit the same wire shape and must not appear in this repository.
 
+Renderer-facing awareness is not a fifth web-conformance profile. When a site
+projects agent or system state into audio, motion, or ambient surfaces, the
+portable event contract is [VIBEnet Signal Contract](https://github.com/jamesfgibbons/vibenet-signal-contract).
+Constitutional CMS still governs whether the page may claim that projection.
+The signal does not certify the page.
+
 The JSON Schemas in `schemas/` are the portable wire contracts. YAML files in `contracts/` explain the associated
 governance rules and vocabularies.
