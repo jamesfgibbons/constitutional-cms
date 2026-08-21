@@ -437,8 +437,20 @@ The agents write code and produce content. Humans write the contracts, review th
 
 ### Installation
 
+**Local development (this repository):**
+
 ```bash
 pip install -e .
+```
+
+**After PyPI publication (not yet available):**
+
+Once published to PyPI, you'll be able to install directly:
+
+```bash
+pip install constitutional-cms
+# or run without installation
+uvx constitutional-cms audit --evidence <path>
 ```
 
 ### Audit conformance
