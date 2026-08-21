@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "constitutional-cms"
+version = "0.4.2"
+description = "A governance framework for AI agents that build websites"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "Apache-2.0"}
+authors = [
+    {name = "Targeted Impressions", email = "hello@targetedimpressions.com"}
+]
+keywords = ["governance", "ai-agents", "cms", "contracts"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "PyYAML>=6.0,<7.0",
+    "jsonschema>=4.23,<5.0",
+]
+
+[project.scripts]
+constitutional-cms = "constitutional_cms.cli:main"
+
+[project.urls]
+Homepage = "https://constitutionalcms.com"
+Documentation = "https://constitutionalcms.com"
+Repository = "https://github.com/jamesfgibbons/constitutional-cms"
+"Source Boundary" = "https://github.com/jamesfgibbons/constitutional-cms/blob/main/docs/SOURCE_BOUNDARY.md"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["constitutional_cms*"]
