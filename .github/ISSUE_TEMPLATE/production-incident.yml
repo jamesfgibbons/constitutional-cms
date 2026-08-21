@@ -1,0 +1,55 @@
+name: Report a production incident
+description: A public surface failed a contract. Report the generalized failure, not private mappings.
+title: "[incident] "
+labels: ["incident"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Agents prepare work. Humans review.
+
+        This template is for a **generalized** contract failure on a public surface.
+        Do not paste proprietary route maps, claim corpora, thresholds, prompts, or
+        private operating playbooks. See [SOURCE_BOUNDARY.md](../blob/main/docs/SOURCE_BOUNDARY.md).
+  - type: input
+    id: surface
+    attributes:
+      label: Public surface
+      description: Public hostname or protocol surface, not a private deploy name.
+      placeholder: example.com
+    validations:
+      required: true
+  - type: dropdown
+    id: contract
+    attributes:
+      label: Contract that failed
+      options:
+        - page_types / quality tier
+        - link_rules
+        - snapshot_boundary
+        - claim_decision
+        - proof_ledger
+        - web conformance / receipt
+        - other public contract
+    validations:
+      required: true
+  - type: textarea
+    id: failure
+    attributes:
+      label: What failed
+      description: Named state, expected vs observed, and the public check or receipt if one exists.
+      placeholder: Expected BASIC with schema_emission true. Observed SHELL still emitting JSON-LD.
+    validations:
+      required: true
+  - type: textarea
+    id: invariant
+    attributes:
+      label: Portable invariant
+      description: The rule that would have blocked this, written so another site could reuse it. No private mappings.
+    validations:
+      required: true
+  - type: textarea
+    id: receipt
+    attributes:
+      label: Public evidence
+      description: Optional. Link or paste a sanitized ConformanceReceiptV1 / validator output. Redact private IDs.
