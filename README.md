@@ -422,6 +422,68 @@ The agents write code and produce content. Humans write the contracts, review th
 
 ---
 
+## Run it
+
+### Installation
+
+```bash
+pip install -e .
+```
+
+### Audit conformance
+
+Run a conformance audit against normalized evidence and produce a `ConformanceReceiptV1`:
+
+```bash
+constitutional-cms audit --evidence tests/fixtures/conformance/pass_all.yaml
+```
+
+Save the receipt to a file:
+
+```bash
+constitutional-cms audit \
+  --evidence tests/fixtures/conformance/pass_all.yaml \
+  --out receipt.json
+```
+
+Use a custom catalog or evaluation timestamp:
+
+```bash
+constitutional-cms audit \
+  --catalog contracts/check_catalog_v1.yaml \
+  --evidence tests/fixtures/conformance/pass_all.yaml \
+  --as-of 2026-08-15T12:00:00Z
+```
+
+### Validate contracts
+
+Validate contract consistency and web conformance schemas:
+
+```bash
+constitutional-cms validate
+```
+
+### No-install path
+
+If you prefer not to install the package, the original scripts still work:
+
+```bash
+# Validate contracts
+python scripts/validate_contracts.py
+
+# Validate web conformance
+python scripts/validate_web_conformance.py
+
+# Run conformance evaluator
+python scripts/conformance_evaluator.py \
+  --evidence tests/fixtures/conformance/pass_all.yaml
+
+# Observe page health (no enforcement)
+python scripts/page_health_validator.py
+```
+
+---
+
 ## Getting started
 
 ```
@@ -480,7 +542,7 @@ constitutional-cms/
 2. Edit the domain contracts and create a public-safe `ConstitutionalSiteManifestV1`.
 3. Point agents at the contracts before they write code.
 4. Map collector output or a private authority into `EvidenceBundleV1`.
-5. Run `python scripts/conformance_evaluator.py --evidence <bundle.yaml> --as-of <timestamp>` and enforce the receipt in CI.
+5. Run `constitutional-cms audit --evidence <bundle.yaml> --as-of <timestamp>` and enforce the receipt in CI.
 
 More detail lives in [`docs/WEB_CONFORMANCE.md`](docs/WEB_CONFORMANCE.md),
 [`docs/ADAPTER_BOUNDARY.md`](docs/ADAPTER_BOUNDARY.md),

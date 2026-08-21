@@ -9,3 +9,4 @@ node_modules
 *.swo
 reports/page-health-validator/
 .codex-worktrees/
+constitutional_cms.egg-info/
