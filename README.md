@@ -4,6 +4,17 @@
 
 [Website](https://constitutionalcms.com) · [Source boundary](docs/SOURCE_BOUNDARY.md) · Apache 2.0
 
+## Run it
+
+```bash
+python scripts/validate_contracts.py
+python scripts/validate_web_conformance.py
+python scripts/conformance_evaluator.py --evidence tests/fixtures/conformance/pass_all.yaml
+```
+
+These scripts are the public evaluator. A packaged `constitutional-cms audit` command is not in this repo yet.
+
+
 CMS used to mean Content Management System — software for humans who write pages. Constitutional CMS manages the *contracts* that govern what AI agents are permitted to publish. Same acronym, different era.
 
 WordPress, Webflow, Drupal, and Shopify were designed for human authors. They still work for that. Constitutional CMS is designed for the gap that opens when **agents become the authors** — and nobody is checking whether each generated page has valid data, working links, or enough substance to deserve publication.
