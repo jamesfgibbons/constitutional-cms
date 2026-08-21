@@ -1,0 +1,51 @@
+name: Contribute an adapter
+description: Propose a public adapter shape that maps private authority into public evidence.
+title: "[adapter] "
+labels: ["adapter"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Public adapters make private authorities testable without publishing them.
+        Read [ADAPTER_BOUNDARY.md](../blob/main/docs/ADAPTER_BOUNDARY.md) first.
+        Do not include private route tables, claim corpora, or credentials.
+  - type: input
+    id: adapter_name
+    attributes:
+      label: Adapter name
+      placeholder: link-target-from-sitemap
+    validations:
+      required: true
+  - type: textarea
+    id: in_shape
+    attributes:
+      label: Private input (named, not dumped)
+      description: Name the private authority or collector output. Do not paste the authority itself.
+    validations:
+      required: true
+  - type: dropdown
+    id: out_shape
+    attributes:
+      label: Public output shape
+      options:
+        - EvidenceBundleV1
+        - LinkTargetV1 / LinkGraphEvidenceV1
+        - ConformanceReceiptV1
+        - ConstitutionalSiteManifestV1
+        - other public schema
+    validations:
+      required: true
+  - type: textarea
+    id: fail_closed
+    attributes:
+      label: Fail-closed behavior
+      description: What happens when required input is missing? Must resolve to UNMEASURED, never PASS.
+    validations:
+      required: true
+  - type: textarea
+    id: test
+    attributes:
+      label: Fixture plan
+      description: Public-safe fixture and the check that proves the mapping.
+    validations:
+      required: true

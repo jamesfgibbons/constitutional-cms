@@ -1,0 +1,50 @@
+name: Contribute an invariant
+description: Propose a portable rule learned from a generalized failure.
+title: "[invariant] "
+labels: ["invariant"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Invariants in this repo are **portable and sanitized**. They express a rule
+        through a generalized failure scenario. They do not publish private incident
+        detail or implementation outcomes as public proof.
+  - type: input
+    id: name
+    attributes:
+      label: Invariant name
+      placeholder: no_schema_on_shell
+    validations:
+      required: true
+  - type: textarea
+    id: rule
+    attributes:
+      label: The rule
+      description: One sentence an agent can follow literally.
+    validations:
+      required: true
+  - type: textarea
+    id: failure
+    attributes:
+      label: Failure it prevents
+      description: Generalized scenario. No proprietary entities, routes, or thresholds.
+    validations:
+      required: true
+  - type: textarea
+    id: test
+    attributes:
+      label: Proposed regression
+      description: The test or probe that would have failed before the fix.
+    validations:
+      required: true
+  - type: dropdown
+    id: location
+    attributes:
+      label: Where it should live
+      options:
+        - docs/INCIDENT_LEARNED_INVARIANTS.md
+        - a YAML contract in contracts/
+        - a validator / observe-first probe
+        - not sure
+    validations:
+      required: true
