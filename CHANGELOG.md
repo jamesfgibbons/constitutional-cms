@@ -6,6 +6,9 @@ All notable changes to Constitutional CMS are documented here. This project foll
 
 ### Added
 - Documented VIBEnet Signal Contract as the adjacent renderer-facing awareness layer, not a fifth web-conformance profile.
+- **CheckCatalogV1 1.0.2**: Added `search.structured_data.jsonld_rfc8259` (19 checks). Catalog `framework_release` is `v0.4.2`. Shared pass_all / unmeasured-state fixtures and public goldens recreate PASS, FAIL, NOT_APPLICABLE, and UNMEASURED for the new check.
+- Authority references for RFC 8259 §7 and Google's JSON-LD single-unescape behavior in standards registry.
+- Test fixtures and golden receipts covering PASS, FAIL, NOT_APPLICABLE, and UNMEASURED verdict states for the new check.
 
 ## [0.4.2] - 2026-08-16
 

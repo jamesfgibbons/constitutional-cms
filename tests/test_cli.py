@@ -48,8 +48,8 @@ class CLITest(unittest.TestCase):
             
             receipt = json.loads(receipt_path.read_text())
             self.assertEqual(receipt["schema_version"], "ConformanceReceiptV1")
-            self.assertEqual(receipt["framework_release"], "v0.4.1")
-            self.assertEqual(receipt["catalog_version"], "1.0.1")
+            self.assertEqual(receipt["framework_release"], "v0.4.2")
+            self.assertEqual(receipt["catalog_version"], "1.0.2")
             self.assertTrue(all(
                 check["verdict"] == "PASS" for check in receipt["checks"]
             ), "All checks should pass for pass_all fixture")

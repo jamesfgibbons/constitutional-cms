@@ -44,6 +44,14 @@ Lighthouse and other synthetic browser measurements are lab evidence. LCP, INP, 
 only when supplied as sufficient real-user observations at the required percentile. Missing field data remains
 `UNMEASURED`; it is never replaced with a lab value or zero.
 
+## JSON-LD parser behavior
+
+Google applies a single pass of HTML unescaping when extracting JSON-LD, then parses the result as RFC 8259 JSON (§7).
+Double-escaped entities like `&amp;amp;` or `&amp;#10004;` no longer unroll. Sites must emit standard JSON escapes or
+Unicode hex escapes (`\u0026`). The `search.structured_data.jsonld_rfc8259` check certifies that JSON-LD survives this
+single-unescape operation and parses as valid JSON. Pages without JSON-LD receive `NOT_APPLICABLE`; pages where the
+collector could not observe the raw JSON-LD remain `UNMEASURED`.
+
 ## Recreating a check
 
 Anyone can reproduce a catalog verdict without private infrastructure.

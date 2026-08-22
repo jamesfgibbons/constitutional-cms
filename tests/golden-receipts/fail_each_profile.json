@@ -1,5 +1,5 @@
 {
-  "catalog_version": "1.0.1",
+  "catalog_version": "1.0.2",
   "certified": false,
   "checks": [
     {
@@ -81,6 +81,16 @@
       "reason_code": "rule_falsified",
       "remediation": "Generate visible and machine-readable claims from the same canonical decision.",
       "verdict": "FAIL"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "search.structured_data.jsonld_rfc8259",
+      "detail": "Applicability evidence is evidence_missing: observations.search.jsonld.present.",
+      "evidence_scope": "public_static",
+      "profile": "search",
+      "reason_code": "evidence_missing",
+      "remediation": "Serialize JSON-LD at the render sink with JSON.stringify plus \\u003c \\u003e \\u0026 (or standard JSON escapes). Do not HTML-entity-encode fields.",
+      "verdict": "UNMEASURED"
     },
     {
       "certification_eligible": true,
@@ -186,16 +196,16 @@
   "evaluated_at": "2026-08-15T12:00:00Z",
   "evaluation_context": {
     "as_of": "2026-08-15T12:00:00Z",
-    "catalog_digest": "918af8c5344009bf4f9d2450588e04860075556dc69c9dedfa038d4fcefe5489",
+    "catalog_digest": "c5a909b6e6acebd2617393ba8cccff6601b76b7d661d4895c28ff248c8659f70",
     "evaluator_version": "constitutional-cms-reference/0.4.1",
     "evidence_digest": "f5c7c07dcf66c1ff48c064f5a03a97b46f0f5a2def8da849ddd7963402010850"
   },
   "evidence_coverage": {
     "measured": 4,
-    "ratio": 0.222222,
-    "total_applicable": 18
+    "ratio": 0.210526,
+    "total_applicable": 19
   },
-  "framework_release": "v0.4.1",
+  "framework_release": "v0.4.2",
   "limitations": [
     "This fixture intentionally supplies one falsifying observation per profile."
   ],
@@ -216,7 +226,7 @@
       "FAIL": 1,
       "NOT_APPLICABLE": 0,
       "PASS": 0,
-      "UNMEASURED": 4
+      "UNMEASURED": 5
     },
     "web_foundation": {
       "FAIL": 1,
@@ -225,7 +235,7 @@
       "UNMEASURED": 4
     }
   },
-  "result_digest": "28ebaadf0c9fc62b51c0a77a78745669dd6d19952d344552539f9cdf9046ed6b",
+  "result_digest": "a6d7a4de35398f2fa9fa157b8748472b43015196cf2296587c438c1be8d6d554",
   "schema_version": "ConformanceReceiptV1",
   "subject": {
     "url": "https://example.com/failing"

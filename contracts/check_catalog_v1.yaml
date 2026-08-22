@@ -1,6 +1,6 @@
 schema_version: CheckCatalogV1
-catalog_version: "1.0.1"
-framework_release: "v0.4.1"
+catalog_version: "1.0.2"
+framework_release: "v0.4.2"
 status: normative
 
 profiles:
@@ -135,6 +135,23 @@ checks:
     mutation_class: pure_read
     evaluation: {path: observations.search.structured_data_visible_parity, operator: equals, expected: true}
     remediation: Generate visible and machine-readable claims from the same canonical decision.
+    certification_eligible: true
+  - check_id: search.structured_data.jsonld_rfc8259
+    profile: search
+    title: JSON-LD survives a single HTML unescape as RFC 8259 JSON
+    authority_refs: [rfc8259_section_7, google_jsonld_single_unescape]
+    governing_invariant: schema_publishable
+    required_evidence: [observations.search.jsonld.single_unescape_rfc8259]
+    evidence_contracts:
+      observations.search.jsonld.present: {type: boolean, max_age_seconds: 86400}
+      observations.search.jsonld.single_unescape_rfc8259: {type: boolean, max_age_seconds: 86400}
+    evidence_scope: public_static
+    mutation_class: pure_read
+    applicability:
+      required_evidence: [observations.search.jsonld.present]
+      evaluation: {path: observations.search.jsonld.present, operator: equals, expected: true}
+    evaluation: {path: observations.search.jsonld.single_unescape_rfc8259, operator: equals, expected: true}
+    remediation: Serialize JSON-LD at the render sink with JSON.stringify plus \u003c \u003e \u0026 (or standard JSON escapes). Do not HTML-entity-encode fields.
     certification_eligible: true
   - check_id: search.links.targets_eligible
     profile: search

@@ -1,5 +1,5 @@
 {
-  "catalog_version": "1.0.1",
+  "catalog_version": "1.0.2",
   "certified": false,
   "checks": [
     {
@@ -80,6 +80,16 @@
       "profile": "search",
       "reason_code": "evidence_missing",
       "remediation": "Generate visible and machine-readable claims from the same canonical decision.",
+      "verdict": "UNMEASURED"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "search.structured_data.jsonld_rfc8259",
+      "detail": "Applicability evidence is evidence_missing: observations.search.jsonld.present.",
+      "evidence_scope": "public_static",
+      "profile": "search",
+      "reason_code": "evidence_missing",
+      "remediation": "Serialize JSON-LD at the render sink with JSON.stringify plus \\u003c \\u003e \\u0026 (or standard JSON escapes). Do not HTML-entity-encode fields.",
       "verdict": "UNMEASURED"
     },
     {
@@ -186,16 +196,16 @@
   "evaluated_at": "2026-08-15T12:00:00Z",
   "evaluation_context": {
     "as_of": "2026-08-15T12:00:00Z",
-    "catalog_digest": "918af8c5344009bf4f9d2450588e04860075556dc69c9dedfa038d4fcefe5489",
+    "catalog_digest": "c5a909b6e6acebd2617393ba8cccff6601b76b7d661d4895c28ff248c8659f70",
     "evaluator_version": "constitutional-cms-reference/0.4.1",
     "evidence_digest": "5249e5b9ab71fb8d73aecb957ea73e975b07c7e28657eaf82efdcf61309d04d0"
   },
   "evidence_coverage": {
     "measured": 0,
     "ratio": 0.0,
-    "total_applicable": 16
+    "total_applicable": 17
   },
-  "framework_release": "v0.4.1",
+  "framework_release": "v0.4.2",
   "limitations": [
     "Indexability and experimental WebMCP checks are intentionally not applicable."
   ],
@@ -216,7 +226,7 @@
       "FAIL": 0,
       "NOT_APPLICABLE": 1,
       "PASS": 0,
-      "UNMEASURED": 4
+      "UNMEASURED": 5
     },
     "web_foundation": {
       "FAIL": 0,
@@ -225,7 +235,7 @@
       "UNMEASURED": 5
     }
   },
-  "result_digest": "2ad2879707f4763a7a5189294be4ee5a6508157488ccd100e75b120038d726d3",
+  "result_digest": "83b0442068a66463b969f67bdc5600cc31e58873925f64ee123cc5066123e5e4",
   "schema_version": "ConformanceReceiptV1",
   "subject": {
     "url": "https://example.com/private-preview"

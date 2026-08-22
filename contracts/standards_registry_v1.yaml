@@ -96,3 +96,15 @@ sources:
     publisher: Constitutional CMS
     version: "1"
     path: contracts/signal_projection.yaml
+  rfc8259_section_7:
+    authority_class: external_standard
+    title: RFC 8259 JSON Data Interchange Format - String and Character Issues
+    publisher: IETF
+    version: RFC 8259
+    url: https://www.rfc-editor.org/rfc/rfc8259#section-7
+  google_jsonld_single_unescape:
+    authority_class: platform_guidance
+    title: Google JSON-LD single HTML unescape parser behavior
+    publisher: Google Search Central
+    version: "2026"
+    url: https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data

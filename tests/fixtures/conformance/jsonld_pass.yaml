@@ -1,6 +1,6 @@
 schema_version: EvidenceBundleV1
 subject:
-  url: https://example.com/guide
+  url: https://example.com/jsonld-valid
   canonical_origin: https://example.com
 collected_at: "2026-08-15T12:00:00Z"
 collector: {name: synthetic-fixture, version: "1.0.0"}
@@ -19,7 +19,7 @@ observations:
     lab: {lcp_ms: 1800}
     field: {p75_lcp_ms: 2200, p75_inp_ms: 180, p75_cls: 0.08}
   search:
-    canonical: https://example.com/guide
+    canonical: https://example.com/jsonld-valid
     intended_indexable: true
     blocked: false
     structured_data_visible_parity: true
@@ -30,7 +30,7 @@ observations:
     schema_version: LinkGraphEvidenceV1
     adapter: {id: synthetic-static-routes, version: "1.0.0"}
     source:
-      canonical_url: https://example.com/guide
+      canonical_url: https://example.com/jsonld-valid
       exists: true
       page_family: documentation
       publication_tier: FULL

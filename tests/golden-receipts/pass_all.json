@@ -1,5 +1,5 @@
 {
-  "catalog_version": "1.0.1",
+  "catalog_version": "1.0.2",
   "certified": false,
   "checks": [
     {
@@ -80,6 +80,16 @@
       "profile": "search",
       "reason_code": "rule_satisfied",
       "remediation": "Generate visible and machine-readable claims from the same canonical decision.",
+      "verdict": "PASS"
+    },
+    {
+      "certification_eligible": true,
+      "check_id": "search.structured_data.jsonld_rfc8259",
+      "detail": "Required evidence satisfied the catalog rule.",
+      "evidence_scope": "public_static",
+      "profile": "search",
+      "reason_code": "rule_satisfied",
+      "remediation": "Serialize JSON-LD at the render sink with JSON.stringify plus \\u003c \\u003e \\u0026 (or standard JSON escapes). Do not HTML-entity-encode fields.",
       "verdict": "PASS"
     },
     {
@@ -186,16 +196,16 @@
   "evaluated_at": "2026-08-15T12:00:00Z",
   "evaluation_context": {
     "as_of": "2026-08-15T12:00:00Z",
-    "catalog_digest": "918af8c5344009bf4f9d2450588e04860075556dc69c9dedfa038d4fcefe5489",
+    "catalog_digest": "c5a909b6e6acebd2617393ba8cccff6601b76b7d661d4895c28ff248c8659f70",
     "evaluator_version": "constitutional-cms-reference/0.4.1",
-    "evidence_digest": "4a430b9e15ef20523f95d57d9fa4647a9bbacf63b35b2c11efd8740bf90d5b87"
+    "evidence_digest": "9e54416883b1a32b3d8ac276ef9a2ee86195807a404185301e501e3a85e7b8d6"
   },
   "evidence_coverage": {
-    "measured": 18,
+    "measured": 19,
     "ratio": 1.0,
-    "total_applicable": 18
+    "total_applicable": 19
   },
-  "framework_release": "v0.4.1",
+  "framework_release": "v0.4.2",
   "limitations": [],
   "profile_summaries": {
     "agentic_web": {
@@ -213,7 +223,7 @@
     "search": {
       "FAIL": 0,
       "NOT_APPLICABLE": 0,
-      "PASS": 5,
+      "PASS": 6,
       "UNMEASURED": 0
     },
     "web_foundation": {
@@ -223,7 +233,7 @@
       "UNMEASURED": 0
     }
   },
-  "result_digest": "48fbc18f4dcc716226e0743770fe8a758a4d4a77c7b61b901388180d4659eeb0",
+  "result_digest": "bcef760d7b55c12be971a4c231d0e72e1f9549698fdd181e72b3cc7df5ed4d18",
   "schema_version": "ConformanceReceiptV1",
   "subject": {
     "canonical_origin": "https://example.com",

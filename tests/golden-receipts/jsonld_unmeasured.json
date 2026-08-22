@@ -5,82 +5,82 @@
     {
       "certification_eligible": true,
       "check_id": "web.http.success",
-      "detail": "Required evidence is evidence_missing: observations.http.status.",
+      "detail": "Required evidence satisfied the catalog rule.",
       "evidence_scope": "public_static",
       "profile": "web_foundation",
-      "reason_code": "evidence_missing",
+      "reason_code": "rule_satisfied",
       "remediation": "Return a deliberate successful response for publishable public content.",
-      "verdict": "UNMEASURED"
+      "verdict": "PASS"
     },
     {
       "certification_eligible": true,
       "check_id": "web.document.language",
-      "detail": "Required evidence is evidence_missing: observations.document.lang.",
+      "detail": "Required evidence satisfied the catalog rule.",
       "evidence_scope": "public_static",
       "profile": "web_foundation",
-      "reason_code": "evidence_missing",
+      "reason_code": "rule_satisfied",
       "remediation": "Add a valid lang attribute to the root html element.",
-      "verdict": "UNMEASURED"
+      "verdict": "PASS"
     },
     {
       "certification_eligible": true,
       "check_id": "web.accessibility.automated",
-      "detail": "Required evidence is evidence_missing: observations.accessibility.serious_violation_count.",
+      "detail": "Required evidence satisfied the catalog rule.",
       "evidence_scope": "public_rendered",
       "profile": "web_foundation",
-      "reason_code": "evidence_missing",
+      "reason_code": "rule_satisfied",
       "remediation": "Repair serious and critical automated accessibility findings, then perform required human evaluation.",
-      "verdict": "UNMEASURED"
+      "verdict": "PASS"
     },
     {
       "certification_eligible": true,
       "check_id": "web.performance.lab_lcp",
-      "detail": "Required evidence is evidence_missing: observations.performance.lab.lcp_ms.",
+      "detail": "Required evidence satisfied the catalog rule.",
       "evidence_scope": "public_rendered",
       "profile": "web_foundation",
-      "reason_code": "evidence_missing",
+      "reason_code": "rule_satisfied",
       "remediation": "Improve the lab loading path; do not report this result as field Core Web Vitals.",
-      "verdict": "UNMEASURED"
+      "verdict": "PASS"
     },
     {
       "certification_eligible": true,
       "check_id": "web.performance.field_cwv",
-      "detail": "Required evidence is evidence_missing: observations.performance.field.p75_lcp_ms.",
+      "detail": "Required evidence satisfied the catalog rule.",
       "evidence_scope": "field_observation",
       "profile": "web_foundation",
-      "reason_code": "evidence_missing",
+      "reason_code": "rule_satisfied",
       "remediation": "Use sufficient real-user field data; never substitute Lighthouse or a synthetic zero.",
-      "verdict": "UNMEASURED"
+      "verdict": "PASS"
     },
     {
       "certification_eligible": true,
       "check_id": "search.canonical.absolute",
-      "detail": "Required evidence is evidence_missing: observations.search.canonical.",
+      "detail": "Required evidence satisfied the catalog rule.",
       "evidence_scope": "public_static",
       "profile": "search",
-      "reason_code": "evidence_missing",
+      "reason_code": "rule_satisfied",
       "remediation": "Emit one absolute HTTPS canonical that represents the page identity.",
-      "verdict": "UNMEASURED"
+      "verdict": "PASS"
     },
     {
       "certification_eligible": true,
       "check_id": "search.robots.indexable",
-      "detail": "Applicability evidence is evidence_missing: observations.search.intended_indexable.",
+      "detail": "Required evidence satisfied the catalog rule.",
       "evidence_scope": "public_static",
       "profile": "search",
-      "reason_code": "evidence_missing",
+      "reason_code": "rule_satisfied",
       "remediation": "Align robots and page-level index controls with the declared indexability decision.",
-      "verdict": "UNMEASURED"
+      "verdict": "PASS"
     },
     {
       "certification_eligible": true,
       "check_id": "search.structured_data.visible_parity",
-      "detail": "Required evidence is evidence_missing: observations.search.structured_data_visible_parity.",
+      "detail": "Required evidence satisfied the catalog rule.",
       "evidence_scope": "public_static",
       "profile": "search",
-      "reason_code": "evidence_missing",
+      "reason_code": "rule_satisfied",
       "remediation": "Generate visible and machine-readable claims from the same canonical decision.",
-      "verdict": "UNMEASURED"
+      "verdict": "PASS"
     },
     {
       "certification_eligible": true,
@@ -95,102 +95,102 @@
     {
       "certification_eligible": true,
       "check_id": "search.links.targets_eligible",
-      "detail": "Required evidence is evidence_missing: subject.canonical_origin.",
+      "detail": "Required evidence satisfied the catalog rule.",
       "evidence_scope": "declared_config",
       "profile": "search",
-      "reason_code": "evidence_missing",
+      "reason_code": "rule_satisfied",
       "remediation": "Map the implementation route authority to LinkTargetV1 and suppress ineligible targets.",
-      "verdict": "UNMEASURED"
+      "verdict": "PASS"
     },
     {
       "certification_eligible": true,
       "check_id": "search.corpus.complete",
-      "detail": "Required evidence is evidence_missing: observations.corpus.complete.",
+      "detail": "Required evidence satisfied the catalog rule.",
       "evidence_scope": "public_crawl",
       "profile": "search",
-      "reason_code": "evidence_missing",
+      "reason_code": "rule_satisfied",
       "remediation": "Complete the declared census; a sample cannot certify a page family.",
-      "verdict": "UNMEASURED"
+      "verdict": "PASS"
     },
     {
       "certification_eligible": true,
       "check_id": "answer.primary_answer.present",
-      "detail": "Required evidence is evidence_missing: observations.answer.primary_answer_present.",
+      "detail": "Required evidence satisfied the catalog rule.",
       "evidence_scope": "public_rendered",
       "profile": "answer_ai_retrieval",
-      "reason_code": "evidence_missing",
+      "reason_code": "rule_satisfied",
       "remediation": "State the page's primary answer clearly in visible, extractable content.",
-      "verdict": "UNMEASURED"
+      "verdict": "PASS"
     },
     {
       "certification_eligible": true,
       "check_id": "answer.entity.clear",
-      "detail": "Required evidence is evidence_missing: observations.answer.primary_entity.",
+      "detail": "Required evidence satisfied the catalog rule.",
       "evidence_scope": "public_rendered",
       "profile": "answer_ai_retrieval",
-      "reason_code": "evidence_missing",
+      "reason_code": "rule_satisfied",
       "remediation": "Name the primary entity consistently in the title, heading, body, and structured data.",
-      "verdict": "UNMEASURED"
+      "verdict": "PASS"
     },
     {
       "certification_eligible": true,
       "check_id": "answer.claims.provenance",
-      "detail": "Required evidence is evidence_missing: observations.answer.material_claims_sourced.",
+      "detail": "Required evidence satisfied the catalog rule.",
       "evidence_scope": "declared_config",
       "profile": "answer_ai_retrieval",
-      "reason_code": "evidence_missing",
+      "reason_code": "rule_satisfied",
       "remediation": "Bind material claims to named authority and freshness evidence or suppress them.",
-      "verdict": "UNMEASURED"
+      "verdict": "PASS"
     },
     {
       "certification_eligible": true,
       "check_id": "answer.crawlers.choice",
-      "detail": "Required evidence is evidence_missing: observations.answer.crawler_policy_explicit.",
+      "detail": "Required evidence satisfied the catalog rule.",
       "evidence_scope": "declared_config",
       "profile": "answer_ai_retrieval",
-      "reason_code": "evidence_missing",
+      "reason_code": "rule_satisfied",
       "remediation": "Declare separate policy choices for search, user-directed retrieval, and model training crawlers.",
-      "verdict": "UNMEASURED"
+      "verdict": "PASS"
     },
     {
       "certification_eligible": true,
       "check_id": "agent.actions.typed",
-      "detail": "Required evidence is evidence_missing: observations.agent.actions_typed.",
+      "detail": "Required evidence satisfied the catalog rule.",
       "evidence_scope": "declared_config",
       "profile": "agentic_web",
-      "reason_code": "evidence_missing",
+      "reason_code": "rule_satisfied",
       "remediation": "Publish a machine-readable input and output schema for each action.",
-      "verdict": "UNMEASURED"
+      "verdict": "PASS"
     },
     {
       "certification_eligible": true,
       "check_id": "agent.actions.side_effects",
-      "detail": "Required evidence is evidence_missing: observations.agent.side_effects_declared.",
+      "detail": "Required evidence satisfied the catalog rule.",
       "evidence_scope": "declared_config",
       "profile": "agentic_web",
-      "reason_code": "evidence_missing",
+      "reason_code": "rule_satisfied",
       "remediation": "Declare mutation class, consent, authentication, idempotency, and material side effects.",
-      "verdict": "UNMEASURED"
+      "verdict": "PASS"
     },
     {
       "certification_eligible": true,
       "check_id": "agent.actions.receipts",
-      "detail": "Required evidence is evidence_missing: observations.agent.mutating_actions_receipted.",
+      "detail": "Required evidence satisfied the catalog rule.",
       "evidence_scope": "private_authority",
       "profile": "agentic_web",
-      "reason_code": "evidence_missing",
+      "reason_code": "rule_satisfied",
       "remediation": "Emit independently checkable, sanitized receipts for every mutating action.",
-      "verdict": "UNMEASURED"
+      "verdict": "PASS"
     },
     {
       "certification_eligible": false,
       "check_id": "agent.webmcp.experimental",
-      "detail": "Applicability evidence is evidence_missing: observations.agent.webmcp_declared.",
+      "detail": "Required evidence satisfied the catalog rule.",
       "evidence_scope": "public_rendered",
       "profile": "agentic_web",
-      "reason_code": "evidence_missing",
+      "reason_code": "rule_satisfied",
       "remediation": "Follow the current draft carefully and do not represent draft compatibility as stable certification.",
-      "verdict": "UNMEASURED"
+      "verdict": "PASS"
     }
   ],
   "evaluated_at": "2026-08-15T12:00:00Z",
@@ -198,46 +198,47 @@
     "as_of": "2026-08-15T12:00:00Z",
     "catalog_digest": "c5a909b6e6acebd2617393ba8cccff6601b76b7d661d4895c28ff248c8659f70",
     "evaluator_version": "constitutional-cms-reference/0.4.1",
-    "evidence_digest": "5059c32b05be34ef7e2e298cb134e867668f9277b7983d2f5fe6b6c213d7a5de"
+    "evidence_digest": "4491d41f14a79f6bb5f079c11f1287f6fb0483a17814a96fce198e3884b5f1b3"
   },
   "evidence_coverage": {
-    "measured": 0,
-    "ratio": 0.0,
+    "measured": 18,
+    "ratio": 0.947368,
     "total_applicable": 19
   },
   "framework_release": "v0.4.2",
   "limitations": [
-    "No observations were collected; missing evidence must not become PASS."
+    "Collector did not observe JSON-LD presence or RFC 8259 compliance; check result is UNMEASURED."
   ],
   "profile_summaries": {
     "agentic_web": {
       "FAIL": 0,
       "NOT_APPLICABLE": 0,
-      "PASS": 0,
-      "UNMEASURED": 4
+      "PASS": 4,
+      "UNMEASURED": 0
     },
     "answer_ai_retrieval": {
       "FAIL": 0,
       "NOT_APPLICABLE": 0,
-      "PASS": 0,
-      "UNMEASURED": 4
+      "PASS": 4,
+      "UNMEASURED": 0
     },
     "search": {
       "FAIL": 0,
       "NOT_APPLICABLE": 0,
-      "PASS": 0,
-      "UNMEASURED": 6
+      "PASS": 5,
+      "UNMEASURED": 1
     },
     "web_foundation": {
       "FAIL": 0,
       "NOT_APPLICABLE": 0,
-      "PASS": 0,
-      "UNMEASURED": 5
+      "PASS": 5,
+      "UNMEASURED": 0
     }
   },
-  "result_digest": "455cc54dd51982bee410f68bbe153fb832249649c346f99f6fd0848716e09745",
+  "result_digest": "a67c416e0756f5c04efb4dcff148878f15cb27cf11c1ec72bb447fb3431b38ad",
   "schema_version": "ConformanceReceiptV1",
   "subject": {
-    "url": "https://example.com/unmeasured"
+    "canonical_origin": "https://example.com",
+    "url": "https://example.com/jsonld-unmeasured"
   }
 }

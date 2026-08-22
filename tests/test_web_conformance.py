@@ -286,7 +286,7 @@ class WebConformanceTest(unittest.TestCase):
 
     def test_catalog_has_stable_unique_ids_and_complete_contracts(self):
         ids = [check["check_id"] for check in self.catalog["checks"]]
-        self.assertEqual(len(ids), 18, "v0.4.1 must not add or remove checks")
+        self.assertEqual(len(ids), 19, "catalog 1.0.2 must keep a stable 19-check set")
         self.assertEqual(len(ids), len(set(ids)))
         self.assertEqual({check["profile"] for check in self.catalog["checks"]}, set(self.catalog["profiles"]))
         for check in self.catalog["checks"]:
