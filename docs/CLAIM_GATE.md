@@ -1,8 +1,11 @@
 # Claim Gate v0.1 — ClaimBundle + ClaimReceipt
 
 **Status: DRAFT (pre-ratification).** v0.1 of the CLAIM objects is draft until
-the founder tags a release. Five-minute read; the schemas and the constitution
-tests in `tests/test_claim_gate.py` are the law when prose and code disagree.
+the founder tags a release. Five-minute read. For external implementers, THIS
+PROSE plus the schemas and the golden fixtures under `tests/golden-claims/`
+are the law — everything needed for a fully independent implementation ships
+in those files. `tests/test_claim_gate.py` is the reference implementation's
+internal enforcement of the same law, not a normative source.
 
 ## The two objects
 
@@ -107,6 +110,20 @@ FIRST failing check's reason code (a v0.1 receipt carries exactly one):
 This order is a conformance requirement: implementations that check in a
 different order can emit different reason codes for the same artifact and are
 non-conformant even when their verdicts agree.
+
+`verify_receipt` MUST run its checks in exactly this sequence and return the
+FIRST failing check's single result-level code — the same conformance
+language as the bundle order above:
+
+1. schema validity → `receipt_malformed`
+2. receipt-hash integrity (recompute over the canonical core bytes, with
+   `receipt_hash`, `superseded`, `superseded_by` omitted) → `receipt_hash_mismatch`
+3. bundle quote check, only when a bundle is presented → `bundle_mismatch`
+4. current-state only: supersession → `receipt_superseded`
+5. current-state only: expiry (`as_of >= valid_until`) → `receipt_expired`
+6. otherwise → `receipt_verified`
+
+Steps 4-5 are skipped for the historical question (`current=False`).
 
 ## Unmeasured claim values (normative encoding)
 
