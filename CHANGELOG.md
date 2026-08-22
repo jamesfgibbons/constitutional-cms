@@ -2,7 +2,20 @@
 
 All notable changes to Constitutional CMS are documented here. This project follows [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [Unreleased] — v0.6.0-dev (pre-ratification)
+
+### Added — Claim Gate v0.1 (DRAFT: not ratified until the founder tags a release)
+- **ClaimBundleV0_1** (`schemas/claim_bundle_v0_1.schema.json`): frozen, hashed, Ed25519-signed claim core. Volatile facts forbidden inside; `bundle_hash` and the signature cover the same canonical bytes (house `docs/CANONICAL_JSON.md` procedure, one code path). Bundle `valid_until` MUST equal the earliest claim `valid_until` — earliest-expiry-governs is verifier-enforced.
+- **ClaimReceiptV0_1** (`schemas/claim_receipt_v0_1.schema.json`): volatile verification record quoting `bundle_hash`. Verifies integrity + policy conformance, never truth. Deterministic `receipt_id` (`cr_…`); supersession annotations live outside `receipt_hash` so superseding never mutates the old receipt's hashed core.
+- `constitutional_cms.claims`: `build_bundle`, `sign_bundle`, `verify_bundle`, `verify_receipt`, plus `generate_keypair` and `supersede_receipt`. Ed25519 via the new optional extra `constitutional-cms[claims]` (base install stays PyYAML + jsonschema); a clear import-guard error names the extra.
+- CLI verbs `claim-bundle`, `claim-sign`, `claim-verify` — fully offline against a local keys file; exit 0 verified, 1 refused (typed reason), 2 operational error. Private keys are file paths (or `CONSTITUTIONAL_CMS_CLAIM_KEY`); key material is never printed.
+- `docs/CLAIM_GATE.md`: five-minute boundary spec — canonicalization, signing, expiry, supersession, `/.well-known/constitutional-cms/keys.json` convention (spec only), the minimal HTTP surface as normative-future, and the strict-consumer contract (verify → use, else reject).
+- Technical-constitution test suite (`tests/test_claim_gate.py`) with byte-stable golden pairs in `tests/golden-claims/` (verified / tampered / expired / unmeasured / unknown-key / expiry-mismatch / superseded), TEST ONLY fixture keys, and an independent-reproduction test that re-derives hash + signature through a separate minimal code path.
+- New reason codes (documented in the spec): `bundle_verified`, `bundle_malformed`, `hash_mismatch`, `signature_invalid`, `key_unknown`, `bundle_expired`, `expiry_mismatch`, `claims_unmeasured`.
+
+### Notes
+- All-UNMEASURED evidence never yields a green receipt (`UNMEASURED / claims_unmeasured`).
+- Deferred until earned: serving the HTTP surface and `.well-known` file, a TS verifier, key revocation semantics, per-claim evidence narrowing.
 
 ### Added
 - **`contracts/entity_lifecycle.yaml`** — the layer before the claim resolver. Claim governance defends against false positives: things a system asserts without evidence. It does not defend against false negatives: real things that vanish because one downstream layer had no answer. Both are authority failures, and the second is harder to see, because nothing was asserted — something was withdrawn, and a withdrawal leaves no artifact to audit. The contract separates entity identity, entity lifecycle, relationship lifecycle, claim state, and artifact state; gives `unknown` and `seasonal_inactive` first-class representation; and makes `retired` the only terminal state, reachable only through a transition carrying lifecycle authority, an evidence reference, a reason code, and an effective date. `410 Gone` is a semantic assertion that something was intentionally and permanently removed. It now requires that authority and nothing less.

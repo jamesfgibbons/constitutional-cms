@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constitutionalcms.com/schemas/claim-receipt-v0-1.json",
+  "title": "ClaimReceiptV0_1",
+  "description": "Volatile verification record for one ClaimBundleV0_1, quoted by bundle_hash. A receipt attests INTEGRITY and policy conformance of the bundle, never truth. receipt_hash covers the immutable core (receipt_hash, superseded, and superseded_by omitted) so supersession annotations never break historical verification. DRAFT until founder ratification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "receipt_id",
+    "bundle_hash",
+    "verdict",
+    "reason_codes",
+    "verified_at",
+    "valid_until",
+    "evaluator",
+    "superseded",
+    "superseded_by",
+    "receipt_hash"
+  ],
+  "properties": {
+    "schema_version": {"const": "ClaimReceiptV0_1"},
+    "receipt_id": {"type": "string", "pattern": "^cr_[a-z0-9]{6,}$"},
+    "bundle_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "verdict": {"enum": ["PASS", "FAIL", "UNMEASURED", "NOT_APPLICABLE"]},
+    "reason_codes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "enum": [
+          "bundle_verified",
+          "bundle_malformed",
+          "hash_mismatch",
+          "signature_invalid",
+          "key_unknown",
+          "bundle_expired",
+          "expiry_mismatch",
+          "claims_unmeasured",
+          "evidence_missing",
+          "evidence_stale",
+          "evidence_invalid",
+          "source_unavailable",
+          "applicability_false",
+          "rule_satisfied",
+          "rule_falsified"
+        ]
+      }
+    },
+    "verified_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?Z$"
+    },
+    "valid_until": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?Z$",
+      "description": "min(bundle valid_until, verified_at + verification policy horizon), never before verified_at."
+    },
+    "evaluator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1}
+      }
+    },
+    "superseded": {"type": "boolean"},
+    "superseded_by": {
+      "description": "receipt_id of the superseding receipt, or null. Superseding NEVER mutates the hashed core of the old receipt: a superseded receipt remains historically verifiable but cannot represent current state.",
+      "oneOf": [
+        {"type": "null"},
+        {"type": "string", "pattern": "^cr_[a-z0-9]{6,}$"}
+      ]
+    },
+    "bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "decision_hash": {
+          "type": "string",
+          "pattern": "^(sha256:)?[0-9a-f]{64}$",
+          "description": "Quoted legacy decision hash (serpradio decision_envelope_v1 lineage); the sha256: prefix is optional only when quoting."
+        },
+        "signal_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "receipt_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "sha256 over the canonical JSON of this receipt with receipt_hash, superseded, and superseded_by omitted."
+    }
+  }
+}

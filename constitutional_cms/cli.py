@@ -151,6 +151,114 @@ def audit_command(args: argparse.Namespace) -> int:
     return exit_code_for(receipt, fail_on)
 
 
+def _read_json(path: str, label: str) -> dict[str, Any]:
+    try:
+        return json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise ValueError(f"could not read {label} from {path}: {error}") from error
+
+
+def _write_json(document: dict[str, Any], out: str | None) -> None:
+    payload = json.dumps(document, indent=2, sort_keys=True) + "\n"
+    if out:
+        Path(out).write_text(payload, encoding="utf-8")
+    else:
+        print(payload, end="")
+
+
+def claim_bundle_command(args: argparse.Namespace) -> int:
+    """Build an UNSIGNED ClaimBundle core from evidence. Exit 0 built, 2 error."""
+    from . import claims
+
+    try:
+        catalog = _load_catalog(args.catalog)
+        evidence = evaluator.load_data(Path(args.evidence))
+        bundle = claims.build_bundle(
+            evidence,
+            catalog,
+            issuer=args.issuer,
+            generation_digest=args.generation_digest,
+            default_claim_ttl_seconds=(
+                args.default_claim_ttl
+                if args.default_claim_ttl is not None
+                else claims.DEFAULT_CLAIM_TTL_SECONDS
+            ),
+        )
+    except (OSError, KeyError, TypeError, ValueError) as error:
+        print(f"claim-bundle: {error}", file=sys.stderr)
+        return EXIT_ERROR
+    _write_json(bundle, args.out)
+    return EXIT_OK
+
+
+def claim_sign_command(args: argparse.Namespace) -> int:
+    """Freeze a bundle core: bundle_hash + Ed25519 signature. Exit 0 signed, 2 error.
+
+    The private key is read from --key (a file path) or the
+    CONSTITUTIONAL_CMS_CLAIM_KEY environment variable (also a path).
+    Key material is never printed.
+    """
+    from . import claims
+
+    try:
+        bundle = _read_json(args.bundle, "bundle")
+        signed = claims.sign_bundle(bundle, key_id=args.key_id, key_path=args.key)
+    except (KeyError, TypeError, ValueError) as error:
+        print(f"claim-sign: {error}", file=sys.stderr)
+        return EXIT_ERROR
+    _write_json(signed, args.out)
+    return EXIT_OK
+
+
+def claim_verify_command(args: argparse.Namespace) -> int:
+    """Verify a signed bundle (or a receipt) fully offline.
+
+    Exit codes: 0 verified · 1 refused (typed reason on stderr) · 2 operational error.
+    No account, no network: verification needs only the artifact and a local keys file.
+    """
+    from . import claims
+
+    try:
+        if args.receipt:
+            receipt = _read_json(args.receipt, "receipt")
+            bundle = _read_json(args.bundle, "bundle") if args.bundle else None
+            result = claims.verify_receipt(
+                receipt, bundle, current=not args.historical, as_of=args.as_of
+            )
+        else:
+            if not args.bundle:
+                print("claim-verify: provide --bundle (and --keys), or --receipt.", file=sys.stderr)
+                return EXIT_ERROR
+            if not args.keys:
+                print("claim-verify: bundle verification requires --keys <keys.json>.", file=sys.stderr)
+                return EXIT_ERROR
+            bundle = _read_json(args.bundle, "bundle")
+            result = claims.verify_bundle(
+                bundle,
+                args.keys,
+                as_of=args.as_of,
+                horizon_seconds=(
+                    args.horizon_seconds
+                    if args.horizon_seconds is not None
+                    else claims.DEFAULT_RECEIPT_HORIZON_SECONDS
+                ),
+            )
+            if result.receipt is not None and (args.receipt_out or args.json):
+                _write_json(result.receipt, args.receipt_out)
+    except (KeyError, TypeError, ValueError) as error:
+        print(f"claim-verify: {error}", file=sys.stderr)
+        return EXIT_ERROR
+
+    if result.ok:
+        print(f"VERIFIED · {result.verdict} · {', '.join(result.reason_codes)}")
+        return EXIT_OK
+    print(
+        f"REFUSED · {result.verdict} · {', '.join(result.reason_codes)} · {result.detail}",
+        file=sys.stderr,
+    )
+    return EXIT_FAIL
+
+
 def validate_command(args: argparse.Namespace) -> int:
     print("Validating bundled catalog and schemas...")
     packaged = contracts_validator.run_packaged()
@@ -211,6 +319,52 @@ def main(argv: list[str] | None = None) -> int:
         help=f"Fetch timeout in seconds for URL audits (default: {collector.DEFAULT_TIMEOUT:g})",
     )
 
+    bundle_parser = subparsers.add_parser(
+        "claim-bundle",
+        help="Build an UNSIGNED ClaimBundleV0_1 core from an EvidenceBundleV1 (sign it with claim-sign)",
+    )
+    bundle_parser.add_argument("--evidence", required=True, help="Path to a prepared EvidenceBundleV1 (YAML or JSON)")
+    bundle_parser.add_argument("--catalog", help="Path to a CheckCatalogV1 (defaults to the bundled catalog)")
+    bundle_parser.add_argument("--issuer", required=True, help="Issuer domain (e.g. example.com); keys are discovered under it")
+    bundle_parser.add_argument("--generation-digest", help="Optional sha256:<hex> digest binding the bundle to a generation run")
+    bundle_parser.add_argument(
+        "--default-claim-ttl",
+        type=int,
+        default=None,
+        help="Claim TTL in seconds when the catalog declares no max_age (default: 604800)",
+    )
+    bundle_parser.add_argument("--out", help="Write the bundle core to this path (default: stdout)")
+
+    sign_parser = subparsers.add_parser(
+        "claim-sign",
+        help="Freeze a bundle core: compute bundle_hash and attach the Ed25519 signature",
+    )
+    sign_parser.add_argument("--bundle", required=True, help="Path to the unsigned bundle core (JSON)")
+    sign_parser.add_argument(
+        "--key",
+        help="Path to the Ed25519 private key PEM (or set CONSTITUTIONAL_CMS_CLAIM_KEY to a path). Never printed.",
+    )
+    sign_parser.add_argument("--key-id", required=True, help="key_id the verifier will look up in the keys document")
+    sign_parser.add_argument("--out", help="Write the signed bundle to this path (default: stdout)")
+
+    verify_parser = subparsers.add_parser(
+        "claim-verify",
+        help="Verify a signed ClaimBundle (or a ClaimReceipt) fully offline. Exit 0 verified, 1 refused, 2 error.",
+    )
+    verify_parser.add_argument("--bundle", help="Path to a signed ClaimBundleV0_1 (JSON)")
+    verify_parser.add_argument("--keys", help="Path to a local keys.json (the /.well-known/constitutional-cms/keys.json shape)")
+    verify_parser.add_argument("--receipt", help="Verify this ClaimReceiptV0_1 instead (optionally against --bundle)")
+    verify_parser.add_argument("--historical", action="store_true", help="Receipt mode: ask the historical question (supersession and expiry allowed)")
+    verify_parser.add_argument("--as-of", help="RFC 3339 verification clock (defaults to now, UTC)")
+    verify_parser.add_argument(
+        "--horizon-seconds",
+        type=int,
+        default=None,
+        help="Verification policy horizon for receipt expiry (default: 604800)",
+    )
+    verify_parser.add_argument("--receipt-out", help="Write the emitted ClaimReceipt to this path")
+    verify_parser.add_argument("--json", action="store_true", help="Print the emitted ClaimReceipt to stdout")
+
     validate_parser = subparsers.add_parser(
         "validate",
         help="Check that the bundled catalog and schemas (and an optional contracts directory) are internally coherent",
@@ -232,6 +386,12 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "audit":
         return audit_command(args)
+    if args.command == "claim-bundle":
+        return claim_bundle_command(args)
+    if args.command == "claim-sign":
+        return claim_sign_command(args)
+    if args.command == "claim-verify":
+        return claim_verify_command(args)
     if args.command == "validate":
         return validate_command(args)
     parser.print_help()

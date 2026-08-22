@@ -80,6 +80,16 @@ The inverse of `hub_to_children` is `children_require_hub` in
 [`contracts/link_rules.yaml`](../contracts/link_rules.yaml), enforcement
 `soft_warn` until a founder ratifies `hard_block`.
 
+## Claim Gate v0.1 (DRAFT)
+
+ClaimBundleV0_1 and ClaimReceiptV0_1 (`schemas/claim_bundle_v0_1.schema.json`,
+`schemas/claim_receipt_v0_1.schema.json`; spec in [CLAIM_GATE.md](CLAIM_GATE.md))
+answer one canonical question: **can a third party verify a quoted set of
+claims offline — integrity, signature, expiry — without trusting the
+producer?** They certify portability of claims, not page-family maturity
+(G0-G5), not catalog conformance (ConformanceReceiptV1), and never truth.
+DRAFT until founder ratification.
+
 ## Routing sequence
 
 1. **Contract family:** which publishing boundary owns the change?

@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constitutionalcms.com/schemas/claim-bundle-v0-1.json",
+  "title": "ClaimBundleV0_1",
+  "description": "Frozen, hashed, Ed25519-signed core of portable claims. Volatile facts (verification results, current status, supersession) are FORBIDDEN inside a bundle; they live in ClaimReceiptV0_1. DRAFT until founder ratification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "issuer",
+    "subject",
+    "claims",
+    "policy_digest",
+    "generated_at",
+    "valid_until",
+    "bundle_hash",
+    "signature"
+  ],
+  "properties": {
+    "schema_version": {"const": "ClaimBundleV0_1"},
+    "issuer": {
+      "type": "string",
+      "description": "Registrable domain of the issuing authority; keys are discovered under this domain.",
+      "pattern": "^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$"
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "id"],
+      "properties": {
+        "type": {"type": "string", "minLength": 1},
+        "id": {"type": "string", "minLength": 1}
+      }
+    },
+    "claims": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["claim_id", "value", "authority", "observed_at", "valid_until", "evidence_digest"],
+        "properties": {
+          "claim_id": {"type": "string", "pattern": "^claim:[A-Za-z0-9][A-Za-z0-9_.:-]*$"},
+          "value": true,
+          "authority": {
+            "type": "string",
+            "minLength": 1,
+            "description": "source_id of the authority that grounds this claim (e.g. a standards-registry source)."
+          },
+          "observed_at": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?Z$"
+          },
+          "valid_until": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?Z$"
+          },
+          "evidence_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "policy_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "Canonical digest of the governing contract/catalog the claims were evaluated under."
+    },
+    "generation_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "Optional digest binding the bundle to the generation run that produced it."
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?Z$"
+    },
+    "valid_until": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?Z$",
+      "description": "MUST equal the earliest claims[].valid_until (earliest-expiry-governs). Enforced by the verifier, not only by this description."
+    },
+    "bundle_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "sha256 over the canonical JSON of this bundle with bundle_hash AND signature omitted."
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["alg", "key_id", "sig"],
+      "properties": {
+        "alg": {"const": "Ed25519"},
+        "key_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,63}$"},
+        "sig": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9+/]{86}==$",
+          "description": "Base64 Ed25519 signature over the same canonical bytes bundle_hash covers."
+        }
+      }
+    }
+  }
+}
