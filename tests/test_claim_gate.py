@@ -110,6 +110,18 @@ class ClaimConstitutionTest(unittest.TestCase):
         self.assertFalse(result.ok)
         self.assertEqual((result.verdict, result.reason_codes), ("FAIL", ["bundle_expired"]))
 
+    def test_c2_expiry_boundary_is_inclusive_at_valid_until(self):
+        """Normative inclusivity (docs/CLAIM_GATE.md): expired when
+        as_of >= valid_until; one second earlier still verifies."""
+        boundary = self.verified_bundle["valid_until"]
+        at_boundary = claims.verify_bundle(self.verified_bundle, KEYS, as_of=boundary)
+        self.assertFalse(at_boundary.ok)
+        self.assertEqual(at_boundary.reason_codes, ["bundle_expired"])
+        just_before = boundary.replace("T12:00:00Z", "T11:59:59Z")
+        self.assertNotEqual(just_before, boundary)
+        before = claims.verify_bundle(self.verified_bundle, KEYS, as_of=just_before)
+        self.assertTrue(before.ok, before.detail)
+
     def test_d_unknown_signing_key_fails_closed(self):
         unknown = load_json(GOLDENS / "unknown_key.bundle.json")
         result = claims.verify_bundle(unknown, KEYS, as_of=AS_OF)
@@ -185,6 +197,7 @@ class ClaimConstitutionTest(unittest.TestCase):
             ("verified", AS_OF),
             ("tampered", AS_OF),
             ("expired", "2026-09-20T12:00:00Z"),
+            ("expired_boundary", "2026-08-16T12:00:00Z"),
             ("unmeasured", AS_OF),
             ("unknown_key", AS_OF),
             ("expiry_mismatch", AS_OF),
@@ -247,10 +260,18 @@ class ClaimConstitutionTest(unittest.TestCase):
         self.assertEqual(result.reason_codes, ["receipt_hash_mismatch"])
 
     def test_verify_receipt_refuses_a_mismatched_bundle(self):
+        """bundle_mismatch trigger is the RECOMPUTED hash of the presented
+        bundle's core bytes, not its stated bundle_hash field."""
         other = load_json(GOLDENS / "unmeasured.bundle.json")
         result = claims.verify_receipt(self.verified_receipt, other, as_of=AS_OF)
         self.assertFalse(result.ok)
         self.assertEqual(result.reason_codes, ["bundle_mismatch"])
+        # Tampering only the STATED bundle_hash does not trip the quote check
+        # (that field's integrity belongs to verify_bundle).
+        stated_tamper = copy.deepcopy(self.verified_bundle)
+        stated_tamper["bundle_hash"] = "sha256:" + "0" * 64
+        result = claims.verify_receipt(self.verified_receipt, stated_tamper, as_of=AS_OF)
+        self.assertTrue(result.ok, result.detail)
 
 
 @needs_crypto

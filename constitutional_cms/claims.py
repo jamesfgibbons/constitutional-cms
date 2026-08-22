@@ -451,9 +451,9 @@ def verify_bundle(
             computed_hash,
         )
 
-    # 5. Expiry.
+    # 5. Expiry (inclusive boundary: expired when as_of >= valid_until).
     assert valid_until_time is not None
-    if verified_time > valid_until_time:
+    if verified_time >= valid_until_time:
         return refuse("FAIL", ["bundle_expired"], f"bundle expired at {bundle['valid_until']}", computed_hash)
 
     # 6. Honest measurement: all-UNMEASURED evidence is never a green receipt.
@@ -518,10 +518,16 @@ def verify_receipt(
             False, "FAIL", ["receipt_hash_mismatch"], "receipt_hash does not match the canonical receipt core"
         )
 
-    if bundle is not None and bundle.get("bundle_hash") != receipt["bundle_hash"]:
-        return VerificationResult(
-            False, "FAIL", ["bundle_mismatch"], "receipt quotes a different bundle_hash than the supplied bundle"
-        )
+    if bundle is not None:
+        # bundle_mismatch trigger (normative): the receipt's quoted bundle_hash
+        # differs from the hash RECOMPUTED over the presented bundle's core
+        # bytes. The presented bundle's own stated bundle_hash field is ignored
+        # here — its integrity belongs to verify_bundle.
+        recomputed = _hash_bytes(bundle_signing_bytes(bundle))
+        if recomputed != receipt["bundle_hash"]:
+            return VerificationResult(
+                False, "FAIL", ["bundle_mismatch"], "receipt quotes a different bundle_hash than the presented bundle's recomputed hash"
+            )
 
     if current:
         if receipt["superseded"]:
@@ -533,7 +539,8 @@ def verify_receipt(
                 f"receipt is superseded by {by!r} and cannot represent current state",
             )
         valid_until = parse_timestamp(receipt["valid_until"])
-        if valid_until is not None and now is not None and now > valid_until:
+        # Same inclusive boundary as bundles: expired when as_of >= valid_until.
+        if valid_until is not None and now is not None and now >= valid_until:
             return VerificationResult(
                 False, "FAIL", ["receipt_expired"], f"receipt expired at {receipt['valid_until']}"
             )

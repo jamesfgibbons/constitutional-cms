@@ -14,6 +14,7 @@ All notable changes to Constitutional CMS are documented here. This project foll
 - New reason codes (documented in the spec): `bundle_verified`, `bundle_malformed`, `hash_mismatch`, `signature_invalid`, `key_unknown`, `bundle_expired`, `expiry_mismatch`, `claims_unmeasured`.
 
 ### Notes
+- Clean-room portability test (spec + fixtures only) reached 8/8 golden parity; the eight spec gaps it recorded are closed as normative text in `docs/CLAIM_GATE.md`: exact `receipt_id` derivation, explicit `as_of` clock, unmeasured-value encoding, normative refusal order (first failing check's code), both-direction `expiry_mismatch`, inclusive expiry boundary (`as_of >= valid_until`, with a boundary golden), refused-receipt `valid_until` rule, and the `bundle_mismatch` trigger (recomputed hash of the presented bundle).
 - All-UNMEASURED evidence never yields a green receipt (`UNMEASURED / claims_unmeasured`).
 - Deferred until earned: serving the HTTP surface and `.well-known` file, a TS verifier, key revocation semantics, per-claim evidence narrowing.
 

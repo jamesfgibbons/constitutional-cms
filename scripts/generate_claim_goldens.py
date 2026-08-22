@@ -103,6 +103,14 @@ def main() -> int:
     write(GOLDENS / "expired.bundle.json", verified_bundle)
     write(GOLDENS / "expired.receipt.json", expired.receipt)
 
+    # 3b. expiry boundary — inclusive: as_of EXACTLY valid_until is expired.
+    boundary = claims.verify_bundle(
+        verified_bundle, str(keys_path), as_of=verified_bundle["valid_until"]
+    )
+    assert boundary.reason_codes == ["bundle_expired"], boundary
+    write(GOLDENS / "expired_boundary.bundle.json", verified_bundle)
+    write(GOLDENS / "expired_boundary.receipt.json", boundary.receipt)
+
     # 4. unmeasured — all-UNMEASURED evidence is NEVER a green receipt.
     unmeasured_core = claims.build_bundle(unmeasured_evidence, issuer=ISSUER)
     unmeasured_bundle = claims.sign_bundle(unmeasured_core, key_id="test-2026-b", key_path=KEY_B)

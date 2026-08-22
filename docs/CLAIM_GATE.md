@@ -59,17 +59,79 @@ Outer hashes are MANDATORY-prefixed `sha256:<64 lowercase hex>`:
 - Verification fails CLOSED: an unknown `key_id` is a refusal
   (`key_unknown`), never a skip.
 
+## Verification clock
+
+Verification time is an explicit INPUT (`as_of`), never an implicit wall
+clock. A verifier that is given no `as_of` MAY use the current UTC time, but
+it MUST report the clock it used: the receipt's `verified_at` IS the `as_of`
+of that verification. Two verifiers given the same bundle, keys, and `as_of`
+MUST produce identical receipts.
+
 ## Expiry
 
 **Earliest-expiry-governs, enforced by the verifier — not just prose.** The
-bundle's `valid_until` MUST equal the earliest `claims[].valid_until`; a
-bundle whose `valid_until` is later than any claim's is refused as malformed
-(`expiry_mismatch`) even when correctly signed. An expired bundle is refused
-(`bundle_expired`).
+bundle's `valid_until` MUST equal the earliest `claims[].valid_until`. ANY
+inequality — later **or** earlier than the earliest claim — is refused with
+the single code `expiry_mismatch`, even when correctly signed. There is no
+second code for the earlier direction.
+
+**Expiry boundary is inclusive:** an artifact is expired when
+`as_of >= valid_until`. At the exact instant `as_of == valid_until` a bundle
+is refused (`bundle_expired`) and a receipt no longer represents current
+state (`receipt_expired`). One golden pins the boundary instant
+(`tests/golden-claims/expired_boundary.*`).
 
 Receipt expiry: `valid_until = min(bundle valid_until, verified_at +
 verification-policy horizon)`, never before `verified_at`. Default horizon:
-604800 s (7 days).
+604800 s (7 days). **This rule applies to REFUSED receipts too**: the same
+`min()` runs with the bundle's `valid_until` participating whenever it is
+parseable (an expired bundle therefore clamps the refusal receipt's
+`valid_until` to `verified_at` — immediately non-current); when the bundle's
+`valid_until` is absent or unparseable, the receipt's `valid_until` is
+`verified_at + horizon`.
+
+## Normative verification order
+
+`verify_bundle` MUST run these checks in exactly this sequence and emit the
+FIRST failing check's reason code (a v0.1 receipt carries exactly one):
+
+1. schema validity → `bundle_malformed`
+2. hash integrity (recompute over the canonical core bytes) → `hash_mismatch`
+3. key lookup by `key_id` in the keys document → `key_unknown` (fail closed)
+4. Ed25519 signature over the same bytes → `signature_invalid`
+5. earliest-expiry-governs equality → `expiry_mismatch`
+6. expiry (`as_of >= valid_until`) → `bundle_expired`
+7. honest measurement (below) → `UNMEASURED` / `claims_unmeasured`
+8. otherwise → `PASS` / `bundle_verified`
+
+This order is a conformance requirement: implementations that check in a
+different order can emit different reason codes for the same artifact and are
+non-conformant even when their verdicts agree.
+
+## Unmeasured claim values (normative encoding)
+
+A claim's `value` may be any JSON. A claim is **unmeasured** if and only if
+its `value` is a JSON object whose `"verdict"` member equals the string
+`"UNMEASURED"` or `"NOT_APPLICABLE"`. Every other value — including scalars,
+arrays, and objects without a `"verdict"` member — counts as measured.
+Detection depends on this rule alone, never on golden shapes. When every
+claim in a bundle is unmeasured, the receipt is `UNMEASURED /
+claims_unmeasured` and non-verified.
+
+## Receipt identity (normative derivation)
+
+`receipt_id` is deterministic — no randomness in identity:
+
+```
+receipt_id = "cr_" + sha256( canonical_json({
+    "bundle_hash":       <the receipt's quoted bundle_hash>,
+    "verified_at":       <the receipt's verified_at>,
+    "evaluator_version": <the receipt's evaluator.version>
+}) )[:16]
+```
+
+Exactly those three members, canonicalized per `docs/CANONICAL_JSON.md`,
+SHA-256 lowercase hex, truncated to the first 16 hex characters.
 
 ## Supersession — the never-overwrite law
 
@@ -93,6 +155,12 @@ stored): `receipt_verified`, `receipt_malformed`, `receipt_hash_mismatch`,
 All-UNMEASURED evidence is **never** a green receipt: a bundle whose every
 claim value carries an unmeasured verdict yields `UNMEASURED /
 claims_unmeasured` — integrity holds, nothing is attested.
+
+`bundle_mismatch` (result-level) triggers precisely when `verify_receipt` is
+given a bundle and the receipt's quoted `bundle_hash` differs from the hash
+RECOMPUTED over the presented bundle's canonical core bytes. The presented
+bundle's own stated `bundle_hash` field is ignored by this check — its
+integrity belongs to `verify_bundle`.
 
 ## Key discovery convention (SPEC ONLY in v0.1)
 
