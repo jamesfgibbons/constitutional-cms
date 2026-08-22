@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constitutionalcms.com/schemas/constitutional-site-manifest-v1.json",
+  "title": "ConstitutionalSiteManifestV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "canonical_origin", "route_sources", "page_families", "crawler_policy"],
+  "properties": {
+    "schema_version": {"const": "ConstitutionalSiteManifestV1"},
+    "canonical_origin": {"type": "string", "format": "uri", "pattern": "^https://"},
+    "route_sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["type", "authority_id"],
+        "properties": {
+          "type": {"enum": ["sitemap", "static_manifest", "private_adapter"]},
+          "url": {"type": "string", "format": "uri", "pattern": "^https://"},
+          "path": {"type": "string"},
+          "authority_id": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "page_families": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "path_patterns"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]+$"},
+          "path_patterns": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+        }
+      }
+    },
+    "crawler_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["search", "user_retrieval", "training"],
+      "properties": {
+        "search": {"enum": ["allow", "disallow", "mixed"]},
+        "user_retrieval": {"enum": ["allow", "disallow", "mixed"]},
+        "training": {"enum": ["allow", "disallow", "mixed"]}
+      }
+    },
+    "schema_expectations": {"type": "object"},
+    "agent_actions": {"type": "array", "items": {"type": "object"}}
+  }
+}

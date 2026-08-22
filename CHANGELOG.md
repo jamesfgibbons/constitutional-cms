@@ -5,6 +5,9 @@ All notable changes to Constitutional CMS are documented here. This project foll
 ## [Unreleased]
 
 ### Added
+- `constitutional-cms audit <url>`: one-command public audit. A static collector performs a single read-only GET, normalizes it into `EvidenceBundleV1` (`public_static` scope, `pure_read`), and runs the reference evaluator. Verdicts are reported exactly as produced — PASS / FAIL / UNMEASURED / NOT_APPLICABLE, no synthetic score. Exit code 1 only on FAIL, 2 on operational errors. `--json` emits the full `ConformanceReceiptV1`.
+- Packaged the evaluator and contract validator inside `constitutional_cms/` with schemas and the check catalog as package data, so `uvx constitutional-cms` works without a repository checkout. `scripts/conformance_evaluator.py` and `scripts/validate_contracts.py` remain working thin re-exports; a sync test keeps packaged data byte-identical to the canonical `schemas/` and `contracts/` files.
+- `constitutional-cms validate [path]` validates a local contracts directory; repository-only web-conformance fixture checks are honestly skipped outside a checkout.
 - Documented VIBEnet Signal Contract as the adjacent renderer-facing awareness layer, not a fifth web-conformance profile.
 - **CheckCatalogV1 1.0.2**: Added `search.structured_data.jsonld_rfc8259` (19 checks). Catalog `framework_release` is `v0.4.2`. Shared pass_all / unmeasured-state fixtures and public goldens recreate PASS, FAIL, NOT_APPLICABLE, and UNMEASURED for the new check.
 - Authority references for RFC 8259 §7 and Google's JSON-LD single-unescape behavior in standards registry.

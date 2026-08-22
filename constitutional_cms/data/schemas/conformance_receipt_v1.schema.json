@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constitutionalcms.com/schemas/conformance-receipt-v1.json",
+  "title": "ConformanceReceiptV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "framework_release", "catalog_version", "subject", "evaluated_at", "evaluation_context", "checks", "profile_summaries", "evidence_coverage", "limitations", "certified", "result_digest"],
+  "properties": {
+    "schema_version": {"const": "ConformanceReceiptV1"},
+    "framework_release": {"type": "string"},
+    "catalog_version": {"type": "string"},
+    "subject": {"type": "object", "required": ["url"], "properties": {"url": {"type": "string", "format": "uri"}}},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "evaluation_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["as_of", "catalog_digest", "evidence_digest", "evaluator_version"],
+      "properties": {
+        "as_of": {"type": "string", "format": "date-time"},
+        "catalog_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "evidence_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "evaluator_version": {"type": "string", "minLength": 1}
+      }
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["check_id", "profile", "verdict", "reason_code", "certification_eligible", "evidence_scope", "remediation"],
+        "properties": {
+          "check_id": {"type": "string"},
+          "profile": {"type": "string"},
+          "verdict": {"enum": ["PASS", "FAIL", "UNMEASURED", "NOT_APPLICABLE"]},
+          "reason_code": {"enum": ["evidence_missing", "evidence_stale", "evidence_invalid", "source_unavailable", "applicability_false", "rule_satisfied", "rule_falsified"]},
+          "certification_eligible": {"type": "boolean"},
+          "evidence_scope": {"type": "string"},
+          "remediation": {"type": "string"},
+          "detail": {"type": "string"}
+        }
+      }
+    },
+    "profile_summaries": {"type": "object"},
+    "evidence_coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["measured", "total_applicable", "ratio"],
+      "properties": {
+        "measured": {"type": "integer", "minimum": 0},
+        "total_applicable": {"type": "integer", "minimum": 0},
+        "ratio": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    },
+    "limitations": {"type": "array", "items": {"type": "string"}},
+    "certified": {"const": false},
+    "result_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

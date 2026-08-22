@@ -1,0 +1,290 @@
+schema_version: CheckCatalogV1
+catalog_version: "1.0.2"
+framework_release: "v0.4.2"
+status: normative
+
+profiles:
+  web_foundation:
+    title: Web Foundation
+    purpose: Transport, semantics, accessibility, responsive behavior, security, and performance evidence.
+  search:
+    title: Search
+    purpose: Crawl, index, canonical, structured-data, and internal-link integrity.
+  answer_ai_retrieval:
+    title: Answer and AI Retrieval
+    purpose: Extractable answers, entity clarity, provenance, freshness, and crawler choice.
+  agentic_web:
+    title: Agentic Web
+    purpose: Safe, typed, observable actions exposed to agents.
+
+checks:
+  - check_id: web.http.success
+    profile: web_foundation
+    title: Public page returns HTTP success
+    authority_refs: [google_search_technical]
+    governing_invariant: body_publishable
+    required_evidence: [observations.http.status]
+    evidence_contracts:
+      observations.http.status: {type: integer, max_age_seconds: 86400}
+    evidence_scope: public_static
+    mutation_class: pure_read
+    evaluation: {path: observations.http.status, operator: between, min: 200, max: 299}
+    remediation: Return a deliberate successful response for publishable public content.
+    certification_eligible: true
+  - check_id: web.document.language
+    profile: web_foundation
+    title: Document language is declared
+    authority_refs: [wcag_2_2]
+    governing_invariant: accessible_document
+    required_evidence: [observations.document.lang]
+    evidence_contracts:
+      observations.document.lang: {type: string, max_age_seconds: 86400}
+    evidence_scope: public_static
+    mutation_class: pure_read
+    evaluation: {path: observations.document.lang, operator: nonempty}
+    remediation: Add a valid lang attribute to the root html element.
+    certification_eligible: true
+  - check_id: web.accessibility.automated
+    profile: web_foundation
+    title: Rendered automated accessibility audit has no serious violations
+    authority_refs: [wcag_2_2]
+    governing_invariant: accessible_document
+    required_evidence: [observations.accessibility.serious_violation_count]
+    evidence_contracts:
+      observations.accessibility.serious_violation_count: {type: integer, max_age_seconds: 86400}
+    evidence_scope: public_rendered
+    mutation_class: pure_read
+    evaluation: {path: observations.accessibility.serious_violation_count, operator: equals, expected: 0}
+    remediation: Repair serious and critical automated accessibility findings, then perform required human evaluation.
+    certification_eligible: true
+  - check_id: web.performance.lab_lcp
+    profile: web_foundation
+    title: Lab LCP is within the good threshold
+    authority_refs: [core_web_vitals_2025]
+    governing_invariant: lab_field_separation
+    required_evidence: [observations.performance.lab.lcp_ms]
+    evidence_contracts:
+      observations.performance.lab.lcp_ms: {type: number, max_age_seconds: 86400}
+    evidence_scope: public_rendered
+    mutation_class: pure_read
+    evaluation: {path: observations.performance.lab.lcp_ms, operator: lte, expected: 2500}
+    remediation: Improve the lab loading path; do not report this result as field Core Web Vitals.
+    certification_eligible: true
+  - check_id: web.performance.field_cwv
+    profile: web_foundation
+    title: Field Core Web Vitals pass at the 75th percentile
+    authority_refs: [core_web_vitals_2025]
+    governing_invariant: lab_field_separation
+    required_evidence:
+      - observations.performance.field.p75_lcp_ms
+      - observations.performance.field.p75_inp_ms
+      - observations.performance.field.p75_cls
+    evidence_contracts:
+      observations.performance.field.p75_lcp_ms: {type: number, max_age_seconds: 2592000}
+      observations.performance.field.p75_inp_ms: {type: number, max_age_seconds: 2592000}
+      observations.performance.field.p75_cls: {type: number, max_age_seconds: 2592000}
+    evidence_scope: field_observation
+    mutation_class: pure_read
+    evaluation:
+      operator: all
+      rules:
+        - {path: observations.performance.field.p75_lcp_ms, operator: lte, expected: 2500}
+        - {path: observations.performance.field.p75_inp_ms, operator: lte, expected: 200}
+        - {path: observations.performance.field.p75_cls, operator: lte, expected: 0.1}
+    remediation: Use sufficient real-user field data; never substitute Lighthouse or a synthetic zero.
+    certification_eligible: true
+  - check_id: search.canonical.absolute
+    profile: search
+    title: Canonical URL is absolute and HTTPS
+    authority_refs: [google_search_technical]
+    governing_invariant: canonical_identity
+    required_evidence: [observations.search.canonical]
+    evidence_contracts:
+      observations.search.canonical: {type: string, max_age_seconds: 86400}
+    evidence_scope: public_static
+    mutation_class: pure_read
+    evaluation: {path: observations.search.canonical, operator: https_url}
+    remediation: Emit one absolute HTTPS canonical that represents the page identity.
+    certification_eligible: true
+  - check_id: search.robots.indexable
+    profile: search
+    title: Intended indexable page is not blocked
+    authority_refs: [robots_rfc_9309, google_search_technical]
+    governing_invariant: seo_indexable
+    required_evidence: [observations.search.blocked]
+    evidence_contracts:
+      observations.search.intended_indexable: {type: boolean, max_age_seconds: 86400}
+      observations.search.blocked: {type: boolean, max_age_seconds: 86400}
+    evidence_scope: public_static
+    mutation_class: pure_read
+    applicability:
+      required_evidence: [observations.search.intended_indexable]
+      evaluation: {path: observations.search.intended_indexable, operator: equals, expected: true}
+    evaluation: {path: observations.search.blocked, operator: equals, expected: false}
+    remediation: Align robots and page-level index controls with the declared indexability decision.
+    certification_eligible: true
+  - check_id: search.structured_data.visible_parity
+    profile: search
+    title: Structured data matches visible claims
+    authority_refs: [schema_org_30, constitutional_projection]
+    governing_invariant: schema_publishable
+    required_evidence: [observations.search.structured_data_visible_parity]
+    evidence_contracts:
+      observations.search.structured_data_visible_parity: {type: boolean, max_age_seconds: 86400}
+    evidence_scope: public_static
+    mutation_class: pure_read
+    evaluation: {path: observations.search.structured_data_visible_parity, operator: equals, expected: true}
+    remediation: Generate visible and machine-readable claims from the same canonical decision.
+    certification_eligible: true
+  - check_id: search.structured_data.jsonld_rfc8259
+    profile: search
+    title: JSON-LD survives a single HTML unescape as RFC 8259 JSON
+    authority_refs: [rfc8259_section_7, google_jsonld_single_unescape]
+    governing_invariant: schema_publishable
+    required_evidence: [observations.search.jsonld.single_unescape_rfc8259]
+    evidence_contracts:
+      observations.search.jsonld.present: {type: boolean, max_age_seconds: 86400}
+      observations.search.jsonld.single_unescape_rfc8259: {type: boolean, max_age_seconds: 86400}
+    evidence_scope: public_static
+    mutation_class: pure_read
+    applicability:
+      required_evidence: [observations.search.jsonld.present]
+      evaluation: {path: observations.search.jsonld.present, operator: equals, expected: true}
+    evaluation: {path: observations.search.jsonld.single_unescape_rfc8259, operator: equals, expected: true}
+    remediation: Serialize JSON-LD at the render sink with JSON.stringify plus \u003c \u003e \u0026 (or standard JSON escapes). Do not HTML-entity-encode fields.
+    certification_eligible: true
+  - check_id: search.links.targets_eligible
+    profile: search
+    title: Emitted internal links resolve to eligible targets
+    authority_refs: [constitutional_link_graph]
+    governing_invariant: no_phantom_links
+    required_evidence: [subject.canonical_origin, observations.links]
+    evidence_contracts:
+      subject.canonical_origin: {type: https_origin, max_age_seconds: 86400}
+      observations.links: {type: link_graph, max_age_seconds: 86400}
+    evidence_scope: declared_config
+    mutation_class: pure_read
+    evaluation: {path: observations.links, operator: link_graph_eligible}
+    remediation: Map the implementation route authority to LinkTargetV1 and suppress ineligible targets.
+    certification_eligible: true
+  - check_id: search.corpus.complete
+    profile: search
+    title: The declared page-family corpus was completely observed
+    authority_refs: [constitutional_sensor_integrity]
+    governing_invariant: corpus_completeness
+    required_evidence: [observations.corpus.complete]
+    evidence_contracts:
+      observations.corpus.complete: {type: boolean, max_age_seconds: 86400}
+    evidence_scope: public_crawl
+    mutation_class: pure_read
+    evaluation: {path: observations.corpus.complete, operator: equals, expected: true}
+    remediation: Complete the declared census; a sample cannot certify a page family.
+    certification_eligible: true
+  - check_id: answer.primary_answer.present
+    profile: answer_ai_retrieval
+    title: A clear primary answer is present in the rendered document
+    authority_refs: [google_ai_search]
+    governing_invariant: utility_document
+    required_evidence: [observations.answer.primary_answer_present]
+    evidence_contracts:
+      observations.answer.primary_answer_present: {type: boolean, max_age_seconds: 86400}
+    evidence_scope: public_rendered
+    mutation_class: pure_read
+    evaluation: {path: observations.answer.primary_answer_present, operator: equals, expected: true}
+    remediation: State the page's primary answer clearly in visible, extractable content.
+    certification_eligible: true
+  - check_id: answer.entity.clear
+    profile: answer_ai_retrieval
+    title: The page's primary entity is unambiguous
+    authority_refs: [google_ai_search, schema_org_30]
+    governing_invariant: utility_document
+    required_evidence: [observations.answer.primary_entity]
+    evidence_contracts:
+      observations.answer.primary_entity: {type: string, max_age_seconds: 86400}
+    evidence_scope: public_rendered
+    mutation_class: pure_read
+    evaluation: {path: observations.answer.primary_entity, operator: nonempty}
+    remediation: Name the primary entity consistently in the title, heading, body, and structured data.
+    certification_eligible: true
+  - check_id: answer.claims.provenance
+    profile: answer_ai_retrieval
+    title: Material claims expose source and freshness evidence
+    authority_refs: [constitutional_claim_decision, constitutional_sensor_integrity]
+    governing_invariant: claim_publishable
+    required_evidence: [observations.answer.material_claims_sourced]
+    evidence_contracts:
+      observations.answer.material_claims_sourced: {type: boolean, max_age_seconds: 604800}
+    evidence_scope: declared_config
+    mutation_class: pure_read
+    evaluation: {path: observations.answer.material_claims_sourced, operator: equals, expected: true}
+    remediation: Bind material claims to named authority and freshness evidence or suppress them.
+    certification_eligible: true
+  - check_id: answer.crawlers.choice
+    profile: answer_ai_retrieval
+    title: Search, user retrieval, and training crawler choices are explicit
+    authority_refs: [openai_publishers, anthropic_crawlers]
+    governing_invariant: crawler_choice
+    required_evidence: [observations.answer.crawler_policy_explicit]
+    evidence_contracts:
+      observations.answer.crawler_policy_explicit: {type: boolean, max_age_seconds: 604800}
+    evidence_scope: declared_config
+    mutation_class: pure_read
+    evaluation: {path: observations.answer.crawler_policy_explicit, operator: equals, expected: true}
+    remediation: Declare separate policy choices for search, user-directed retrieval, and model training crawlers.
+    certification_eligible: true
+  - check_id: agent.actions.typed
+    profile: agentic_web
+    title: Agent actions declare typed inputs and outputs
+    authority_refs: [constitutional_projection]
+    governing_invariant: agent_action_contract
+    required_evidence: [observations.agent.actions_typed]
+    evidence_contracts:
+      observations.agent.actions_typed: {type: boolean, max_age_seconds: 604800}
+    evidence_scope: declared_config
+    mutation_class: pure_read
+    evaluation: {path: observations.agent.actions_typed, operator: equals, expected: true}
+    remediation: Publish a machine-readable input and output schema for each action.
+    certification_eligible: true
+  - check_id: agent.actions.side_effects
+    profile: agentic_web
+    title: Agent actions declare mutation class and side effects
+    authority_refs: [constitutional_sensor_integrity]
+    governing_invariant: agent_action_contract
+    required_evidence: [observations.agent.side_effects_declared]
+    evidence_contracts:
+      observations.agent.side_effects_declared: {type: boolean, max_age_seconds: 604800}
+    evidence_scope: declared_config
+    mutation_class: pure_read
+    evaluation: {path: observations.agent.side_effects_declared, operator: equals, expected: true}
+    remediation: Declare mutation class, consent, authentication, idempotency, and material side effects.
+    certification_eligible: true
+  - check_id: agent.actions.receipts
+    profile: agentic_web
+    title: Mutating agent actions emit sanitized receipts
+    authority_refs: [constitutional_projection]
+    governing_invariant: evidence_gated_done
+    required_evidence: [observations.agent.mutating_actions_receipted]
+    evidence_contracts:
+      observations.agent.mutating_actions_receipted: {type: boolean, max_age_seconds: 86400}
+    evidence_scope: private_authority
+    mutation_class: pure_read
+    evaluation: {path: observations.agent.mutating_actions_receipted, operator: equals, expected: true}
+    remediation: Emit independently checkable, sanitized receipts for every mutating action.
+    certification_eligible: true
+  - check_id: agent.webmcp.experimental
+    profile: agentic_web
+    title: Experimental WebMCP declaration is internally coherent
+    authority_refs: [webmcp_draft]
+    governing_invariant: experimental_agent_interface
+    required_evidence: [observations.agent.webmcp_coherent]
+    evidence_contracts:
+      observations.agent.webmcp_declared: {type: boolean, max_age_seconds: 86400}
+      observations.agent.webmcp_coherent: {type: boolean, max_age_seconds: 86400}
+    evidence_scope: public_rendered
+    mutation_class: pure_read
+    applicability:
+      required_evidence: [observations.agent.webmcp_declared]
+      evaluation: {path: observations.agent.webmcp_declared, operator: equals, expected: true}
+    evaluation: {path: observations.agent.webmcp_coherent, operator: equals, expected: true}
+    remediation: Follow the current draft carefully and do not represent draft compatibility as stable certification.
+    certification_eligible: false

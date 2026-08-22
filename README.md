@@ -4,15 +4,46 @@
 
 [Website](https://constitutionalcms.com) · [Source boundary](docs/SOURCE_BOUNDARY.md) · Apache 2.0
 
-## Run it
+## Quickstart (90 seconds)
+
+Audit any public page against the versioned check catalog with one command:
+
+```bash
+uvx constitutional-cms audit https://your-site.com
+```
+
+Until the PyPI release lands, run straight from this repository:
+
+```bash
+uvx --from git+https://github.com/jamesfgibbons/constitutional-cms constitutional-cms audit https://your-site.com
+```
+
+Sample output (real run against `https://example.com`, abridged):
+
+```
+Constitutional CMS conformance audit
+Subject:   https://example.com
+Catalog:   1.0.2 (framework v0.4.2) · evaluated 2026-08-22T04:18:27Z
+
+Web Foundation
+  PASS           web.http.success
+  PASS           web.document.language
+  UNMEASURED     web.accessibility.automated  (evidence_missing)
+  UNMEASURED     web.performance.field_cwv  (evidence_missing)
+...
+Summary: 2 PASS · 0 FAIL · 16 UNMEASURED · 1 NOT_APPLICABLE  (measured 2 of 18 applicable)
+UNMEASURED means no honest evidence was collected for the check — it is neither a pass nor a failure.
+```
+
+UNMEASURED is a first-class verdict: evidence the collector cannot honestly observe is reported as unmeasured — never converted into a pass, a fail, or a synthetic score. Exit code is `1` only when a check actually FAILs. Add `--json` for the full `ConformanceReceiptV1`.
+
+The command wraps the same public recreate-a-check path the scripts expose:
 
 ```bash
 python scripts/validate_contracts.py
 python scripts/validate_web_conformance.py
 python scripts/conformance_evaluator.py --evidence tests/fixtures/conformance/pass_all.yaml
 ```
-
-These scripts are the public evaluator. A packaged `constitutional-cms audit` command is not in this repo yet.
 
 
 CMS used to mean Content Management System — software for humans who write pages. Constitutional CMS manages the *contracts* that govern what AI agents are permitted to publish. Same acronym, different era.
@@ -450,12 +481,19 @@ Once published to PyPI, you'll be able to install directly:
 ```bash
 pip install constitutional-cms
 # or run without installation
-uvx constitutional-cms audit --evidence <path>
+uvx constitutional-cms audit https://your-site.com
 ```
 
 ### Audit conformance
 
-Run a conformance audit against normalized evidence and produce a `ConformanceReceiptV1`:
+Audit a live URL — one read-only GET, static evidence only, everything else honestly `UNMEASURED`:
+
+```bash
+constitutional-cms audit https://your-site.com          # human summary
+constitutional-cms audit https://your-site.com --json   # full ConformanceReceiptV1
+```
+
+Or run the evaluator against prepared, normalized evidence and produce a `ConformanceReceiptV1`:
 
 ```bash
 constitutional-cms audit --evidence tests/fixtures/conformance/pass_all.yaml
@@ -480,10 +518,11 @@ constitutional-cms audit \
 
 ### Validate contracts
 
-Validate contract consistency and web conformance schemas:
+Validate a local contracts directory for internal consistency (defaults to `./contracts`):
 
 ```bash
 constitutional-cms validate
+constitutional-cms validate path/to/contracts --check links
 ```
 
 ### No-install path

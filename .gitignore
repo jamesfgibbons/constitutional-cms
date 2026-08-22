@@ -10,3 +10,5 @@ node_modules
 reports/page-health-validator/
 .codex-worktrees/
 constitutional_cms.egg-info/
+build/
+dist/

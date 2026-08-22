@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "constitutional-cms"
-version = "0.4.2"
+version = "0.4.3.dev0"
 description = "A governance framework for AI agents that build websites"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -41,3 +41,6 @@ Repository = "https://github.com/jamesfgibbons/constitutional-cms"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["constitutional_cms*"]
+
+[tool.setuptools.package-data]
+constitutional_cms = ["data/schemas/*.json", "data/catalog/*.yaml"]
