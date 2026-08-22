@@ -2,7 +2,10 @@ blank_issues_enabled: true
 contact_links:
   - name: Protocol site
     url: https://constitutionalcms.com
-    about: Public protocol reference and doctrine
+    about: Public protocol reference, Public Truth Audit, and CLI
+  - name: Discussions
+    url: https://github.com/jamesfgibbons/constitutional-cms/discussions
+    about: Implementation questions, adapter proposals, and design-partner interest
   - name: Source boundary
     url: https://github.com/jamesfgibbons/constitutional-cms/blob/main/docs/SOURCE_BOUNDARY.md
     about: What belongs in this public repo vs private jurisdiction

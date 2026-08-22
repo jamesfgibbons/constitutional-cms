@@ -196,7 +196,7 @@
   "evaluated_at": "2026-08-15T12:00:00Z",
   "evaluation_context": {
     "as_of": "2026-08-15T12:00:00Z",
-    "catalog_digest": "c5a909b6e6acebd2617393ba8cccff6601b76b7d661d4895c28ff248c8659f70",
+    "catalog_digest": "978b46ddb83e468636a30c95e5a25ff9ded2c4904c4c83a25047001146fdd285",
     "evaluator_version": "constitutional-cms-reference/0.4.1",
     "evidence_digest": "f5abefefc979789a263503ff5899e494f613620b6b73208a9e35212f962af80f"
   },
@@ -205,7 +205,7 @@
     "ratio": 1.0,
     "total_applicable": 18
   },
-  "framework_release": "v0.4.2",
+  "framework_release": "v0.5.0",
   "limitations": [
     "This page has no JSON-LD, so the JSON-LD RFC 8259 check is not applicable."
   ],
@@ -235,7 +235,7 @@
       "UNMEASURED": 0
     }
   },
-  "result_digest": "e344df839e1b1f11bf67a71f41edd6b0e62ba77a16c9f95562e6b666bd622af2",
+  "result_digest": "848ec63bd443ca8e02e6015b46b56933c562bf52a475f26c5bd589ea9990adc9",
   "schema_version": "ConformanceReceiptV1",
   "subject": {
     "canonical_origin": "https://example.com",

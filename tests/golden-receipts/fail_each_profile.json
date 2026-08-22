@@ -196,7 +196,7 @@
   "evaluated_at": "2026-08-15T12:00:00Z",
   "evaluation_context": {
     "as_of": "2026-08-15T12:00:00Z",
-    "catalog_digest": "c5a909b6e6acebd2617393ba8cccff6601b76b7d661d4895c28ff248c8659f70",
+    "catalog_digest": "978b46ddb83e468636a30c95e5a25ff9ded2c4904c4c83a25047001146fdd285",
     "evaluator_version": "constitutional-cms-reference/0.4.1",
     "evidence_digest": "f5c7c07dcf66c1ff48c064f5a03a97b46f0f5a2def8da849ddd7963402010850"
   },
@@ -205,7 +205,7 @@
     "ratio": 0.210526,
     "total_applicable": 19
   },
-  "framework_release": "v0.4.2",
+  "framework_release": "v0.5.0",
   "limitations": [
     "This fixture intentionally supplies one falsifying observation per profile."
   ],
@@ -235,7 +235,7 @@
       "UNMEASURED": 4
     }
   },
-  "result_digest": "a6d7a4de35398f2fa9fa157b8748472b43015196cf2296587c438c1be8d6d554",
+  "result_digest": "f57c3e089574eb2d126a3cc23304cddead324965771240392d9635415fa0de9c",
   "schema_version": "ConformanceReceiptV1",
   "subject": {
     "url": "https://example.com/failing"

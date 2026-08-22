@@ -196,7 +196,7 @@
   "evaluated_at": "2026-08-15T12:00:00Z",
   "evaluation_context": {
     "as_of": "2026-08-15T12:00:00Z",
-    "catalog_digest": "c5a909b6e6acebd2617393ba8cccff6601b76b7d661d4895c28ff248c8659f70",
+    "catalog_digest": "978b46ddb83e468636a30c95e5a25ff9ded2c4904c4c83a25047001146fdd285",
     "evaluator_version": "constitutional-cms-reference/0.4.1",
     "evidence_digest": "9c9c2b26d402492e38e663c503ee1f1b8db848bd32d759694100aac7df4ecf25"
   },
@@ -205,7 +205,7 @@
     "ratio": 0.0,
     "total_applicable": 19
   },
-  "framework_release": "v0.4.2",
+  "framework_release": "v0.5.0",
   "limitations": [
     "This fixture is synthetic and exercises evidence_invalid through a wrong-typed observation."
   ],
@@ -235,7 +235,7 @@
       "UNMEASURED": 5
     }
   },
-  "result_digest": "d03decc8ee04e29dfbb63f7109d6480cffb845615446972859ffc95774310d37",
+  "result_digest": "39d96b804a25f978486d28fd8758c385f840851d0354eb4ddbb5228cb5afc050",
   "schema_version": "ConformanceReceiptV1",
   "subject": {
     "url": "https://example.com/invalid"

@@ -196,7 +196,7 @@
   "evaluated_at": "2026-08-15T12:00:00Z",
   "evaluation_context": {
     "as_of": "2026-08-15T12:00:00Z",
-    "catalog_digest": "c5a909b6e6acebd2617393ba8cccff6601b76b7d661d4895c28ff248c8659f70",
+    "catalog_digest": "978b46ddb83e468636a30c95e5a25ff9ded2c4904c4c83a25047001146fdd285",
     "evaluator_version": "constitutional-cms-reference/0.4.1",
     "evidence_digest": "f128c988d06ab5201e51f97e15482cd69742c1c37f668a14aab6628144950e5b"
   },
@@ -205,7 +205,7 @@
     "ratio": 1.0,
     "total_applicable": 19
   },
-  "framework_release": "v0.4.2",
+  "framework_release": "v0.5.0",
   "limitations": [],
   "profile_summaries": {
     "agentic_web": {
@@ -233,7 +233,7 @@
       "UNMEASURED": 0
     }
   },
-  "result_digest": "ac96197fdcbb3e207fc91a88d6777252b7b94678ea8db04ab77e371b005d8650",
+  "result_digest": "d795fc873004dd8de1d8764c7ced6c2b825f69d551eb2dca8a745ef97f389b67",
   "schema_version": "ConformanceReceiptV1",
   "subject": {
     "canonical_origin": "https://example.com",

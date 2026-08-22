@@ -4,11 +4,29 @@ All notable changes to Constitutional CMS are documented here. This project foll
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-08-22
+
+**Run the Constitution.** This is the distribution release: one framework identity, a wheel that works outside the clone, and a receipt-first CLI.
+
 ### Added
+- Packaged CLI as the developer conversion surface. `constitutional-cms audit --evidence` evaluates a normalized `EvidenceBundleV1` against the bundled catalog and writes a `ConformanceReceiptV1`. Optional `audit <url>` performs one read-only GET for public-static evidence only.
+- `--version` and opt-in `--fail-on FAIL` / `--fail-on FAIL,UNMEASURED`. Default `audit` is receipt-first: it writes a valid receipt and exits 0. A catalog `FAIL` does not block a release unless CI asks it to.
+- Catalog, JSON Schemas, evaluator, and contract validator ship inside `constitutional_cms/` via `importlib.resources`, so a clean wheel works from `/tmp`. `scripts/conformance_evaluator.py` and `scripts/validate_contracts.py` remain thin re-exports.
+- `constitutional-cms validate` with no arguments checks bundled catalog/schema coherence (19 checks, catalog 1.0.2, framework `v0.5.0`). A local contracts directory is validated when present or when a path is passed.
+- Synthetic `examples/hello-site/` fixture for the README quickstart.
+- Clean-wheel smoke in CI: install the built wheel outside the repository and run `--help`, `validate`, and `audit`.
+- **CheckCatalogV1 1.0.2** (already on `main`, now released under this framework identity): `search.structured_data.jsonld_rfc8259` (19 checks). Shared pass_all / unmeasured-state fixtures and public goldens recreate PASS, FAIL, NOT_APPLICABLE, and UNMEASURED for the new check.
+- Authority references for RFC 8259 §7 and Google's JSON-LD single-unescape behavior in the standards registry.
 - Documented VIBEnet Signal Contract as the adjacent renderer-facing awareness layer, not a fifth web-conformance profile.
-- **CheckCatalogV1 1.0.2**: Added `search.structured_data.jsonld_rfc8259` (19 checks). Catalog `framework_release` is `v0.4.2`. Shared pass_all / unmeasured-state fixtures and public goldens recreate PASS, FAIL, NOT_APPLICABLE, and UNMEASURED for the new check.
-- Authority references for RFC 8259 §7 and Google's JSON-LD single-unescape behavior in standards registry.
-- Test fixtures and golden receipts covering PASS, FAIL, NOT_APPLICABLE, and UNMEASURED verdict states for the new check.
+
+### Changed
+- Framework release, Python package, git tag, and catalog `framework_release` pin are all `v0.5.0` / `0.5.0`. Do not publish this tree as `0.4.2`: the existing `v0.4.2` tag points at `951b09d`, before the CLI package and the nineteenth check.
+- README opening is the adoption screen (category, website/CLI distinction, install, fixture, sample receipt, non-goals, contribution ladder). Historical contract material stays below.
+
+### Notes
+- `EVALUATOR_VERSION` remains `constitutional-cms-reference/0.4.1`. Evaluation rules did not change; distribution and identity did.
+- `certified` remains `false` on the public recreate-a-check path.
+- Site diagnostics remain separately labeled from catalog verdicts.
 
 ## [0.4.2] - 2026-08-16
 

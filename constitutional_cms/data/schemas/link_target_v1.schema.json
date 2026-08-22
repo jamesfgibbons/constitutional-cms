@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constitutionalcms.com/schemas/link-target-v1.json",
+  "title": "LinkTargetV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["canonical_url", "exists", "page_family", "publication_tier", "indexable", "inbound_eligible", "outbound_eligible", "observed_at", "authority_id"],
+  "properties": {
+    "canonical_url": {"type": "string", "format": "uri", "pattern": "^https://"},
+    "exists": {"type": "boolean"},
+    "page_family": {"type": "string", "minLength": 1},
+    "publication_tier": {"enum": ["FULL", "BASIC", "SHELL", "SUPPRESS"]},
+    "indexable": {"type": "boolean"},
+    "inbound_eligible": {"type": "boolean"},
+    "outbound_eligible": {"type": "boolean"},
+    "observed_at": {"type": "string", "format": "date-time"},
+    "authority_id": {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "redirect_chain": {
+      "type": "array",
+      "items": {"type": "string", "format": "uri", "pattern": "^https://"}
+    }
+  }
+}

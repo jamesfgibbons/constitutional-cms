@@ -19,6 +19,16 @@ Agents prepare work. Humans review and merge.
 3. Read the relevant contract in `contracts/` before touching anything it governs.
 4. Identify your boundary in `contracts/snapshot_boundary.yaml`. Write agents write. Read agents read. Do not cross.
 
+## Three contribution paths
+
+File a GitHub issue. Do not paste private authorities, credentials, or production inventories.
+
+1. **Incident** — what broke in a real publishing system. Use the production-incident template.
+2. **Invariant** — the portable rule that failure generalizes to. Use the contribute-invariant template.
+3. **Adapter** — a translator from a named source into `EvidenceBundleV1` or `LinkTargetV1`. Use the contribute-adapter template.
+
+Implementation questions and design-partner interest belong in Discussions. Issues stay for concrete work.
+
 ## What belongs here
 
 **In scope**

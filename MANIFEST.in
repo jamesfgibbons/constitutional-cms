@@ -3,7 +3,9 @@ include LICENSE
 include requirements.txt
 include CHANGELOG.md
 include CONTRIBUTING.md
+include ROADMAP.md
 
+recursive-include constitutional_cms/data *.json *.yaml
 recursive-include contracts *.yaml
 recursive-include schemas *.json
 recursive-include scripts *.py

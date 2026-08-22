@@ -1,23 +1,141 @@
 # Constitutional CMS
 
-**A governance framework for AI agents that build websites.**
+Open-source **publishing governance for AI-built websites**.
 
-[Website](https://constitutionalcms.com) · [Source boundary](docs/SOURCE_BOUNDARY.md) · Apache 2.0
+**Constitutional CMS governs what AI agents are entitled to publish.**
 
-## Run it
+The public checker inspects what reached the web.
+The CLI runs the same evidence rules before publication.
 
-```bash
-python scripts/validate_contracts.py
-python scripts/validate_web_conformance.py
-python scripts/conformance_evaluator.py --evidence tests/fixtures/conformance/pass_all.yaml
-```
-
-These scripts are the public evaluator. A packaged `constitutional-cms audit` command is not in this repo yet.
-
+[Run a public audit](https://constitutionalcms.com/check) · [CLI](#install-and-run-a-fixture) · [Protocol](docs/WEB_CONFORMANCE.md) · [Pilot](https://constitutionalcms.com/pilot)
 
 CMS used to mean Content Management System — software for humans who write pages. Constitutional CMS manages the *contracts* that govern what AI agents are permitted to publish. Same acronym, different era.
 
 WordPress, Webflow, Drupal, and Shopify were designed for human authors. They still work for that. Constitutional CMS is designed for the gap that opens when **agents become the authors** — and nobody is checking whether each generated page has valid data, working links, or enough substance to deserve publication.
+
+## Website vs CLI
+
+| | After publication | Before publication |
+|---|---|---|
+| **Surface** | [constitutionalcms.com/check](https://constitutionalcms.com/check) | `constitutional-cms` CLI |
+| **Input** | A public URL | Normalized `EvidenceBundleV1` |
+| **Question** | What did the outside world receive? | Can our own system run the same rules before the next page ships? |
+
+Do not trust the hosted checker as the last word. Download the evidence and re-run the same verdict locally.
+
+## Install and run a fixture
+
+From a clone of this repository:
+
+```bash
+pip install -e .
+constitutional-cms validate
+constitutional-cms audit \
+  --evidence examples/hello-site/evidence.yaml \
+  --out receipt.json
+```
+
+After the v0.5.0 package is on PyPI:
+
+```bash
+uvx constitutional-cms audit \
+  --evidence examples/hello-site/evidence.yaml \
+  --out receipt.json
+```
+
+Default `audit` writes a receipt and exits `0`. That is intentional: the command is a receipt generator. CI that should block a release must opt in:
+
+```bash
+constitutional-cms audit \
+  --evidence examples/hello-site/evidence.yaml \
+  --out receipt.json \
+  --fail-on FAIL
+```
+
+Stricter publication boundaries can also block missing evidence:
+
+```bash
+--fail-on FAIL,UNMEASURED
+```
+
+Optional: `constitutional-cms audit https://example.com` performs one read-only GET and leaves everything a static response cannot observe as `UNMEASURED`. Prefer `--evidence` in CI.
+
+## Sample receipt (abridged)
+
+Provenance: synthetic fixture. Not a live customer page. `certified` is always `false` on this public recreate-a-check path.
+
+```json
+{
+  "schema_version": "ConformanceReceiptV1",
+  "framework_release": "v0.5.0",
+  "catalog_version": "1.0.2",
+  "certified": false,
+  "checks": [
+    {
+      "check_id": "web.http.success",
+      "verdict": "PASS",
+      "reason_code": "rule_satisfied"
+    },
+    {
+      "check_id": "web.accessibility.automated",
+      "verdict": "UNMEASURED",
+      "reason_code": "evidence_missing"
+    }
+  ]
+}
+```
+
+A score collapses “wrong,” “not applicable,” and “not observed” into one number. Constitutional CMS keeps them separate.
+
+## What it does — and does not do
+
+It does:
+
+- evaluate normalized evidence against a versioned 19-check catalog
+- keep `PASS`, `FAIL`, `UNMEASURED`, and `NOT_APPLICABLE` as distinct verdicts
+- emit a `ConformanceReceiptV1` with evidence pointers and a result digest
+- refuse to invent a pass, a fail, or a composite score
+
+It is not:
+
+- another SEO crawler
+- another content generator
+- a replacement for WordPress, Webflow, or a headless CMS
+- general-purpose agent permission management
+- a proprietary website score
+- an observability dashboard
+
+Agent-security products govern what tools an agent can call. Constitutional CMS governs what the resulting public surface is allowed to claim.
+
+## Release identity
+
+| Coordinate | Value |
+|---|---|
+| Framework release | `v0.5.0` |
+| Python package | `0.5.0` |
+| Check catalog | `1.0.2` (19 checks) |
+| Git tag | `v0.5.0` |
+
+The hosted checker, this repository, the Python package, and the changelog must name the same commit. See [CHANGELOG.md](CHANGELOG.md) and [ROADMAP.md](ROADMAP.md).
+
+## Adoption ladder
+
+1. Run a fixture.
+2. Produce a receipt.
+3. Change one evidence value.
+4. See the verdict change.
+5. Add your own collector or adapter.
+6. Enforce the receipt in CI (`--fail-on FAIL` when you mean it).
+
+## Three contribution paths
+
+| Path | What you file | Template |
+|---|---|---|
+| **Incident** | What broke in a real publishing system | [production-incident](.github/ISSUE_TEMPLATE/production-incident.yml) |
+| **Invariant** | The portable rule that failure generalizes to | [contribute-invariant](.github/ISSUE_TEMPLATE/contribute-invariant.yml) |
+| **Adapter** | A translator from a public or private source into `EvidenceBundleV1` / `LinkTargetV1` | [contribute-adapter](.github/ISSUE_TEMPLATE/contribute-adapter.yml) |
+
+Issues are for concrete work and reproducible failures. Implementation questions and adapter proposals belong in [Discussions](https://github.com/jamesfgibbons/constitutional-cms/discussions).
 
 **Skills make agents capable. Contracts make agents trustworthy.**
 
@@ -40,6 +158,7 @@ WordPress, Webflow, Drupal, and Shopify were designed for human authors. They st
 - [Runtime governance](#runtime-governance)
 - [Production pattern](#production-pattern)
 - [Getting started](#getting-started)
+- [Roadmap](ROADMAP.md)
 - [Prior art](#prior-art--honest-positioning)
 - [License](#license)
 
@@ -435,55 +554,66 @@ The agents write code and produce content. Humans write the contracts, review th
 
 ## Run it
 
+The website checks a page after it is public. The CLI lets your own system check itself before it publishes.
+
 ### Installation
 
-**Local development (this repository):**
+**This repository:**
 
 ```bash
 pip install -e .
 ```
 
-**After PyPI publication (not yet available):**
-
-Once published to PyPI, you'll be able to install directly:
+**After the v0.5.0 PyPI release is published:**
 
 ```bash
 pip install constitutional-cms
-# or run without installation
-uvx constitutional-cms audit --evidence <path>
+# or
+uvx constitutional-cms validate
 ```
 
 ### Audit conformance
 
-Run a conformance audit against normalized evidence and produce a `ConformanceReceiptV1`:
-
-```bash
-constitutional-cms audit --evidence tests/fixtures/conformance/pass_all.yaml
-```
-
-Save the receipt to a file:
+`audit` evaluates normalized evidence against the public catalog and writes a `ConformanceReceiptV1`. It does **not** block a release unless you pass `--fail-on`.
 
 ```bash
 constitutional-cms audit \
-  --evidence tests/fixtures/conformance/pass_all.yaml \
+  --evidence examples/hello-site/evidence.yaml \
   --out receipt.json
 ```
 
-Use a custom catalog or evaluation timestamp:
+CI gate (opt-in):
+
+```bash
+constitutional-cms audit \
+  --evidence examples/hello-site/evidence.yaml \
+  --out receipt.json \
+  --fail-on FAIL
+```
+
+Custom catalog or evaluation timestamp:
 
 ```bash
 constitutional-cms audit \
   --catalog contracts/check_catalog_v1.yaml \
-  --evidence tests/fixtures/conformance/pass_all.yaml \
+  --evidence examples/hello-site/evidence.yaml \
   --as-of 2026-08-15T12:00:00Z
+```
+
+Optional public-URL collection — one read-only GET, static evidence only, everything else honestly `UNMEASURED`:
+
+```bash
+constitutional-cms audit https://example.com
+constitutional-cms audit https://example.com --json
 ```
 
 ### Validate contracts
 
-Validate contract consistency and web conformance schemas:
+With no arguments, `validate` checks that the **bundled** catalog and schemas are internally coherent. That works from a wheel, outside this clone. If `./contracts` exists, it is validated too.
 
 ```bash
 constitutional-cms validate
+constitutional-cms validate path/to/contracts --check links
 ```
 
 ### No-install path
@@ -536,6 +666,7 @@ constitutional-cms/
 │   └── sprints/                       # Sprint-scoped work contracts
 │       └── example-sprint.yaml
 ├── examples/
+│   ├── hello-site/                    # Synthetic evidence fixture for the CLI quickstart
 │   ├── location-intelligence/         # Location intelligence example
 │   ├── ecommerce-catalog/             # Product page example
 │   ├── manifests/                     # Public-safe configuration examples
@@ -565,7 +696,7 @@ constitutional-cms/
 2. Edit the domain contracts and create a public-safe `ConstitutionalSiteManifestV1`.
 3. Point agents at the contracts before they write code.
 4. Map collector output or a private authority into `EvidenceBundleV1`.
-5. Run `constitutional-cms audit --evidence <bundle.yaml> --as-of <timestamp>` and enforce the receipt in CI.
+5. Run `constitutional-cms audit --evidence <bundle.yaml> --out receipt.json`. Add `--fail-on FAIL` in CI only when a catalog `FAIL` should block publication.
 
 More detail lives in [`docs/WEB_CONFORMANCE.md`](docs/WEB_CONFORMANCE.md),
 [`docs/ADAPTER_BOUNDARY.md`](docs/ADAPTER_BOUNDARY.md),

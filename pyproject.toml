@@ -4,15 +4,15 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "constitutional-cms"
-version = "0.4.2"
-description = "A governance framework for AI agents that build websites"
+version = "0.5.0"
+description = "Publishing governance for AI-built websites. Evaluate evidence against a versioned catalog and produce a conformance receipt."
 readme = "README.md"
 requires-python = ">=3.9"
 license = {text = "Apache-2.0"}
 authors = [
     {name = "Targeted Impressions", email = "hello@targetedimpressions.com"}
 ]
-keywords = ["governance", "ai-agents", "cms", "contracts"]
+keywords = ["publishing-governance", "ai-agents", "cms", "contracts", "conformance", "receipts"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -41,3 +41,6 @@ Repository = "https://github.com/jamesfgibbons/constitutional-cms"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["constitutional_cms*"]
+
+[tool.setuptools.package-data]
+constitutional_cms = ["data/schemas/*.json", "data/catalog/*.yaml"]

@@ -196,7 +196,7 @@
   "evaluated_at": "2026-08-15T12:00:00Z",
   "evaluation_context": {
     "as_of": "2026-08-15T12:00:00Z",
-    "catalog_digest": "c5a909b6e6acebd2617393ba8cccff6601b76b7d661d4895c28ff248c8659f70",
+    "catalog_digest": "978b46ddb83e468636a30c95e5a25ff9ded2c4904c4c83a25047001146fdd285",
     "evaluator_version": "constitutional-cms-reference/0.4.1",
     "evidence_digest": "5249e5b9ab71fb8d73aecb957ea73e975b07c7e28657eaf82efdcf61309d04d0"
   },
@@ -205,7 +205,7 @@
     "ratio": 0.0,
     "total_applicable": 17
   },
-  "framework_release": "v0.4.2",
+  "framework_release": "v0.5.0",
   "limitations": [
     "Indexability and experimental WebMCP checks are intentionally not applicable."
   ],
@@ -235,7 +235,7 @@
       "UNMEASURED": 5
     }
   },
-  "result_digest": "83b0442068a66463b969f67bdc5600cc31e58873925f64ee123cc5066123e5e4",
+  "result_digest": "9400ce05a61740ad4c786b6faffc499003d304b6188e1f87e232e2616846f497",
   "schema_version": "ConformanceReceiptV1",
   "subject": {
     "url": "https://example.com/private-preview"

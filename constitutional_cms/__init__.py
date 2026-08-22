@@ -1,3 +1,3 @@
-"""Constitutional CMS - A governance framework for AI agents that build websites."""
+"""Constitutional CMS — publishing governance for AI-built websites."""
 
-__version__ = "0.4.2"
+__version__ = "0.5.0"
