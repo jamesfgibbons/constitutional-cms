@@ -148,6 +148,21 @@ it MUST report the clock it used: the receipt's `verified_at` IS the `as_of`
 of that verification. Two verifiers given the same bundle, keys, and `as_of`
 MUST produce identical receipts.
 
+**`as_of` obeys the same six-digit grammar as every other timestamp, and
+over-precision is REFUSED, never truncated and never rounded:** an `as_of`
+carrying more than six fractional digits (`2026-08-15T12:30:00.1234567Z`) is
+rejected as an OPERATIONAL error — **CLI exit 2**, no receipt emitted — because
+it is verifier input, not an artifact under test, so it earns no
+`bundle_malformed` verdict. This closes the last determinism hole: truncation
+would silently map `…00.1234567Z` to `…00.123456Z` and `…00.0000006Z` to
+`…00Z`, while rounding would map the latter to `…00.000001Z`, and each choice
+mints a different `verified_at` → different `receipt_id` → different
+`receipt_hash`. Refusal is the only behavior that cannot disagree with itself.
+A caller that genuinely holds a finer clock MUST decide its own rounding
+BEFORE calling the verifier, and then owns that decision visibly. Pinned by
+`test_round4_as_of_finer_than_microsecond_is_refused_not_truncated` and
+`test_round4_pinned_as_of_precision_rule_is_deterministic`.
+
 ## Timestamps are INSTANTS, never strings
 
 Every timestamp comparison, ordering, and equality test in this spec is on the

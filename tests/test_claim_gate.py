@@ -275,6 +275,48 @@ class ClaimConstitutionTest(unittest.TestCase):
         fractional = claims.verify_bundle(bundle, KEYS, as_of="2026-08-15T12:30:00.5Z").receipt
         self.assertEqual(fractional["verified_at"], "2026-08-15T12:30:00.500000Z")
 
+    def test_round4_as_of_finer_than_microsecond_is_refused_not_truncated(self):
+        """as_of over-precision is an OPERATIONAL refusal (exit 2), never a
+        silent truncation or a rounding: each choice would mint a different
+        verified_at from the same instant."""
+        for over_precise in (
+            "2026-08-15T12:30:00.1234567Z",   # truncation would give .123456Z
+            "2026-08-15T12:30:00.0000006Z",   # truncation → …00Z, rounding → .000001Z
+        ):
+            with self.subTest(as_of=over_precise):
+                with self.assertRaises(claims.ClaimGateError):
+                    claims.verify_bundle(self.verified_bundle, KEYS, as_of=over_precise)
+        # Verifier input, not an artifact: exit 2, and no receipt on stdout.
+        result = subprocess.run(
+            [
+                sys.executable, "-m", "constitutional_cms.cli", "claim-verify",
+                "--bundle", str(GOLDENS / "verified.bundle.json"),
+                "--keys", str(KEYS),
+                "--as-of", "2026-08-15T12:30:00.1234567Z",
+            ],
+            capture_output=True, text=True, cwd=str(ROOT),
+        )
+        self.assertEqual(result.returncode, 2, result.stderr)
+        self.assertNotIn("receipt_id", result.stdout)
+
+    def test_round4_pinned_as_of_precision_rule_is_deterministic(self):
+        """The pinned rule (refuse) leaves exactly one verified_at reachable
+        per instant: six digits verify and round-trip, the seventh cannot
+        produce a receipt at all, so no two conformant verifiers can disagree."""
+        accepted = claims.verify_bundle(
+            self.verified_bundle, KEYS, as_of="2026-08-15T12:30:00.123456Z"
+        ).receipt
+        self.assertEqual(accepted["verified_at"], "2026-08-15T12:30:00.123456Z")
+        again = claims.verify_bundle(
+            self.verified_bundle, KEYS, as_of="2026-08-15T12:30:00.123456Z"
+        ).receipt
+        self.assertEqual(accepted, again)
+        # No spelling of a finer instant can reach a receipt, so neither a
+        # truncating nor a rounding implementation is conformant.
+        for finer in ("2026-08-15T12:30:00.1234560Z", "2026-08-15T12:30:00.1234561Z"):
+            with self.assertRaises(claims.ClaimGateError):
+                claims.verify_bundle(self.verified_bundle, KEYS, as_of=finer)
+
     def test_seventh_fractional_digit_is_refused_not_truncated(self):
         """Bounding the grammar to six digits is what makes exact comparison
         implementable in any language."""
