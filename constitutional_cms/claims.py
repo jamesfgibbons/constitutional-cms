@@ -109,8 +109,12 @@ _UNMEASURED_VERDICTS = {"UNMEASURED", "NOT_APPLICABLE"}
 #: anything else is refused before it is used or copied into a receipt.
 SHA256_PREFIXED = re.compile(r"^sha256:[0-9a-f]{64}$")
 
+# Fractional seconds are bounded to six digits (microseconds) so that the
+# exact comparison resolution and the arithmetic resolution coincide: a
+# timestamp this project can order is a timestamp it can also serialize
+# without loss. More digits are refused, never silently truncated.
 _RFC3339 = re.compile(
-    r"^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.(\d+))?(Z|[+-]\d{2}:\d{2})$"
+    r"^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.(\d{1,6}))?(Z|[+-]\d{2}:\d{2})$"
 )
 
 
@@ -153,9 +157,10 @@ def _split_rfc3339(value: Any) -> tuple[datetime, str] | None:
 def parse_instant(value: Any) -> datetime | None:
     """Return the UTC instant ``value`` names, or None when it names none.
 
-    Sub-second digits are truncated to microseconds (the resolution of
-    :class:`datetime`); use :func:`instant_key` when the comparison must be
-    exact at any precision.
+    Fractional seconds are bounded to six digits by the grammar, so this is
+    lossless for every timestamp this project accepts: the arithmetic
+    resolution and :func:`instant_key`'s comparison resolution are the same
+    microsecond. A seventh digit is not truncated — it is refused (None).
     """
     parsed = _split_rfc3339(value)
     if parsed is None:
@@ -173,6 +178,11 @@ def instant_key(value: Any) -> tuple[datetime, Decimal] | None:
     fractional seconds, and ``.`` (0x2E) sorts before ``Z`` (0x5A), so lexical
     order is not chronological order: ``…12:00:00.999999Z`` sorts BEFORE
     ``…12:00:00Z`` as a string while being LATER as an instant.
+
+    Comparison is exact at the full precision the grammar admits (at most six
+    fractional digits), so every implementation that parses this grammar
+    orders these timestamps identically — no language's clock resolution can
+    change a verdict.
     """
     parsed = _split_rfc3339(value)
     if parsed is None:

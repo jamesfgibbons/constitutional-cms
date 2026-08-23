@@ -218,6 +218,9 @@ class ClaimConstitutionTest(unittest.TestCase):
             ("unmeasured", AS_OF),
             ("unknown_key", AS_OF),
             ("expiry_mismatch", AS_OF),
+            ("issuer_mismatch", AS_OF),
+            ("signature_invalid", AS_OF),
+            ("bundle_malformed", AS_OF),
         ]
         for name, as_of in cases:
             with self.subTest(golden=name):
@@ -232,6 +235,70 @@ class ClaimConstitutionTest(unittest.TestCase):
         annotated = claims.supersede_receipt(self.verified_receipt, superseding["receipt_id"])
         expected = (GOLDENS / "superseded.receipt.json").read_text(encoding="utf-8")
         self.assertEqual(json.dumps(annotated, indent=2, sort_keys=True) + "\n", expected)
+
+    def test_goldens_pin_every_bundle_reason_code(self):
+        """An independent implementer must be able to pin each refusal path
+        against shipped bytes rather than inventing a fixture."""
+        pinned = set()
+        for path in sorted(GOLDENS.glob("*.receipt.json")):
+            pinned.update(load_json(path)["reason_codes"])
+        self.assertEqual(claims.CLAIM_REASON_CODES - pinned, set())
+
+    def test_result_level_receipt_golden_refuses(self):
+        """receipt_hash_mismatch.receipt.json is the tampered artifact itself:
+        verify_receipt mints no receipt for a refusal, so the golden is the
+        input, and the shipped bytes pin the refusal."""
+        forged = load_json(GOLDENS / "receipt_hash_mismatch.receipt.json")
+        result = claims.verify_receipt(forged, as_of=AS_OF)
+        self.assertFalse(result.ok)
+        self.assertEqual(result.reason_codes, ["receipt_hash_mismatch"])
+
+    def test_gap9_equivalent_as_of_spellings_produce_byte_identical_receipts(self):
+        """Computed timestamps have ONE spelling: the same instant spelled any
+        accepted way yields identical verified_at, receipt_id, and receipt_hash."""
+        bundle = load_json(GOLDENS / "verified.bundle.json")
+        spellings = [
+            "2026-08-15T12:30:00Z",
+            "2026-08-15T12:30:00.0Z",
+            "2026-08-15T12:30:00.000Z",
+            "2026-08-15T12:30:00.000000Z",
+            "2026-08-15T08:30:00-04:00",
+        ]
+        receipts = [
+            json.dumps(claims.verify_bundle(bundle, KEYS, as_of=s).receipt, sort_keys=True)
+            for s in spellings
+        ]
+        self.assertEqual(len(set(receipts)), 1, receipts)
+        first = json.loads(receipts[0])
+        self.assertEqual(first["verified_at"], "2026-08-15T12:30:00Z")
+        # A non-zero fraction is emitted with exactly six digits.
+        fractional = claims.verify_bundle(bundle, KEYS, as_of="2026-08-15T12:30:00.5Z").receipt
+        self.assertEqual(fractional["verified_at"], "2026-08-15T12:30:00.500000Z")
+
+    def test_seventh_fractional_digit_is_refused_not_truncated(self):
+        """Bounding the grammar to six digits is what makes exact comparison
+        implementable in any language."""
+        self.assertIsNone(claims.parse_instant("2026-08-15T12:30:00.0000001Z"))
+        self.assertIsNone(claims.instant_key("2026-08-15T12:30:00.0000001Z"))
+        bundle = copy.deepcopy(self.verified_bundle)
+        bundle["generated_at"] = "2026-08-15T12:00:00.0000001Z"
+        result = claims.verify_bundle(bundle, KEYS, as_of=AS_OF)
+        self.assertFalse(result.ok)
+        self.assertEqual(result.reason_codes, ["bundle_malformed"])
+
+    def test_keys_document_comment_is_permitted_and_never_consulted(self):
+        """Prose and schema agree: an optional free-text comment is allowed at
+        document level and carries no semantics."""
+        keys_doc = load_json(KEYS)
+        self.assertIn("comment", keys_doc)
+        stripped = {k: v for k, v in keys_doc.items() if k != "comment"}
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "keys.json"
+            path.write_text(json.dumps(stripped), encoding="utf-8")
+            without = claims.verify_bundle(self.verified_bundle, str(path), as_of=AS_OF)
+        with_comment = claims.verify_bundle(self.verified_bundle, KEYS, as_of=AS_OF)
+        self.assertTrue(without.ok, without.detail)
+        self.assertEqual(without.receipt, with_comment.receipt)
 
     def test_j_earliest_expiry_governs_is_enforced_not_prose(self):
         bundle = load_json(GOLDENS / "expiry_mismatch.bundle.json")

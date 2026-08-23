@@ -13,6 +13,8 @@ example.com fixtures and protect nothing. Never reuse them outside tests.
 
 from __future__ import annotations
 
+import base64
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -68,6 +70,28 @@ def ensure_keys() -> None:
             ],
         }
         write(FIXTURES / "keys.json", keys_doc)
+
+
+def raw_sign(core: dict, key_id: str, key_path: Path) -> dict:
+    """Freeze a core the way an ATTACKER would: raw Ed25519, no producer guards.
+
+    ``sign_bundle`` refuses to emit a bundle no conformant verifier accepts, so
+    the refusal specimens below cannot be produced through it. Every specimen
+    signed here is correctly hashed and correctly signed, which is the point:
+    integrity must never shield the policy defect under test.
+    """
+    from cryptography.hazmat.primitives import serialization
+
+    payload = claims.bundle_signing_bytes(core)
+    private = serialization.load_pem_private_key(key_path.read_bytes(), password=None)
+    signed = {k: v for k, v in core.items() if k not in ("bundle_hash", "signature")}
+    signed["bundle_hash"] = "sha256:" + hashlib.sha256(payload).hexdigest()
+    signed["signature"] = {
+        "alg": "Ed25519",
+        "key_id": key_id,
+        "sig": base64.b64encode(private.sign(payload)).decode("ascii"),
+    }
+    return signed
 
 
 def write(path: Path, document: dict) -> None:
@@ -146,6 +170,53 @@ def main() -> int:
     mismatch = claims.verify_bundle(mismatch_bundle, str(keys_path), as_of=AS_OF)
     assert mismatch.reason_codes == ["expiry_mismatch"], mismatch
     write(GOLDENS / "expiry_mismatch.receipt.json", mismatch.receipt)
+
+    # 8. issuer mismatch — correctly signed by a key the document lists, but
+    #    claiming a DIFFERENT issuer. A key proves possession, never identity.
+    impostor_core = json.loads(json.dumps(core))
+    impostor_core["issuer"] = "victim-bank.example"
+    impostor_bundle = raw_sign(impostor_core, "test-2026-b", KEY_B)
+    write(GOLDENS / "issuer_mismatch.bundle.json", impostor_bundle)
+    impostor = claims.verify_bundle(impostor_bundle, str(keys_path), as_of=AS_OF)
+    assert impostor.reason_codes == ["issuer_mismatch"], impostor
+    write(GOLDENS / "issuer_mismatch.receipt.json", impostor.receipt)
+
+    # 9. signature invalid — bytes and hash agree, but the signature was made
+    #    over a DIFFERENT core (attacker mutated then re-hashed, cannot re-sign).
+    forged = json.loads(json.dumps(verified_bundle))
+    forged["claims"][0]["value"]["verdict"] = "FAIL"
+    forged["bundle_hash"] = "sha256:" + hashlib.sha256(
+        claims.bundle_signing_bytes(forged)
+    ).hexdigest()
+    write(GOLDENS / "signature_invalid.bundle.json", forged)
+    invalid = claims.verify_bundle(forged, str(keys_path), as_of=AS_OF)
+    assert invalid.reason_codes == ["signature_invalid"], invalid
+    write(GOLDENS / "signature_invalid.receipt.json", invalid.receipt)
+
+    # 10. bundle malformed — schema-valid shape, structurally illegal content:
+    #     one claim_id carrying two contradictory values (consumers key by
+    #     claim_id and would silently get last-wins).
+    contradictory_core = json.loads(json.dumps(core))
+    duplicate = json.loads(json.dumps(contradictory_core["claims"][0]))
+    duplicate["value"] = {"verdict": "FAIL", "reason_code": "rule_falsified"}
+    contradictory_core["claims"].append(duplicate)
+    contradictory_core["valid_until"] = min(
+        claim["valid_until"] for claim in contradictory_core["claims"]
+    )
+    malformed_bundle = raw_sign(contradictory_core, "test-2026-b", KEY_B)
+    write(GOLDENS / "bundle_malformed.bundle.json", malformed_bundle)
+    malformed = claims.verify_bundle(malformed_bundle, str(keys_path), as_of=AS_OF)
+    assert malformed.reason_codes == ["bundle_malformed"], malformed
+    write(GOLDENS / "bundle_malformed.receipt.json", malformed.receipt)
+
+    # 11. result-level receipt golden — a receipt whose hashed core was edited
+    #     after issuance. verify_receipt refuses it (receipt_hash_mismatch);
+    #     no NEW receipt is minted, so the golden IS the tampered artifact.
+    forged_receipt = json.loads(json.dumps(verified.receipt))
+    forged_receipt["verdict"] = "FAIL"
+    write(GOLDENS / "receipt_hash_mismatch.receipt.json", forged_receipt)
+    forged_result = claims.verify_receipt(forged_receipt, as_of=AS_OF)
+    assert forged_result.reason_codes == ["receipt_hash_mismatch"], forged_result
 
     print("claim goldens regenerated")
     return 0

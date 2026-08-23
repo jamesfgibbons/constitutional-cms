@@ -85,6 +85,18 @@ them rather than hashing bytes another verifier cannot reproduce:
   refused (`bundle_malformed` / `receipt_malformed`). v0.1 claim values that
   need a number carry it as a string.
 
+  **Scope — this is not a contradiction of `docs/CANONICAL_JSON.md`.** The two
+  documents govern different artifacts and both statements are in force:
+  CANONICAL_JSON.md defines the digest procedure for ALL house artifacts, and
+  under it an integral float COLLAPSES (`1.0` → `1`) — that remains the rule
+  for the older conformance artifacts (`CheckCatalogV1`, `EvidenceBundleV1`,
+  `ConformanceReceiptV1`), which may legitimately carry floats such as a
+  coverage `ratio`. Claim bundles and claim receipts are the STRICTER
+  artifacts: they refuse a float at the door rather than relying on the
+  collapse, because a third-party verifier reproducing the hash must not have
+  to reimplement the collapse rule correctly. Claim artifacts never reach the
+  collapsing branch; conformance artifacts never reach this refusal.
+
 Unicode normalization is NOT yet specified (see the debt list in the PR):
 `ensure_ascii=False` means the exact code points are hashed, so a producer that
 NFC-normalizes and one that does not will disagree. v0.1 hashes what it is
@@ -155,9 +167,38 @@ it is not a detail:
   `2026-13-45T99:99:99Z` matches the pattern and is not a date, and the leap
   second `2026-06-30T23:59:60Z` names no representable instant. Both are
   `bundle_malformed` / `receipt_malformed`, never an exception.
-- Instants are compared at full fractional precision. Receipt-expiry
-  ARITHMETIC (the `min()` below) is performed at microsecond resolution, which
-  can only move a receipt's `valid_until` earlier — never later.
+- **Fractional seconds are bounded to six digits** (`(\.[0-9]{1,6})?`, in the
+  schema pattern and in the verifier's grammar). A seventh digit is REFUSED
+  (`bundle_malformed` / `receipt_malformed`), never truncated. This bound is
+  what makes the next rule implementable: comparison is exact at the full
+  precision the grammar admits, so the comparison resolution and the
+  arithmetic resolution are the same microsecond and no host language's clock
+  precision can change a verdict.
+
+### Computed timestamps have ONE spelling (normative)
+
+An accepted timestamp may be spelled many ways, but every timestamp a
+verifier COMPUTES — `verified_at` and the receipt's `valid_until` — MUST be
+serialized by this rule, because `receipt_hash` covers those strings and
+`receipt_id` is derived from `verified_at` as a string:
+
+1. Convert the instant to UTC. The zone is always the literal `Z`; a numeric
+   offset MUST NOT appear in a computed timestamp.
+2. Write `YYYY-MM-DDThh:mm:ss`, then the fractional part by this rule:
+   **omit the fraction entirely when the microsecond field is zero;
+   otherwise write exactly six digits.** No other digit count is emitted —
+   never `.0`, never `.000`, never `.500`.
+3. Normalize BEFORE the value enters the receipt: an `as_of` of
+   `2026-08-15T12:30:00.000Z`, `2026-08-15T12:30:00Z`, or
+   `2026-08-15T08:30:00-04:00` all name one instant and MUST produce
+   `verified_at` `2026-08-15T12:30:00Z`, the same `receipt_id`, and the same
+   `receipt_hash`. An `as_of` of `2026-08-15T12:30:00.5Z` produces
+   `2026-08-15T12:30:00.500000Z`.
+
+Without this rule the spec contradicts itself: "two verifiers given the same
+bundle, keys, and `as_of` MUST produce identical receipts" is unsatisfiable if
+one of them spells the same instant differently. Pinned by
+`test_gap9_equivalent_as_of_spellings_produce_byte_identical_receipts`.
 
 ## Expiry
 
@@ -348,17 +389,24 @@ rules are normative:
 - `issuer` is REQUIRED. It is what a bundle's `issuer` is checked against (see
   "Issuer binding" above); a document without it cannot bind anything and is
   refused fail-closed.
-- A key entry carries **exactly** `key_id`, `alg`, `public_key`. In particular
+- A key ENTRY carries **exactly** `key_id`, `alg`, `public_key`. In particular
   there is **no `status`**. v0.1 defines no semantics for a key lifecycle
   field, and shipping an inert one advertises a control that does not exist — a
-  `"status": "retired"` key would go on signing fresh, long-lived bundles. A
-  document carrying any other member is refused rather than silently ignored.
-  Key lifecycle beyond presence/absence is deferred until earned.
+  `"status": "retired"` key would go on signing fresh, long-lived bundles. An
+  entry carrying any other member is refused rather than silently ignored. Key
+  lifecycle beyond presence/absence is deferred until earned.
+- At DOCUMENT level the members are `schema_version`, `issuer`, `keys`, and an
+  OPTIONAL free-text `comment` that carries no semantics and is never
+  consulted by a verifier (the shipped `tests/fixtures/claims/keys.json` uses
+  it to label the TEST ONLY keys). Any other document member is refused. The
+  schema is the authority on this list; this prose restates it.
 - **Duplicate `key_id` is refused.** With first-match lookup, two entries
   sharing a `key_id` let document ORDER decide the verdict: an attacker who can
   append one entry flips every legitimate bundle to `signature_invalid` (placed
   first) or gets their own bundles accepted (placed last). A verifier MUST
-  refuse the whole document.
+  refuse the whole document. Like every other keys-document defect this is an
+  OPERATIONAL refusal — **CLI exit 2**, no receipt emitted — never a typed
+  verdict about the bundle.
 - A malformed keys document is an OPERATIONAL refusal (CLI exit 2), not a
   verdict about the bundle: the keys file is the verifier's own configuration,
   not the artifact under test.
