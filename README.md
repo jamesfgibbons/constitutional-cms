@@ -42,15 +42,15 @@ constitutional-cms audit \
   --out receipt.json
 ```
 
+![Fixture audit writing receipt.json with certified: false](docs/assets/quickstart.gif)
+
 ```text
 $ constitutional-cms audit --evidence examples/hello-site/evidence.yaml --out receipt.json
-constitutional-cms 0.5.0
-catalog 1.0.2 · 19 checks
+$ python3 -c "import json; print('certified:', json.load(open('receipt.json'))['certified'])"
 certified: false
-PASS … UNMEASURED …
 ```
 
-`certified: false` is correct. This public path recreates a check; it does not certify a site.
+The command is quiet and exits `0`: it writes a receipt, it does not print a score. `certified: false` is correct. This public path recreates a check; it does not certify a site.
 
 Default `audit` writes a receipt and exits `0`. CI that should block a release must opt in:
 
