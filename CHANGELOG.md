@@ -4,6 +4,9 @@ All notable changes to Constitutional CMS are documented here. This project foll
 
 ## [Unreleased]
 
+### Changed
+- README first screen is the product page: verified clone + venv quickstart (PEP 668), live good-first issue links, one-line VIBEnet boundary. Long constitution moved to [`docs/CONSTITUTION.md`](docs/CONSTITUTION.md). Extra CLI flags live in [`docs/CLI.md`](docs/CLI.md). Do not promote `uvx` until PyPI serves 0.5.0.
+
 ## [0.5.0] - 2026-08-22
 
 **Run the Constitution.** This is the distribution release: one framework identity, a wheel that works outside the clone, and a receipt-first CLI.
