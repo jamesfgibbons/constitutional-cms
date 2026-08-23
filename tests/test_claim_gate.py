@@ -21,6 +21,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from datetime import timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -185,12 +186,28 @@ class ClaimConstitutionTest(unittest.TestCase):
 
     def test_h_key_rotation_done_correctly_keeps_old_bundles_verifying(self):
         keys_doc = load_json(KEYS)
-        statuses = {k["key_id"]: k.get("status") for k in keys_doc["keys"]}
-        self.assertEqual(statuses, {"test-2026-a": "retired", "test-2026-b": "active"})
-        # verified.bundle.json is signed by the RETIRED key_id test-2026-a.
+        self.assertEqual(
+            [k["key_id"] for k in keys_doc["keys"]], ["test-2026-a", "test-2026-b"]
+        )
+        # verified.bundle.json is signed by the OLDER key_id test-2026-a; the
+        # rotation keeps it in the document, so the old bundle keeps verifying.
         self.assertEqual(self.verified_bundle["signature"]["key_id"], "test-2026-a")
         result = claims.verify_bundle(self.verified_bundle, KEYS, as_of=AS_OF)
         self.assertTrue(result.ok, result.detail)
+
+    def test_h2_keys_entries_advertise_no_inert_status_control(self):
+        """v0.1 defines no key `status` semantics. A document carrying one is
+        refused rather than silently ignored: shipping an inert field would
+        advertise a revocation control that does not exist (a retired key would
+        keep signing fresh long-lived bundles). Removal is documented in
+        docs/CLAIM_GATE.md under deferred-until-earned."""
+        keys_doc = load_json(KEYS)
+        for entry in keys_doc["keys"]:
+            self.assertEqual(set(entry), {"key_id", "alg", "public_key"})
+        with_status = copy.deepcopy(keys_doc)
+        with_status["keys"][0]["status"] = "retired"
+        with self.assertRaises(claims.ClaimGateError):
+            claims.verify_bundle(self.verified_bundle, with_status, as_of=AS_OF)
 
     def test_i_golden_bundles_and_receipts_are_byte_stable(self):
         cases = [
@@ -275,6 +292,348 @@ class ClaimConstitutionTest(unittest.TestCase):
 
 
 @needs_crypto
+class AdversarialRoundOneTest(unittest.TestCase):
+    """Round-1 adversarial review: every clause here failed against the code as
+    reviewed. Each test names the exploit it closes."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.verified_bundle = load_json(GOLDENS / "verified.bundle.json")
+        cls.verified_receipt = load_json(GOLDENS / "verified.receipt.json")
+        cls.keys_doc = load_json(KEYS)
+
+    @staticmethod
+    def resign(bundle: dict, key_id: str = "test-2026-b", key_name: str = "TEST_ONLY_key_b.pem") -> dict:
+        """Re-freeze a mutated core the way an ATTACKER would.
+
+        Deliberately raw Ed25519 with no house guardrails: an attacker signs
+        with a crypto library, not with our producer. Every specimen below is
+        therefore correctly hashed and correctly signed, so INTEGRITY can never
+        shield the policy defect under test.
+        """
+        from cryptography.hazmat.primitives import serialization
+
+        core = {k: v for k, v in bundle.items() if k not in ("bundle_hash", "signature")}
+        payload = claims.bundle_signing_bytes(core)
+        private = serialization.load_pem_private_key(
+            (FIXTURES / key_name).read_bytes(), password=None
+        )
+        signed = dict(core)
+        signed["bundle_hash"] = "sha256:" + hashlib.sha256(payload).hexdigest()
+        signed["signature"] = {
+            "alg": "Ed25519",
+            "key_id": key_id,
+            "sig": base64.b64encode(private.sign(payload)).decode("ascii"),
+        }
+        return signed
+
+    def test_sign_bundle_refuses_to_emit_what_no_verifier_accepts(self):
+        """The producer is bound by the same structural law as the verifier —
+        defence in depth, not a security control (see resign above)."""
+        bundle = self.single_claim_bundle()
+        duplicate = copy.deepcopy(bundle["claims"][0])
+        bundle["claims"].append(duplicate)
+        core = {k: v for k, v in bundle.items() if k not in ("bundle_hash", "signature")}
+        with self.assertRaises(claims.ClaimGateError):
+            claims.sign_bundle(core, key_id="test-2026-b", key_path=FIXTURES / "TEST_ONLY_key_b.pem")
+
+    def single_claim_bundle(self, **overrides) -> dict:
+        bundle = copy.deepcopy(self.verified_bundle)
+        bundle["claims"] = bundle["claims"][:1]
+        bundle["valid_until"] = bundle["claims"][0]["valid_until"]
+        bundle.update(overrides)
+        return bundle
+
+    # ---- BLOCKING-1: earliest-expiry-governs compares INSTANTS, not strings --
+
+    def test_instant_key_orders_chronologically_where_strings_do_not(self):
+        """'.' (0x2E) sorts before 'Z' (0x5A), so the string minimum of these
+        two is the LATER instant. The law is about instants."""
+        earlier, later = "2026-08-16T12:00:00Z", "2026-08-16T12:00:00.999999Z"
+        self.assertLess(later, earlier)  # lexical order is BACKWARDS here
+        self.assertLess(claims.instant_key(earlier), claims.instant_key(later))
+        self.assertEqual(min(earlier, later), later)
+        self.assertEqual(min([earlier, later], key=claims.instant_key), earlier)
+
+    def test_bundle_later_than_its_earliest_claim_is_refused(self):
+        """Exploit: a bundle outliving its earliest claim VERIFIED, because the
+        lexically smallest string was the chronologically latest instant."""
+        bundle = self.single_claim_bundle()
+        extra = copy.deepcopy(bundle["claims"][0])
+        extra["claim_id"] = "claim:second"
+        extra["valid_until"] = "2026-08-16T12:00:00.999999Z"
+        bundle["claims"][0]["valid_until"] = "2026-08-16T12:00:00Z"
+        bundle["claims"].append(extra)
+        bundle["valid_until"] = "2026-08-16T12:00:00.999999Z"  # LATER than earliest
+        result = claims.verify_bundle(self.resign(bundle), KEYS, as_of=AS_OF)
+        self.assertFalse(result.ok, "a bundle may never outlive its earliest claim")
+        self.assertEqual((result.verdict, result.reason_codes), ("FAIL", ["expiry_mismatch"]))
+
+    def test_same_instant_in_a_different_lexical_form_verifies(self):
+        """Exploit (the other direction): a LAW-CORRECT bundle was refused
+        because '…12:00:00Z' and '…12:00:00.000Z' are the same instant spelled
+        two ways."""
+        bundle = self.single_claim_bundle()
+        bundle["claims"][0]["valid_until"] = "2026-08-16T12:00:00.000Z"
+        bundle["valid_until"] = "2026-08-16T12:00:00Z"
+        result = claims.verify_bundle(self.resign(bundle), KEYS, as_of=AS_OF)
+        self.assertTrue(result.ok, result.detail)
+
+    def test_build_bundle_valid_until_is_the_earliest_instant(self):
+        bundle = claims.build_bundle(load_evidence("pass_all"), issuer="example.com")
+        earliest = min(c["valid_until"] for c in bundle["claims"])
+        self.assertEqual(
+            claims.instant_key(bundle["valid_until"]),
+            claims.instant_key(min(bundle["claims"], key=lambda c: claims.instant_key(c["valid_until"]))["valid_until"]),
+        )
+        self.assertIsNotNone(claims.instant_key(earliest))
+
+    # ---- BLOCKING-2: the issuer is BOUND to the keys document ---------------
+
+    def test_cross_issuer_forgery_is_refused(self):
+        """Exploit: example.com's own key signed a bundle claiming
+        issuer 'victim-bank.example' and it VERIFIED against example.com's
+        keys.json. A key proves possession, never identity."""
+        forged = self.resign(dict(self.verified_bundle, issuer="victim-bank.example"))
+        result = claims.verify_bundle(forged, KEYS, as_of=AS_OF)
+        self.assertFalse(result.ok)
+        self.assertEqual((result.verdict, result.reason_codes), ("FAIL", ["issuer_mismatch"]))
+        self.assertEqual(result.receipt["verdict"], "FAIL")
+
+    def test_matching_issuer_still_verifies(self):
+        self.assertEqual(self.verified_bundle["issuer"], self.keys_doc["issuer"])
+        result = claims.verify_bundle(self.verified_bundle, KEYS, as_of=AS_OF)
+        self.assertTrue(result.ok, result.detail)
+
+    def test_keys_document_without_an_issuer_is_refused_fail_closed(self):
+        doc = copy.deepcopy(self.keys_doc)
+        del doc["issuer"]
+        with self.assertRaises(claims.ClaimGateError):
+            claims.verify_bundle(self.verified_bundle, doc, as_of=AS_OF)
+
+    # ---- BLOCKING-3: duplicate key_id in the keys document ------------------
+
+    def test_duplicate_key_id_is_refused_in_either_order(self):
+        """Exploit: with first-match lookup, an attacker-controlled entry sharing
+        a legitimate key_id flipped the verdict by ORDER alone."""
+        impostor = {
+            "key_id": "test-2026-a",
+            "alg": "Ed25519",
+            "public_key": self.keys_doc["keys"][1]["public_key"],
+        }
+        for label, entries in (
+            ("impostor first", [impostor] + self.keys_doc["keys"]),
+            ("impostor last", self.keys_doc["keys"] + [impostor]),
+        ):
+            with self.subTest(order=label):
+                doc = dict(self.keys_doc, keys=entries)
+                with self.assertRaises(claims.ClaimGateError) as caught:
+                    claims.verify_bundle(self.verified_bundle, doc, as_of=AS_OF)
+                self.assertIn("duplicate key_id", str(caught.exception))
+
+    def test_malformed_keys_entry_is_an_operational_refusal_not_a_crash(self):
+        """Exploit: {"keys": ["oops"]} raised AttributeError and exited 1 — the
+        documented code for a TYPED REFUSAL."""
+        with self.assertRaises(claims.ClaimGateError):
+            claims.verify_bundle(
+                self.verified_bundle,
+                {"schema_version": "ClaimKeysV0_1", "issuer": "example.com", "keys": ["oops"]},
+                as_of=AS_OF,
+            )
+
+    def test_empty_keys_array_is_refused(self):
+        with self.assertRaises(claims.ClaimGateError):
+            claims.verify_bundle(
+                self.verified_bundle,
+                {"schema_version": "ClaimKeysV0_1", "issuer": "example.com", "keys": []},
+                as_of=AS_OF,
+            )
+
+    # ---- BLOCKING-4: duplicate / contradictory claim_id ---------------------
+
+    def test_duplicate_claim_id_is_bundle_malformed(self):
+        """Exploit: one claim_id carrying both {"verdict":"PASS"} and
+        {"verdict":"FAIL"} VERIFIED. Consumers key by claim_id and silently get
+        last-wins."""
+        bundle = self.single_claim_bundle()
+        contradiction = copy.deepcopy(bundle["claims"][0])
+        contradiction["value"] = {"verdict": "FAIL", "reason_code": "rule_falsified"}
+        bundle["claims"][0]["value"] = {"verdict": "PASS", "reason_code": "rule_satisfied"}
+        bundle["claims"].append(contradiction)
+        result = claims.verify_bundle(self.resign(bundle), KEYS, as_of=AS_OF)
+        self.assertFalse(result.ok)
+        self.assertEqual((result.verdict, result.reason_codes), ("FAIL", ["bundle_malformed"]))
+        self.assertIn("duplicate claim_id", result.detail)
+
+    # ---- BLOCKING-5: verify_* are TOTAL over artifacts ----------------------
+
+    def test_uppercase_hex_bundle_hash_is_bundle_malformed(self):
+        """Exploit: an uppercase-hex quoted hash raised ValueError out of receipt
+        schema validation. The spec mandates bundle_malformed."""
+        bundle = dict(self.verified_bundle, bundle_hash="sha256:" + "A" * 64)
+        result = claims.verify_bundle(bundle, KEYS, as_of=AS_OF)
+        self.assertFalse(result.ok)
+        self.assertEqual(result.reason_codes, ["bundle_malformed"])
+        self.assertIsNone(result.receipt, "a non-canonical hash is never quoted into a receipt")
+        # The refusal must come from the NORMATIVE schema step, not from the
+        # totality safety net catching an exception the guard should have
+        # prevented. Delete the guard and this assertion is what fails.
+        self.assertIn("does not validate", result.detail)
+        self.assertNotIn("could not be processed", result.detail)
+
+    def test_unhashable_claim_value_counts_as_measured(self):
+        """Exploit: {"verdict": ["UNMEASURED"]} raised TypeError (unhashable).
+        The spec says a non-string verdict is MEASURED."""
+        bundle = self.single_claim_bundle()
+        bundle["claims"][0]["value"] = {"verdict": ["UNMEASURED"]}
+        result = claims.verify_bundle(self.resign(bundle), KEYS, as_of=AS_OF)
+        self.assertTrue(result.ok, result.detail)
+        self.assertEqual(result.verdict, "PASS")
+
+    def test_impossible_and_leap_second_timestamps_are_bundle_malformed(self):
+        """Exploit: format: date-time is NOT enforced here, so the loose pattern
+        admitted '2026-13-45T99:99:99Z' and the leap second
+        '2026-06-30T23:59:60Z'; both then tripped a bare assert."""
+        for stamp in ("2026-13-45T99:99:99Z", "2026-06-30T23:59:60Z"):
+            with self.subTest(timestamp=stamp):
+                bundle = self.single_claim_bundle()
+                bundle["claims"][0]["valid_until"] = stamp
+                bundle["valid_until"] = stamp
+                result = claims.verify_bundle(self.resign(bundle), KEYS, as_of=AS_OF)
+                self.assertFalse(result.ok)
+                self.assertEqual(result.reason_codes, ["bundle_malformed"])
+
+    def test_horizon_seconds_is_bounded(self):
+        """Exploit: --horizon-seconds 999999999999 raised OverflowError."""
+        with self.assertRaises(claims.ClaimGateError):
+            claims.verify_bundle(self.verified_bundle, KEYS, as_of=AS_OF, horizon_seconds=999999999999)
+        with self.assertRaises(claims.ClaimGateError):
+            claims.verify_bundle(self.verified_bundle, KEYS, as_of=AS_OF, horizon_seconds=-1)
+        ok = claims.verify_bundle(
+            self.verified_bundle, KEYS, as_of=AS_OF,
+            horizon_seconds=claims.MAX_RECEIPT_HORIZON_SECONDS,
+        )
+        self.assertTrue(ok.ok, ok.detail)
+
+    def test_verify_bundle_is_total_over_arbitrary_json(self):
+        for junk in ("hello", 7, [], None, True, {"claims": {"not": "a list"}}):
+            with self.subTest(bundle=repr(junk)):
+                result = claims.verify_bundle(junk, KEYS, as_of=AS_OF)
+                self.assertFalse(result.ok)
+                self.assertEqual(result.reason_codes, ["bundle_malformed"])
+
+    def test_verify_receipt_is_total_over_arbitrary_json(self):
+        for junk in ("hello", 7, [], None, {"schema_version": "ClaimReceiptV0_1"}):
+            with self.subTest(receipt=repr(junk)):
+                result = claims.verify_receipt(junk, as_of=AS_OF)
+                self.assertFalse(result.ok)
+                self.assertEqual(result.reason_codes, ["receipt_malformed"])
+
+    def test_verify_receipt_refuses_a_non_object_bundle_without_crashing(self):
+        """Exploit: --receipt <valid> --bundle <bare JSON string> raised
+        AttributeError out of the CLI as exit 1."""
+        result = claims.verify_receipt(self.verified_receipt, "hello", as_of=AS_OF)
+        self.assertFalse(result.ok)
+        self.assertEqual(result.reason_codes, ["bundle_mismatch"])
+
+    def test_unusable_as_of_is_operational_not_a_verdict(self):
+        for bad in ("not-a-time", "2026-13-45T99:99:99Z"):
+            with self.subTest(as_of=bad):
+                with self.assertRaises(claims.ClaimGateError):
+                    claims.verify_bundle(self.verified_bundle, KEYS, as_of=bad)
+
+    # ---- Portability MUST-rejects ------------------------------------------
+
+    def test_duplicate_json_object_members_are_refused(self):
+        """RFC 8259 leaves duplicates undefined; Python and JavaScript keep the
+        LAST. A document whose meaning depends on that cannot be independently
+        verified."""
+        with self.assertRaises(claims.ClaimGateError):
+            claims.load_json_strict('{"a": 1, "a": 2}', "test document")
+        self.assertEqual(claims.load_json_strict('{"a": 1, "b": 2}', "test document"), {"a": 1, "b": 2})
+
+    def test_non_interoperable_numbers_are_bundle_malformed(self):
+        for label, value in (
+            ("integral float collapses to an int", {"score": 1.0}),
+            ("float", {"score": 0.5}),
+            ("integer beyond the interoperable range", {"score": claims.MAX_SAFE_INTEGER + 1}),
+        ):
+            with self.subTest(case=label):
+                bundle = self.single_claim_bundle()
+                bundle["claims"][0]["value"] = value
+                result = claims.verify_bundle(self.resign(bundle), KEYS, as_of=AS_OF)
+                self.assertFalse(result.ok)
+                self.assertEqual(result.reason_codes, ["bundle_malformed"])
+
+    # ---- Checks a deletion experiment showed had NO failing test ------------
+
+    def test_bundle_schema_validation_step_is_guarded(self):
+        """Delete step 1 and this returns hash_mismatch instead."""
+        bundle = copy.deepcopy(self.verified_bundle)
+        del bundle["policy_digest"]
+        result = claims.verify_bundle(bundle, KEYS, as_of=AS_OF)
+        self.assertEqual(result.reason_codes, ["bundle_malformed"])
+
+    def test_receipt_schema_validation_step_is_guarded(self):
+        """Delete step 1 and this returns receipt_hash_mismatch instead."""
+        receipt = dict(self.verified_receipt, verdict="MAYBE")
+        result = claims.verify_receipt(receipt, as_of=AS_OF)
+        self.assertEqual(result.reason_codes, ["receipt_malformed"])
+
+    def test_receipt_expired_is_refused_for_current_state(self):
+        result = claims.verify_receipt(self.verified_receipt, as_of="2026-09-20T12:00:00Z")
+        self.assertFalse(result.ok)
+        self.assertEqual(result.reason_codes, ["receipt_expired"])
+        historical = claims.verify_receipt(
+            self.verified_receipt, as_of="2026-09-20T12:00:00Z", current=False
+        )
+        self.assertTrue(historical.ok, historical.detail)
+
+    def test_receipt_expiry_boundary_is_inclusive(self):
+        boundary = self.verified_receipt["valid_until"]
+        at_boundary = claims.verify_receipt(self.verified_receipt, as_of=boundary)
+        self.assertEqual(at_boundary.reason_codes, ["receipt_expired"])
+        one_second_earlier = claims._rfc3339(claims.parse_instant(boundary) - timedelta(seconds=1))
+        before = claims.verify_receipt(self.verified_receipt, as_of=one_second_earlier)
+        self.assertTrue(before.ok, before.detail)
+
+    def test_verify_receipt_defaults_to_the_current_state_question(self):
+        """The DEFAULT call must be the strict one: no `current=` kwarg."""
+        superseded = load_json(GOLDENS / "superseded.receipt.json")
+        result = claims.verify_receipt(superseded, as_of=AS_OF)
+        self.assertFalse(result.ok)
+        self.assertEqual(result.reason_codes, ["receipt_superseded"])
+
+    def test_not_applicable_is_in_the_unmeasured_set(self):
+        bundle = self.single_claim_bundle()
+        bundle["claims"][0]["value"] = {"verdict": "NOT_APPLICABLE", "reason_code": "applicability_false"}
+        result = claims.verify_bundle(self.resign(bundle), KEYS, as_of=AS_OF)
+        self.assertFalse(result.ok)
+        self.assertEqual((result.verdict, result.reason_codes), ("UNMEASURED", ["claims_unmeasured"]))
+
+    # ---- The reason-code constants are LAW, not decoration ------------------
+
+    def test_reason_code_constants_match_the_published_schema(self):
+        schema = load_json(ROOT / "schemas" / "claim_receipt_v0_1.schema.json")
+        enum = set(schema["properties"]["reason_codes"]["items"]["enum"])
+        self.assertTrue(
+            claims.CLAIM_REASON_CODES <= enum,
+            f"codes the verifier can emit but the schema forbids: {sorted(claims.CLAIM_REASON_CODES - enum)}",
+        )
+        self.assertIn("issuer_mismatch", claims.CLAIM_REASON_CODES)
+
+    def test_every_emitted_code_is_a_declared_code(self):
+        declared = claims.CLAIM_REASON_CODES | claims.RECEIPT_RESULT_CODES
+        observed = set()
+        for bundle_path in sorted(GOLDENS.glob("*.bundle.json")):
+            observed.update(claims.verify_bundle(load_json(bundle_path), KEYS, as_of=AS_OF).reason_codes)
+        for receipt_path in sorted(GOLDENS.glob("*.receipt.json")):
+            observed.update(claims.verify_receipt(load_json(receipt_path), as_of=AS_OF).reason_codes)
+        self.assertTrue(observed, "no codes observed — the sweep is not exercising anything")
+        self.assertTrue(observed <= declared, f"undeclared codes emitted: {sorted(observed - declared)}")
+
+
+@needs_crypto
 class ClaimCliTest(unittest.TestCase):
     """claim-bundle → claim-sign → claim-verify, fully offline, typed exits."""
 
@@ -355,6 +714,94 @@ class ClaimCliTest(unittest.TestCase):
             "--historical",
         )
         self.assertEqual(historical.returncode, 0, historical.stderr)
+
+    def test_cli_receipt_only_mode_never_claims_VERIFIED(self):
+        """A v0.1 receipt is UNAUTHENTICATED — anyone can mint a green-looking
+        one. Printing "VERIFIED" for a receipt no key ever touched overclaims."""
+        result = self.run_cli(
+            "claim-verify", "--receipt", str(GOLDENS / "verified.receipt.json"), "--as-of", AS_OF
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertNotIn("VERIFIED", result.stdout)
+        self.assertIn("RECEIPT INTEGRITY OK", result.stdout)
+        self.assertIn("unauthenticated", result.stdout)
+
+    def test_cli_bundle_mode_still_says_VERIFIED(self):
+        result = self.run_cli(
+            "claim-verify",
+            "--bundle", str(GOLDENS / "verified.bundle.json"),
+            "--keys", str(KEYS),
+            "--as-of", AS_OF,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("VERIFIED", result.stdout)
+
+    def test_cli_never_exits_1_for_an_unexpected_condition(self):
+        """Exit 1 is the documented code for a TYPED REFUSAL. Every case below
+        crashed with a traceback and exit 1 before this change."""
+        with tempfile.TemporaryDirectory() as directory:
+            work = Path(directory)
+            (work / "bare-string.json").write_text('"hello"', encoding="utf-8")
+            (work / "bad-keys.json").write_text(
+                json.dumps({"schema_version": "ClaimKeysV0_1", "issuer": "example.com", "keys": ["oops"]}),
+                encoding="utf-8",
+            )
+            (work / "dup-member.json").write_text(
+                '{"schema_version": "ClaimBundleV0_1", "issuer": "a.example", "issuer": "b.example"}',
+                encoding="utf-8",
+            )
+            cases = {
+                "malformed keys entry": (
+                    "claim-verify", "--bundle", str(GOLDENS / "verified.bundle.json"),
+                    "--keys", str(work / "bad-keys.json"), "--as-of", AS_OF,
+                ),
+                "bare JSON string presented as a bundle in receipt mode": (
+                    "claim-verify", "--receipt", str(GOLDENS / "verified.receipt.json"),
+                    "--bundle", str(work / "bare-string.json"), "--as-of", AS_OF,
+                ),
+                "unbounded horizon": (
+                    "claim-verify", "--bundle", str(GOLDENS / "verified.bundle.json"),
+                    "--keys", str(KEYS), "--as-of", AS_OF, "--horizon-seconds", "999999999999",
+                ),
+                "bare JSON string presented to claim-sign": (
+                    "claim-sign", "--bundle", str(work / "bare-string.json"),
+                    "--key", str(FIXTURES / "TEST_ONLY_key_b.pem"), "--key-id", "test-2026-b",
+                ),
+                "duplicate JSON object member": (
+                    "claim-verify", "--bundle", str(work / "dup-member.json"),
+                    "--keys", str(KEYS), "--as-of", AS_OF,
+                ),
+            }
+            declared = claims.CLAIM_REASON_CODES | claims.RECEIPT_RESULT_CODES
+            for label, argv in cases.items():
+                with self.subTest(case=label):
+                    result = self.run_cli(*argv)
+                    self.assertNotIn("Traceback", result.stderr, f"{label}: traceback leaked")
+                    self.assertEqual(
+                        len(result.stderr.strip().splitlines()), 1,
+                        f"{label}: must be exactly one line on stderr, got: {result.stderr}",
+                    )
+                    self.assertIn(result.returncode, (1, 2), f"{label}: {result.stderr}")
+                    if result.returncode == 1:
+                        # Exit 1 is permitted ONLY when a declared code is named.
+                        self.assertTrue(
+                            any(code in result.stderr for code in declared),
+                            f"{label}: exit 1 without a typed reason code: {result.stderr}",
+                        )
+
+    def test_cli_cross_issuer_forgery_is_refused_with_a_typed_reason(self):
+        with tempfile.TemporaryDirectory() as directory:
+            forged_path = Path(directory) / "forged.json"
+            bundle = load_json(GOLDENS / "verified.bundle.json")
+            core = {k: v for k, v in bundle.items() if k not in ("bundle_hash", "signature")}
+            core["issuer"] = "victim-bank.example"
+            signed = claims.sign_bundle(core, key_id="test-2026-b", key_path=FIXTURES / "TEST_ONLY_key_b.pem")
+            forged_path.write_text(json.dumps(signed), encoding="utf-8")
+            result = self.run_cli(
+                "claim-verify", "--bundle", str(forged_path), "--keys", str(KEYS), "--as-of", AS_OF
+            )
+            self.assertEqual(result.returncode, 1)
+            self.assertIn("issuer_mismatch", result.stderr)
 
 
 if __name__ == "__main__":

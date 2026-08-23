@@ -33,6 +33,7 @@
           "hash_mismatch",
           "signature_invalid",
           "key_unknown",
+          "issuer_mismatch",
           "bundle_expired",
           "expiry_mismatch",
           "claims_unmeasured",

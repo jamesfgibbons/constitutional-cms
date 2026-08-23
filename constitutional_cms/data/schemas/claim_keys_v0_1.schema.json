@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constitutionalcms.com/schemas/claim-keys-v0-1.json",
+  "title": "ClaimKeysV0_1",
+  "description": "An issuer's published Ed25519 verification keys (the /.well-known/constitutional-cms/keys.json document). The document BINDS the keys to an issuer: a verifier refuses a bundle whose issuer differs from this document's issuer (issuer_mismatch), so possession of a key never lets one party sign in another's name. Two entries sharing a key_id are refused fail-closed. DRAFT until founder ratification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "issuer", "keys"],
+  "properties": {
+    "schema_version": {"const": "ClaimKeysV0_1"},
+    "issuer": {
+      "type": "string",
+      "description": "Registrable domain this document publishes keys FOR. A bundle whose issuer differs is refused.",
+      "pattern": "^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$"
+    },
+    "comment": {"type": "string"},
+    "keys": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["key_id", "alg", "public_key"],
+        "properties": {
+          "key_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,63}$"},
+          "alg": {"const": "Ed25519"},
+          "public_key": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9+/]{43}=$",
+            "description": "Base64 of the raw 32-byte Ed25519 public key, canonically padded."
+          }
+        }
+      }
+    }
+  }
+}

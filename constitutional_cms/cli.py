@@ -151,11 +151,29 @@ def audit_command(args: argparse.Namespace) -> int:
     return exit_code_for(receipt, fail_on)
 
 
-def _read_json(path: str, label: str) -> dict[str, Any]:
+def _read_json(path: str, label: str) -> Any:
+    """Read a claim artifact, refusing duplicate JSON object members.
+
+    Duplicate members are undefined in RFC 8259 and resolved differently by
+    different parsers, so a document that relies on them cannot be
+    independently verified. The claim CLI refuses them at the door.
+    """
+    from .claims import load_json_strict
+
     try:
-        return json.loads(Path(path).read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as error:
+        text = Path(path).read_text(encoding="utf-8")
+    except OSError as error:
         raise ValueError(f"could not read {label} from {path}: {error}") from error
+    try:
+        return load_json_strict(text, f"{label} from {path}")
+    except ValueError as error:
+        raise ValueError(f"could not read {label} from {path}: {error}") from error
+
+
+def _one_line(error: BaseException) -> str:
+    """A single-line operator message — never a traceback, never a stack."""
+    text = f"{type(error).__name__}: {error}" if not isinstance(error, ValueError) else str(error)
+    return " ".join(text.split())
 
 
 def _write_json(document: dict[str, Any], out: str | None) -> None:
@@ -184,8 +202,8 @@ def claim_bundle_command(args: argparse.Namespace) -> int:
                 else claims.DEFAULT_CLAIM_TTL_SECONDS
             ),
         )
-    except (OSError, KeyError, TypeError, ValueError) as error:
-        print(f"claim-bundle: {error}", file=sys.stderr)
+    except Exception as error:
+        print(f"claim-bundle: {_one_line(error)}", file=sys.stderr)
         return EXIT_ERROR
     _write_json(bundle, args.out)
     return EXIT_OK
@@ -203,8 +221,8 @@ def claim_sign_command(args: argparse.Namespace) -> int:
     try:
         bundle = _read_json(args.bundle, "bundle")
         signed = claims.sign_bundle(bundle, key_id=args.key_id, key_path=args.key)
-    except (KeyError, TypeError, ValueError) as error:
-        print(f"claim-sign: {error}", file=sys.stderr)
+    except Exception as error:
+        print(f"claim-sign: {_one_line(error)}", file=sys.stderr)
         return EXIT_ERROR
     _write_json(signed, args.out)
     return EXIT_OK
@@ -213,11 +231,15 @@ def claim_sign_command(args: argparse.Namespace) -> int:
 def claim_verify_command(args: argparse.Namespace) -> int:
     """Verify a signed bundle (or a receipt) fully offline.
 
-    Exit codes: 0 verified · 1 refused (typed reason on stderr) · 2 operational error.
+    Exit codes: 0 verified · 1 refused (typed reason on stderr) · 2 operational
+    error. Exit 1 means a TYPED REFUSAL and nothing else — an unexpected
+    exception exits 2 with a one-line message, never a traceback, so a crash
+    can never be read as "the artifact was refused".
     No account, no network: verification needs only the artifact and a local keys file.
     """
     from . import claims
 
+    receipt_only = bool(args.receipt)
     try:
         if args.receipt:
             receipt = _read_json(args.receipt, "receipt")
@@ -245,12 +267,21 @@ def claim_verify_command(args: argparse.Namespace) -> int:
             )
             if result.receipt is not None and (args.receipt_out or args.json):
                 _write_json(result.receipt, args.receipt_out)
-    except (KeyError, TypeError, ValueError) as error:
-        print(f"claim-verify: {error}", file=sys.stderr)
+    except Exception as error:
+        print(f"claim-verify: {_one_line(error)}", file=sys.stderr)
         return EXIT_ERROR
 
     if result.ok:
-        print(f"VERIFIED · {result.verdict} · {', '.join(result.reason_codes)}")
+        if receipt_only:
+            # A v0.1 receipt is UNAUTHENTICATED: it carries no signature, so a
+            # green receipt-only check proves self-consistency and nothing
+            # about who issued it. Saying "VERIFIED" here would overclaim.
+            print(
+                "RECEIPT INTEGRITY OK (unauthenticated — supply --bundle and --keys "
+                f"to verify the claim) · {result.verdict} · {', '.join(result.reason_codes)}"
+            )
+        else:
+            print(f"VERIFIED · {result.verdict} · {', '.join(result.reason_codes)}")
         return EXIT_OK
     print(
         f"REFUSED · {result.verdict} · {', '.join(result.reason_codes)} · {result.detail}",

@@ -123,8 +123,14 @@ The portable claim-verification primitive: a **ClaimBundleV0_1** is a frozen,
 hashed, Ed25519-signed core of claims (volatile facts forbidden inside it); a
 **ClaimReceiptV0_1** is the volatile verification record that quotes the
 bundle by `bundle_hash`. Receipts attest integrity and policy conformance —
-never truth. Earliest claim expiry governs the bundle; unknown keys fail
-closed; superseding never mutates an old receipt's hashed core.
+never truth. Earliest claim expiry governs the bundle (compared as instants,
+not strings); a bundle's `issuer` must be the issuer the keys document
+publishes keys for; unknown keys fail closed; superseding never mutates an old
+receipt's hashed core.
+
+**A v0.1 receipt is unauthenticated.** It carries no signature, so verifying a
+receipt alone proves self-consistency, not issuance — only the bundle + keys
+path is authoritative. See "What a v0.1 receipt does NOT prove" in the spec.
 
 ```bash
 pip install "constitutional-cms[claims]"   # base install stays lean; Ed25519 is an extra
@@ -135,7 +141,8 @@ constitutional-cms claim-verify --bundle bundle.json --keys keys.json   # offlin
 ```
 
 Spec: [docs/CLAIM_GATE.md](docs/CLAIM_GATE.md) (five-minute read). Schemas:
-`schemas/claim_bundle_v0_1.schema.json`, `schemas/claim_receipt_v0_1.schema.json`.
+`schemas/claim_bundle_v0_1.schema.json`, `schemas/claim_receipt_v0_1.schema.json`,
+`schemas/claim_keys_v0_1.schema.json`.
 DRAFT until the founder tags a release.
 
 ## Release identity

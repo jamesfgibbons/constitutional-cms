@@ -59,9 +59,12 @@ def ensure_keys() -> None:
             "schema_version": "ClaimKeysV0_1",
             "issuer": ISSUER,
             "comment": "TEST ONLY keys for constitutional-cms fixtures. They protect nothing.",
+            # v0.1 keys entries carry exactly key_id, alg, public_key. There is
+            # deliberately no "status": v0.1 defines no semantics for one, and
+            # shipping an inert field advertises a control that does not exist.
             "keys": [
-                {"key_id": "test-2026-a", "alg": "Ed25519", "public_key": public_b64(KEY_A), "status": "retired"},
-                {"key_id": "test-2026-b", "alg": "Ed25519", "public_key": public_b64(KEY_B), "status": "active"},
+                {"key_id": "test-2026-a", "alg": "Ed25519", "public_key": public_b64(KEY_A)},
+                {"key_id": "test-2026-b", "alg": "Ed25519", "public_key": public_b64(KEY_B)},
             ],
         }
         write(FIXTURES / "keys.json", keys_doc)
