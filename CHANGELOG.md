@@ -4,6 +4,10 @@ All notable changes to Constitutional CMS are documented here. This project foll
 
 ## [Unreleased]
 
+### Added
+- [`docs/PUBLISHING_HEURISTICS.md`](docs/PUBLISHING_HEURISTICS.md): law vs heuristic vs Chair gate; extraction method; `children_require_hub` as the inverse of `hub_to_children`. Not a CheckCatalog check and not a work-ordering scheme.
+- `contracts/link_rules.yaml` rule `children_require_hub` (`soft_warn` only).
+
 ### Changed
 - README first screen is the product page: verified clone + venv quickstart (PEP 668), live good-first issue links, one-line VIBEnet boundary. Long constitution moved to [`docs/CONSTITUTION.md`](docs/CONSTITUTION.md). Extra CLI flags live in [`docs/CLI.md`](docs/CLI.md). Do not promote `uvx` until PyPI serves 0.5.0.
 

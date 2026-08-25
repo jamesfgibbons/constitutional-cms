@@ -48,6 +48,17 @@ A conformance receipt may cite a Signal Contract event as evidence that a
 human-facing renderer was honest. It may not treat sonification, attention
 mix, or an adapter profile as page-family certification.
 
+## Publishing heuristics (not a scheme)
+
+[`docs/PUBLISHING_HEURISTICS.md`](PUBLISHING_HEURISTICS.md) classifies recurring
+smells (for example: child URLs without a collection hub). Heuristics are not a
+taxonomy admission. They do not order work, they are not CheckCatalogV1
+checks, and they must not turn missing evidence into FAIL.
+
+The inverse of `hub_to_children` is `children_require_hub` in
+[`contracts/link_rules.yaml`](../contracts/link_rules.yaml), enforcement
+`soft_warn` until a founder ratifies `hard_block`.
+
 ## Routing sequence
 
 1. **Contract family:** which publishing boundary owns the change?
