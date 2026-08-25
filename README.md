@@ -159,6 +159,7 @@ The long constitution is not the landing page. Read it after you have a receipt.
 
 - [Constitution](docs/CONSTITUTION.md) — five contracts, priority stack, agent rules
 - [Protocol map](docs/PROTOCOL_MAP.md) — which scheme answers which question
+- [Publishing heuristics](docs/PUBLISHING_HEURISTICS.md) — smells, not checks; children require a hub
 - [Web conformance](docs/WEB_CONFORMANCE.md) — profiles, verdicts, `UNMEASURED`
 - [CLI flags](docs/CLI.md)
 - [Novelty](docs/NOVELTY.md) · [Prior art](docs/PRIOR_ART.md) · [Source boundary](docs/SOURCE_BOUNDARY.md)

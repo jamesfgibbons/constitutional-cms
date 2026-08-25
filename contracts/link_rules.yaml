@@ -27,6 +27,15 @@ rules:
     allowed_targets: [entity_page]
     constraint: "target.parent == source.id"
     enforcement: soft_warn
+    rationale: "A hub that does not name its children is not a collection"
+
+  - name: children_require_hub
+    description: "If child entity pages exist in a family, the family index hub exists — or the family is an explicit typed absence, not a naked 404"
+    applies_to: entity_page
+    allowed_targets: [hub_page]
+    constraint: "source.parent exists AND source.parent.url returns the hub, or family is SUPPRESS"
+    enforcement: soft_warn
+    rationale: "Leaves without a parent index orphan users, crawlers, and upward links. Inverse of hub_to_children. Not a CheckCatalog check. See docs/PUBLISHING_HEURISTICS.md. Do not ratchet to hard_block without a founder gate."
 
   - name: sibling_crosslinks
     description: "Entity pages link to siblings in the same category/group"
