@@ -1,0 +1,275 @@
+# Entity Lifecycle Contract
+# Domain-neutral governance for what exists, what state it is in, and who may
+# declare it gone.
+
+version: "1.0.0"
+status: "reference"
+purpose: >
+  Separate the question "does this thing exist, and in what state" from the
+  question "what may we currently say about it". Claim governance alone cannot
+  prevent a system from making real things disappear, because the failure runs
+  the other way: a missing claim is read as a missing entity, and the system
+  removes something it was never authorized to remove.
+
+# ---------------------------------------------------------------------------
+# Why this contract exists
+# ---------------------------------------------------------------------------
+# Claim governance defends against false positives: things a system asserts
+# without evidence. It does not defend against false negatives: real things
+# that vanish because one downstream layer had no answer.
+#
+# Both are authority failures. The second is harder to see, because nothing
+# was asserted. Something was withdrawn, and a withdrawal leaves no artifact
+# to audit.
+#
+# Reference incident (2026-08-26, flight-route domain): a public route surface
+# served 410 Gone on 107 URLs. The explicit retirement authority contained
+# three. The 410 was reached four different ways, none of them a retirement
+# decision -- a downstream fact endpoint returning 404, a request timeout, an
+# absent service relationship, and the renderer's own exception handler. See
+# examples/authority-collapse/ for the fixtures.
+#
+# Note what did NOT prevent it. contracts/page_health_resolver.yaml already
+# carried `unknown_is_not_unsupported` -- "timeout or unknown support state
+# must not be collapsed into permanent 404 or 410 policy". The rule was
+# correct, published, and violated for months. A contract with no detector is
+# a wish. Every rule here is paired with a conformance test.
+
+# ---------------------------------------------------------------------------
+# The five layers that must not collapse into one another
+# ---------------------------------------------------------------------------
+layers:
+  entity_identity:
+    question: "What thing are we talking about?"
+    authority: "identity_authority"
+    note: "Identity is assigned, not measured. It does not depend on evidence."
+
+  entity_lifecycle:
+    question: "Does it exist, and in what state?"
+    authority: "lifecycle_authority"
+
+  relationship_lifecycle:
+    question: "Does this link between two entities exist, and in what state?"
+    authority: "relationship_authority"
+    note: >
+      A relationship has its own lifecycle. Its absence is a fact about the
+      relationship and never about either endpoint.
+
+  claim_state:
+    question: "What do we currently know, and have the right to say?"
+    authority: "claim_decision (see claim_decision.yaml)"
+
+  artifact_state:
+    question: "Should this representation exist, and in what form?"
+    authority: "artifact_resolver (see page_health_resolver.yaml)"
+
+# ---------------------------------------------------------------------------
+# Lifecycle vocabulary
+# ---------------------------------------------------------------------------
+# Aligned with page_health_resolver.yaml `lifecycle_state`, extended with the
+# states that a two-value model forces implementers to fake.
+lifecycle_states:
+  active:          { terminal: false, exists: true }
+  seasonal_active: { terminal: false, exists: true }
+  seasonal_inactive:
+    terminal: false
+    exists: true
+    note: "Dormant, not dead. The single most commonly mis-terminated state."
+  launching:       { terminal: false, exists: true }
+  suspended:       { terminal: false, exists: true }
+  unknown:
+    terminal: false
+    exists: unknown
+    note: >
+      We have not established the state. This is a real state and must be
+      representable. A model without it forces every unresolved lookup to
+      resolve as either healthy or dead, and implementations pick dead.
+  retired:
+    terminal: true
+    exists: false
+    note: "The only terminal state. Reachable only via terminal_transition."
+
+# ---------------------------------------------------------------------------
+# Terminality
+# ---------------------------------------------------------------------------
+# 410 Gone, hard delete, and de-registration are not technical fallbacks. They
+# are assertions that something was intentionally and permanently removed, and
+# downstream consumers act on them irreversibly. They require at least as much
+# authority as a public claim, and arguably more, because a claim can be
+# corrected and a de-indexed URL often cannot.
+terminal_transition:
+  from: [active, seasonal_active, seasonal_inactive, launching, suspended, unknown]
+  to: [retired]
+  requires:
+    - lifecycle_authority: "The authority named in the entity's own registration"
+    - evidence_reference: "A specific evidence artifact, not an inference"
+    - reason_code: "Stable and machine-readable"
+    - effective_at: "When the removal takes effect"
+    - terminal: "Explicitly true"
+    - receipt: "A durable record of the transition"
+
+  # None of the triggers below may produce a terminal state or a terminal
+  # artifact, whatever their severity, unless the entity's own constitution
+  # names that specific condition as terminal.
+  forbidden_triggers:
+    - claim_absent
+    - claim_suppressed
+    - claim_stale
+    - claim_withheld
+    - evidence_source_returned_404
+    - evidence_source_returned_410
+    - evidence_source_timeout
+    - evidence_source_error
+    - relationship_absent
+    - relationship_seasonally_inactive
+    - no_recent_observation
+    - no_engagement_or_traffic
+    - lifecycle_state_unknown
+    - renderer_exception
+    - upstream_latency
+
+# ---------------------------------------------------------------------------
+# Invariants
+# ---------------------------------------------------------------------------
+invariants:
+  - id: identity_is_not_evidence
+    rule: "Missing evidence about an entity does not delete the entity"
+    severity: P0
+
+  - id: entity_state_is_not_claim_state
+    rule: "A withheld, stale, or suppressed claim does not retire its subject"
+    severity: P0
+
+  - id: relationship_state_is_not_entity_state
+    rule: "An absent relationship does not retire either entity it connects"
+    severity: P0
+
+  - id: seasonal_inactive_is_not_retired
+    rule: "Dormancy is not removal, however long the dormancy lasts"
+    severity: P0
+
+  - id: unknown_is_not_absent
+    rule: "An unresolved lifecycle state must not resolve to non-existence"
+    severity: P0
+
+  - id: absent_is_not_terminal
+    rule: "Established absence of evidence is not established permanence"
+    severity: P0
+
+  - id: child_cannot_escalate_parent_to_terminal
+    rule: >
+      A subordinate fact source has authority only over its own facts. Its 404,
+      410, error, or silence may not promote to a terminal state on the entity
+      it describes.
+    severity: P0
+
+  - id: renderer_cannot_derive_lifecycle
+    rule: >
+      Consuming and rendering layers project lifecycle state; they never
+      compute it. A renderer's own failure is not evidence about the world.
+    severity: P0
+
+  - id: terminal_artifact_requires_terminal_authority
+    rule: >
+      410 Gone, hard delete, and de-registration may be emitted only from an
+      explicit terminal decision carrying lifecycle_authority
+    severity: P0
+
+  - id: every_lifecycle_transition_produces_a_receipt
+    rule: "No state change without a durable record of who decided and on what evidence"
+    severity: P1
+
+# ---------------------------------------------------------------------------
+# Authority collapse: the detectable patterns
+# ---------------------------------------------------------------------------
+# Each pattern is a specific illegal edge from one layer to another. An
+# implementation conforms when, for every pattern, the collapsed input cannot
+# produce the collapsed output.
+authority_collapse_patterns:
+  - id: claim_absence_to_entity_absence
+    from: "claim_state in [absent, withheld, stale]"
+    to: "entity_lifecycle = retired"
+    detect: "Hold the entity fixed; remove one claim; assert lifecycle is unchanged"
+
+  - id: child_404_to_parent_410
+    from: "a subordinate fact endpoint returns 404 or 410"
+    to: "artifact_state = gone"
+    detect: "Fail one child source; assert the parent artifact still resolves"
+
+  - id: claim_suppression_to_document_suppression
+    from: "claim_publishable = false"
+    to: "body_publishable = false"
+    detect: >
+      Suppress one claim class; assert every independently governed claim on
+      the same subject still renders
+
+  - id: relationship_absence_to_entity_terminal
+    from: "relationship_lifecycle in [absent, seasonal_inactive]"
+    to: "entity_lifecycle = retired"
+    detect: "Remove the relationship; assert the entity and its artifact survive"
+
+  - id: unknown_to_terminal
+    from: "lifecycle_state = unknown, or a timeout, or an unhandled exception"
+    to: "artifact_state = gone"
+    detect: "Force each failure mode; assert none reaches a terminal artifact"
+
+# ---------------------------------------------------------------------------
+# Projection into artifact state
+# ---------------------------------------------------------------------------
+# Complements page_health_resolver.yaml. That contract governs the health of a
+# URL; this governs which lifecycle states may reach which artifact states.
+artifact_projection:
+  retired:            { permitted: [gone, redirect] }
+  active:             { permitted: [publish, degraded] }
+  seasonal_active:    { permitted: [publish, degraded] }
+  seasonal_inactive:
+    permitted: [publish, degraded]
+    note: >
+      Typically 200 with an honest statement of dormancy. Indexability is a
+      separate decision and belongs to the artifact resolver; thin content is
+      answered with noindex, never with terminality.
+  launching:          { permitted: [publish, degraded] }
+  suspended:          { permitted: [publish, degraded] }
+  unknown:
+    permitted: [publish, degraded]
+    note: "Never terminal. Absence of knowledge is not knowledge of absence."
+
+  rules:
+    - id: terminal_artifact_needs_terminal_entity
+      rule: "artifact_state=gone requires lifecycle_state=retired with terminal=true"
+      severity: P0
+    - id: degraded_over_gone
+      rule: >
+        When state is unresolved, the honest artifact is a degraded
+        representation that says what is unknown -- never a removal
+      severity: P0
+
+# ---------------------------------------------------------------------------
+# Domain adapter boundary
+# ---------------------------------------------------------------------------
+# This protocol knows entity, relationship, lifecycle, claim, authority,
+# transition, artifact, projection. It knows nothing about any vertical.
+# The adapter supplies the vocabulary and names the authorities.
+domain_adapter_contract:
+  must_declare:
+    - entity_types
+    - relationship_types
+    - identity_authority_per_entity_type
+    - lifecycle_authority_per_entity_type
+    - relationship_authority_per_relationship_type
+    - which_conditions_if_any_are_terminal_for_this_domain
+  must_not:
+    - "Let a claim authority stand in for a lifecycle authority"
+    - "Let a rendering layer hold any authority"
+    - "Introduce a terminal condition not declared in the entity constitution"
+
+recommended_reason_codes:
+  - lifecycle_unknown
+  - lifecycle_authority_missing
+  - terminal_without_authority
+  - terminal_without_evidence
+  - child_source_unavailable
+  - relationship_absent
+  - relationship_seasonally_inactive
+  - claim_absent_entity_intact
+  - renderer_failure_not_world_state

@@ -103,7 +103,21 @@ invariants:
 
   - id: unknown_is_not_unsupported
     rule: "timeout or unknown support state must not be collapsed into permanent 404 or 410 policy"
-    severity: P1
+    # Raised P1 -> P0 on 2026-08-26. This rule was correct, published, and
+    # violated in production on 107 URLs against three authorized retirements,
+    # for months, while a green test asserted the collapse as intended
+    # behaviour. A rule that permanently removes public URLs when broken is not
+    # P1. Enforced by contracts/entity_lifecycle.yaml and its detector.
+    severity: P0
+    enforced_by: "contracts/entity_lifecycle.yaml#terminal_artifact_requires_terminal_authority"
+
+  - id: claim_suppression_is_not_document_suppression
+    rule: "claim_publishable=false does not by itself imply body_publishable=false"
+    # The sibling of price_or_claim_suppression_not_noindex below. That rule
+    # protects indexability; nothing protected the body, so a lapsed claim
+    # silenced every independently governed claim on the same subject.
+    severity: P0
+    enforced_by: "contracts/entity_lifecycle.yaml#entity_state_is_not_claim_state"
 
 recommended_reason_codes:
   - rendered_non_200
