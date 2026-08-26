@@ -5,6 +5,7 @@ All notable changes to Constitutional CMS are documented here. This project foll
 ## [Unreleased]
 
 ### Added
+- [`docs/CONSUMING_LAYER.md`](docs/CONSUMING_LAYER.md): Realm 4 essay. Consuming layer cannot invent truth; reduces unauthorized certainty (not all “slop”); write/read split; glosses. Not a new scheme.
 - [`docs/PUBLISHING_HEURISTICS.md`](docs/PUBLISHING_HEURISTICS.md): law vs heuristic vs Chair gate; extraction method; `children_require_hub` as the inverse of `hub_to_children`. Not a CheckCatalog check and not a work-ordering scheme.
 - `contracts/link_rules.yaml` rule `children_require_hub` (`soft_warn` only).
 

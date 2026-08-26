@@ -120,7 +120,7 @@ The bridge essay. Unifies the outbound and inbound arguments under one frame: th
 ### Do Not Let the Consuming Layer Invent Truth (R4)
 > *Prompt-based AI says "tell the model not to hallucinate." Architecture-based AI says "do not ask the model to supply truth the system never emitted."*
 
-The operating-system essay. The contracts, invariants, and reference patterns in this repository are the executable form of this argument: governance before runtime, materialized state, derived (not asserted) headers, single-resolver public facts, cross-surface consistency.
+The operating-system essay. Full body: [`docs/CONSUMING_LAYER.md`](CONSUMING_LAYER.md). The contracts, invariants, and reference patterns in this repository are the executable form of this argument: governance before runtime, materialized state, derived (not asserted) headers, single-resolver public facts, cross-surface consistency. It reduces unauthorized certainty (the load-bearing kind of AI slop). It does not ban generation.
 
 ---
 
@@ -148,6 +148,7 @@ Each artifact ties back to one of the four realms. The contracts and invariants 
 
 ## Cross-references within this repository
 
+- Universe law, full essay: [`docs/CONSUMING_LAYER.md`](CONSUMING_LAYER.md).
 - Universe law in action: [`docs/INCIDENT_LEARNED_INVARIANTS.md`](INCIDENT_LEARNED_INVARIANTS.md) — every invariant is an application of "do not let the consuming layer invent truth."
 - Implementation patterns: [`docs/V0_2_REFERENCE_PATTERNS.md`](V0_2_REFERENCE_PATTERNS.md).
 - Cybernetic frame: [`docs/CONSTITUTIONAL_CYBERNETICS.md`](CONSTITUTIONAL_CYBERNETICS.md).
