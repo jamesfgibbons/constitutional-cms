@@ -1,0 +1,18 @@
+schema_version: EntityLifecycleProjectionV1
+entity:
+  id: market:alpha-omega
+  type: market_relationship
+  identity_authority: market_registry
+  lifecycle:
+    state: retired
+    terminal: true
+    authority: market_registry
+    reason_code: explicit_retirement
+    effective_at: "2026-08-01T00:00:00Z"
+    transition_receipt_id: tr_explicit_retirement_001
+claims:
+  current_fare:
+    state: withheld
+artifact:
+  id: /markets/alpha-omega
+  http_status: 410

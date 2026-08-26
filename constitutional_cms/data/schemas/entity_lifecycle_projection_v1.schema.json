@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constitutionalcms.com/schemas/entity_lifecycle_projection_v1.schema.json",
+  "title": "EntityLifecycleProjectionV1",
+  "description": "A projection of entity, claims, relationships, and artifact HTTP for authority-collapse detection. Vertical type names belong in a Domain Adapter.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["entity", "artifact"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "EntityLifecycleProjectionV1" },
+    "entity": {
+      "type": "object",
+      "required": ["id", "lifecycle"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "type": { "type": "string" },
+        "identity_authority": { "type": "string" },
+        "lifecycle": {
+          "type": "object",
+          "required": ["state", "terminal"],
+          "properties": {
+            "state": {
+              "type": "string",
+              "enum": [
+                "active",
+                "seasonal_active",
+                "seasonal_inactive",
+                "launching",
+                "suspended",
+                "retired",
+                "unknown"
+              ]
+            },
+            "terminal": { "type": "boolean" },
+            "authority": { "type": "string" },
+            "reason_code": { "type": "string" },
+            "effective_at": { "type": "string" },
+            "transition_receipt_id": { "type": "string" },
+            "derived_by": { "type": "string" }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "relationships": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "state": { "type": "string" },
+          "authority": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": ["observed", "derived", "withheld", "stale", "unavailable", "unmeasured"]
+          },
+          "reason": { "type": "string" },
+          "child_http_status": { "type": "integer" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "required": ["http_status"],
+      "properties": {
+        "id": { "type": "string" },
+        "http_status": { "type": "integer" },
+        "lifecycle_derived_by": { "type": "string" }
+      },
+      "additionalProperties": true
+    }
+  }
+}

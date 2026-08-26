@@ -1,0 +1,23 @@
+schema_version: EntityLifecycleProjectionV1
+entity:
+  id: market:alpha-beta
+  type: market_relationship
+  identity_authority: market_registry
+  lifecycle:
+    state: active
+    terminal: false
+    authority: market_registry
+relationships:
+  scheduled_service:
+    state: seasonal_inactive
+    authority: service_registry
+claims:
+  current_fare:
+    state: unmeasured
+  historical_range:
+    state: observed
+  timing:
+    state: stale
+artifact:
+  id: /markets/alpha-beta
+  http_status: 200

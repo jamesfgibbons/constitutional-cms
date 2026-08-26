@@ -1,0 +1,13 @@
+schema_version: EntityLifecycleProjectionV1
+entity:
+  id: market:alpha-beta
+  type: market_relationship
+  lifecycle:
+    state: active
+    terminal: false
+claims:
+  current_fare:
+    state: withheld
+artifact:
+  id: /markets/alpha-beta
+  http_status: 410

@@ -24,6 +24,19 @@ constitutional-cms audit https://example.com --json
 
 Prefer `--evidence` in CI.
 
+## Lifecycle check (authority collapse)
+
+Not the catalog `audit`. Detects illegal mappings such as withheld claim → HTTP 410, child 404 → parent 410, unknown → gone.
+
+```bash
+constitutional-cms lifecycle-check \
+  --projection tests/fixtures/lifecycle/legal_concurrent_states.yaml
+constitutional-cms lifecycle-check \
+  --projection tests/fixtures/lifecycle/child_404_to_parent_410.yaml
+```
+
+Exit 0: no collapse. Exit 1: violation. Exit 2: operational error.
+
 ## Validate
 
 With no arguments, `validate` checks that the **bundled** catalog and schemas are internally coherent. That works from a wheel, outside this clone. If `./contracts` exists, it is validated too.

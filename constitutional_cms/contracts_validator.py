@@ -427,6 +427,41 @@ def validate_web_conformance(contracts_dir: str) -> list[str]:
     return [output or 'web conformance validation failed without output']
 
 
+def validate_entity_lifecycle(contracts_dir: str) -> list[str]:
+    """Validate entity_lifecycle_v1.yaml declares ten invariants and forbids 410 collapses."""
+    errors = []
+    filepath = os.path.join(contracts_dir, 'entity_lifecycle_v1.yaml')
+    if not os.path.exists(filepath):
+        return [f"MISSING: {filepath}"]
+    data = load_yaml(filepath)
+    invariants = data.get('invariants') or []
+    if len(invariants) != 10:
+        errors.append(f"entity_lifecycle: expected 10 invariants, found {len(invariants)}")
+    ids = {row.get('id') for row in invariants if isinstance(row, dict)}
+    required = {
+        'identity_is_not_evidence',
+        'entity_state_is_not_claim_state',
+        'relationship_state_is_not_entity_state',
+        'seasonal_inactive_is_not_retired',
+        'unknown_is_not_absent',
+        'absent_is_not_terminal',
+        'child_cannot_escalate_parent_terminal',
+        'renderer_cannot_derive_lifecycle',
+        'gone_requires_terminal_authority',
+        'lifecycle_transition_produces_receipt',
+    }
+    missing = sorted(required - ids)
+    if missing:
+        errors.append(f"entity_lifecycle: missing invariants {missing}")
+    gone = (data.get('artifact_http') or {}).get(410) or (data.get('artifact_http') or {}).get('410') or {}
+    if not gone.get('requires'):
+        errors.append("entity_lifecycle: HTTP 410 must declare requires")
+    scheme = data.get('scheme') or {}
+    if scheme.get('orders') or scheme.get('certifies'):
+        errors.append("entity_lifecycle: scheme must not order or certify")
+    return errors
+
+
 CHECK_CHOICES = [
     'syntax',
     'page_types',
@@ -441,6 +476,7 @@ CHECK_CHOICES = [
     'sensor_integrity',
     'agent_envelope',
     'web_conformance',
+    'entity_lifecycle',
     'all',
 ]
 
@@ -524,6 +560,7 @@ def run(contracts_dir: str, check: str = 'all') -> int:
             'Web Conformance',
             validate_web_conformance,
         ),
+        'entity_lifecycle': ('Entity Lifecycle', validate_entity_lifecycle),
     }
 
     if check == 'all':

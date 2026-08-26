@@ -1,0 +1,10 @@
+schema_version: EntityLifecycleProjectionV1
+entity:
+  id: market:alpha-beta
+  type: market_relationship
+  lifecycle:
+    state: unknown
+    terminal: false
+artifact:
+  id: /markets/alpha-beta
+  http_status: 410

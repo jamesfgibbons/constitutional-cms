@@ -19,7 +19,7 @@ from pathlib import Path
 from typing import Any
 
 from . import __version__
-from . import collector, contracts_validator, evaluator
+from . import collector, contracts_validator, entity_lifecycle, evaluator
 
 VERDICT_ORDER = ("PASS", "FAIL", "UNMEASURED", "NOT_APPLICABLE")
 FAIL_ON_CHOICES = set(VERDICT_ORDER)
@@ -103,6 +103,39 @@ def _print_summary(receipt: dict[str, Any], catalog: dict[str, Any], limitations
             print(f"  - {limitation}")
     print("\nFull receipt: rerun with --json (or --out receipt.json).")
     print("CI gate: add --fail-on FAIL to exit 1 when a catalog check fails.")
+
+
+def lifecycle_check_command(args: argparse.Namespace) -> int:
+    path = Path(args.projection)
+    if not path.is_file():
+        print(f"lifecycle-check: missing projection {path}", file=sys.stderr)
+        return EXIT_ERROR
+    try:
+        projection = evaluator.load_data(path)
+    except Exception as exc:  # noqa: BLE001 — CLI operational error
+        print(f"lifecycle-check: {exc}", file=sys.stderr)
+        return EXIT_ERROR
+    violations = entity_lifecycle.evaluate_projection(projection)
+    result = {
+        "schema_version": "EntityLifecycleCheckV1",
+        "certified": False,
+        "subject": projection.get("entity", {}).get("id"),
+        "violation_count": len(violations),
+        "violations": violations,
+    }
+    payload = json.dumps(result, indent=2, sort_keys=True) + "\n"
+    if args.out:
+        Path(args.out).write_text(payload, encoding="utf-8")
+    if args.json:
+        print(payload, end="")
+    elif violations:
+        print(f"lifecycle-check: {len(violations)} authority-collapse violation(s)")
+        for row in violations:
+            print(f"  FAIL  {row['collapse_id']}  ({row['invariant_id']})")
+            print(f"        {row['detail']}")
+    else:
+        print("lifecycle-check: no authority collapse detected")
+    return EXIT_FAIL if violations else EXIT_OK
 
 
 def audit_command(args: argparse.Namespace) -> int:
@@ -228,12 +261,26 @@ def main(argv: list[str] | None = None) -> int:
         help="Which local contract family to validate (default: all)",
     )
 
+    life_parser = subparsers.add_parser(
+        "lifecycle-check",
+        help="Detect authority collapse (claim/child/unknown → entity gone). Not a catalog audit.",
+    )
+    life_parser.add_argument(
+        "--projection",
+        required=True,
+        help="Path to an EntityLifecycleProjectionV1 YAML or JSON document",
+    )
+    life_parser.add_argument("--json", action="store_true", help="Print the violation list as JSON")
+    life_parser.add_argument("--out", help="Write the JSON result to this path")
+
     args = parser.parse_args(argv)
 
     if args.command == "audit":
         return audit_command(args)
     if args.command == "validate":
         return validate_command(args)
+    if args.command == "lifecycle-check":
+        return lifecycle_check_command(args)
     parser.print_help()
     return EXIT_ERROR
 

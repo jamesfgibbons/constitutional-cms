@@ -120,7 +120,7 @@ The bridge essay. Unifies the outbound and inbound arguments under one frame: th
 ### Do Not Let the Consuming Layer Invent Truth (R4)
 > *Prompt-based AI says "tell the model not to hallucinate." Architecture-based AI says "do not ask the model to supply truth the system never emitted."*
 
-The operating-system essay. Full body: [`docs/CONSUMING_LAYER.md`](CONSUMING_LAYER.md). The contracts, invariants, and reference patterns in this repository are the executable form of this argument: governance before runtime, materialized state, derived (not asserted) headers, single-resolver public facts, cross-surface consistency. It reduces unauthorized certainty (the load-bearing kind of AI slop). It does not ban generation.
+The operating-system essay. Full body: [`docs/CONSUMING_LAYER.md`](CONSUMING_LAYER.md). Companion: [`docs/ENTITY_LIFECYCLE.md`](ENTITY_LIFECYCLE.md) — do not let one truth domain revoke another; 410 is a verdict. The contracts, invariants, and reference patterns in this repository are the executable form of this argument: governance before runtime, materialized state, derived (not asserted) headers, single-resolver public facts, cross-surface consistency. It reduces unauthorized certainty (the load-bearing kind of AI slop). It does not ban generation.
 
 ---
 

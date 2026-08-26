@@ -5,6 +5,7 @@ All notable changes to Constitutional CMS are documented here. This project foll
 ## [Unreleased]
 
 ### Added
+- [`docs/ENTITY_LIFECYCLE.md`](docs/ENTITY_LIFECYCLE.md) + [`contracts/entity_lifecycle_v1.yaml`](contracts/entity_lifecycle_v1.yaml) (DRAFT): entity vs claim vs artifact vs perception. Companion law — one truth domain must not revoke another's existence. `constitutional-cms lifecycle-check` detects authority collapse. Not a 20th catalog check. Signal Contract v1 unchanged.
 - [`docs/CONSUMING_LAYER.md`](docs/CONSUMING_LAYER.md): Realm 4 essay. Consuming layer cannot invent truth; reduces unauthorized certainty (not all “slop”); write/read split; glosses. Not a new scheme.
 - [`docs/PUBLISHING_HEURISTICS.md`](docs/PUBLISHING_HEURISTICS.md): law vs heuristic vs Chair gate; extraction method; `children_require_hub` as the inverse of `hub_to_children`. Not a CheckCatalog check and not a work-ordering scheme.
 - `contracts/link_rules.yaml` rule `children_require_hub` (`soft_warn` only).

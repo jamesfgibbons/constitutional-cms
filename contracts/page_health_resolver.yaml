@@ -105,6 +105,11 @@ invariants:
     rule: "timeout or unknown support state must not be collapsed into permanent 404 or 410 policy"
     severity: P1
 
+  - id: gone_requires_entity_terminal
+    rule: "rendered_status 410 requires an explicit terminal decision from entity_lifecycle_v1, never a missing claim or child 404"
+    severity: P0
+    see: contracts/entity_lifecycle_v1.yaml
+
 recommended_reason_codes:
   - rendered_non_200
   - rendered_noindex

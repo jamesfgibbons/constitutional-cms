@@ -1,0 +1,14 @@
+schema_version: EntityLifecycleProjectionV1
+entity:
+  id: market:alpha-beta
+  type: market_relationship
+  lifecycle:
+    state: seasonal_inactive
+    terminal: false
+    authority: market_registry
+relationships:
+  scheduled_service:
+    state: seasonal_inactive
+artifact:
+  id: /markets/alpha-beta
+  http_status: 410

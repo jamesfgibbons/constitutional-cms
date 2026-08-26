@@ -8,6 +8,20 @@ Governs: every consuming layer — SSR, schema, FAQ, agent API, sitemap, CLI, ch
 Must not be used as: a ban on LLMs, a G0–G5 substitute, or a FAIL for UNMEASURED
 ```
 
+## Companion laws
+
+Keep:
+
+> Do not let the consuming layer invent truth.
+
+Add:
+
+> **Do not let one truth domain revoke another truth domain's existence.**
+
+> **Absence is scoped. Terminality is explicit.**
+
+Unknown is a state. **Gone is also a state — and it requires authority.** A `410 Gone` is not a missing-evidence fallback. It is a semantic assertion that a representation was intentionally and permanently removed. That assertion needs an explicit lifecycle authority and a transition receipt — at least as much evidence as a public price. See [`ENTITY_LIFECYCLE.md`](ENTITY_LIFECYCLE.md).
+
 ## The law (three forms)
 
 **Canon**

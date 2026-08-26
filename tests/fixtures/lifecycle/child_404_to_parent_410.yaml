@@ -1,0 +1,15 @@
+schema_version: EntityLifecycleProjectionV1
+entity:
+  id: market:alpha-beta
+  type: market_relationship
+  lifecycle:
+    state: active
+    terminal: false
+    authority: market_registry
+claims:
+  timing:
+    state: unavailable
+    child_http_status: 404
+artifact:
+  id: /markets/alpha-beta
+  http_status: 410

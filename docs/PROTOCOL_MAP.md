@@ -13,6 +13,7 @@ identify the question first, then use only the scheme authoritative for that que
 | Eight release gates | What evidence must a release candidate pass? | Publication and verification sequence | Backlog ranking |
 | Four-layer repair stack | Which dependent layer on one surface is repaired first? | Data truth → content truth → depth → experience | Portfolio-wide prioritization |
 | Seven control priority classes | Which admissible intervention deserves attention next? | Constitutional blockers through theory work | A numeric score or repair layer |
+| Entity lifecycle / terminality | Does this entity or relationship exist, and may its representation be gone? | Identity, lifecycle, terminal transitions, artifact HTTP 410 | Claim state, page quality tier, Signal Contract events, work priority |
 
 Counts are labels, not identities. A five-item invariant release and the five contract families are unrelated sets. A
 page tier is not conformance. A release gate is not priority. A repair layer is not a control class.
@@ -47,6 +48,15 @@ G0-G5 substitute.
 A conformance receipt may cite a Signal Contract event as evidence that a
 human-facing renderer was honest. It may not treat sonification, attention
 mix, or an adapter profile as page-family certification.
+
+## Entity lifecycle (classifies; does not order)
+
+[`docs/ENTITY_LIFECYCLE.md`](ENTITY_LIFECYCLE.md) and
+[`contracts/entity_lifecycle_v1.yaml`](../contracts/entity_lifecycle_v1.yaml)
+answer whether a subject still exists and whether Gone is authorized.
+Companion law: one truth domain must not revoke another's existence.
+Detector: `constitutional-cms lifecycle-check`. Not CheckCatalogV1. Signal
+Contract v1 unchanged. Domain Adapters own vertical vocabulary.
 
 ## Universe law (not a scheme)
 

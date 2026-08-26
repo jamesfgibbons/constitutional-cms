@@ -1,0 +1,188 @@
+# Entity Lifecycle / Terminality Contract
+# Portable protocol. Vertical vocabulary belongs in a Domain Adapter.
+#
+# Companion laws:
+#   Do not let the consuming layer invent truth.
+#   Do not let one truth domain revoke another truth domain's existence.
+#   Absence is scoped. Terminality is explicit.
+
+version: "0.1.0"
+status: draft
+status_note: >
+  DRAFT until the founder tags a release. soft_warn / detector only.
+  Not a CheckCatalogV1 check. Not a Signal Contract v1 change.
+
+scheme:
+  canonical_question: "Does this entity or relationship exist, and may its representation be gone?"
+  classifies: true
+  orders: false
+  certifies: false
+  governs:
+    - entity identity
+    - entity and relationship lifecycle
+    - terminal transitions
+    - whether an artifact may project HTTP 410
+  must_not_be_used_as:
+    - claim state (withheld / unmeasured / stale)
+    - page quality tier (FULL / BASIC / SHELL / SUPPRESS)
+    - Signal Contract event meaning
+    - work-order priority
+    - G0-G5 certification
+  does_not_retire: page_health_resolver
+  relationship_to_page_health: >
+    page_health_resolver answers URL health flags (body, index, schema).
+    This contract answers whether the subject still exists and whether
+    Gone is authorized. page_health lifecycle_state must be derived from
+    this layer, never from a missing claim or a child 404.
+
+layers:
+  - id: entity_identity
+    question: "What thing are we talking about?"
+  - id: entity_lifecycle
+    question: "Does it exist, and in what state?"
+  - id: claim_state
+    question: "What do we currently know and have the right to say about it?"
+  - id: artifact_state
+    question: "Should this page/API/schema representation exist?"
+  - id: perception_state
+    question: "Does a change deserve attention, and how should it be rendered?"
+    note: "Perception is Signal Contract + VIBEnet. This protocol does not decide interrupt."
+
+protocol_primitives:
+  - entity
+  - relationship
+  - lifecycle
+  - claim
+  - authority
+  - transition
+  - artifact
+  - projection
+
+# Constitutional CMS does not know aviation, SKUs, dockets, or patients.
+# A Domain Adapter supplies type names and relationship labels.
+domain_adapter:
+  protocol_owns: protocol_primitives
+  adapter_owns:
+    - vertical entity types
+    - vertical relationship types
+    - which conditions are terminal for that vertical
+  signal_contract_v1: unchanged
+
+lifecycle_states:
+  - active
+  - seasonal_active
+  - seasonal_inactive
+  - launching
+  - suspended
+  - retired
+  - unknown
+
+claim_states:
+  - observed
+  - derived
+  - withheld
+  - stale
+  - unavailable
+  - unmeasured
+
+artifact_http:
+  "200":
+    meaning: "Representation exists (indexability is a separate flag)."
+  "404":
+    meaning: "Representation not found. Not a terminal verdict unless the entity constitution says so."
+  "410":
+    meaning: "This representation has been intentionally and permanently removed."
+    requires:
+      - explicit terminal decision
+      - lifecycle.terminal == true
+      - named authority
+      - reason_code
+      - effective_at
+      - transition receipt
+    never_projected_from:
+      - missing price or other claim
+      - missing timing / child intelligence fact
+      - API 404 on a child evidence family
+      - no current observation
+      - season ended
+      - relationship inactive (e.g. no nonstop service)
+      - timeout
+      - unknown
+      - withheld claim
+      - unmeasured claim
+
+terminal_transition:
+  from:
+    - active
+    - seasonal_active
+    - seasonal_inactive
+    - launching
+    - suspended
+  to:
+    - retired
+  requires:
+    - explicit lifecycle authority
+    - evidence_ref
+    - reason_code
+    - effective_at
+    - terminal: true
+    - transition_receipt_id
+
+invariants:
+  - id: identity_is_not_evidence
+    statement: "Identity is not evidence. Missing evidence does not delete an entity."
+    severity: P0
+  - id: entity_state_is_not_claim_state
+    statement: "Entity state is not claim state. A withheld claim does not retire its subject."
+    severity: P0
+  - id: relationship_state_is_not_entity_state
+    statement: "Relationship state is not entity state. Inactive service does not mean no market entity."
+    severity: P0
+  - id: seasonal_inactive_is_not_retired
+    statement: "Seasonal inactive is not retired."
+    severity: P0
+  - id: unknown_is_not_absent
+    statement: "Unknown is not absent."
+    severity: P0
+  - id: absent_is_not_terminal
+    statement: "Absent is not terminal."
+    severity: P0
+  - id: child_cannot_escalate_parent_terminal
+    statement: "A child fact cannot escalate the parent to terminal."
+    severity: P0
+  - id: renderer_cannot_derive_lifecycle
+    statement: "A renderer cannot derive lifecycle state."
+    severity: P0
+  - id: gone_requires_terminal_authority
+    statement: "HTTP 410 requires an explicit terminal authority."
+    severity: P0
+  - id: lifecycle_transition_produces_receipt
+    statement: "Every lifecycle transition produces a receipt."
+    severity: P0
+
+forbidden_collapses:
+  - id: claim_absence_to_entity_absence
+    from_layer: claim_state
+    to_layer: entity_lifecycle
+  - id: child_404_to_parent_410
+    from_layer: claim_state
+    to_layer: artifact_state
+  - id: price_suppression_to_body_suppression
+    from_layer: claim_state
+    to_layer: artifact_state
+  - id: seasonal_inactive_to_retired
+    from_layer: entity_lifecycle
+    to_layer: entity_lifecycle
+  - id: unknown_to_terminal
+    from_layer: entity_lifecycle
+    to_layer: entity_lifecycle
+
+non_contradiction_example:
+  note: "These states may hold at the same time. They are not a contradiction."
+  entity_lifecycle: active
+  relationship_service: seasonal_inactive
+  claim_current_fare: unmeasured
+  claim_historical_range: published
+  claim_timing: stale
+  artifact_http: 200
+  schema_offer: suppress
