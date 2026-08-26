@@ -48,6 +48,20 @@ A conformance receipt may cite a Signal Contract event as evidence that a
 human-facing renderer was honest. It may not treat sonification, attention
 mix, or an adapter profile as page-family certification.
 
+## MarTech control loop (translation; not a scheme)
+
+[`docs/MARTECH_CONTROL_LOOP.md`](MARTECH_CONTROL_LOOP.md) translates sensors,
+resolvers, compilers, actuators, receipts, and outcomes into jobs a MarTech
+operator already recognizes. It does not admit a new taxonomy, does not order
+work, and does not claim the public CLI compiles campaigns.
+
+## Entity lifecycle (classifies; does not order)
+
+[`contracts/entity_lifecycle.yaml`](../contracts/entity_lifecycle.yaml)
+answers whether a subject still exists and whether Gone is authorized.
+Companion law: one truth domain must not revoke another's existence.
+Not CheckCatalogV1. Signal Contract v1 unchanged.
+
 ## Universe law (not a scheme)
 
 [`docs/CONSUMING_LAYER.md`](CONSUMING_LAYER.md) states Realm 4: the consuming

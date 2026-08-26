@@ -441,6 +441,7 @@ constitutional-cms/
     ├── CONSTITUTION.md                # Long-form contracts and priority stack (reference)
     ├── CLI.md                         # Extra CLI flags after the README fixture
     ├── CONSUMING_LAYER.md             # Universe law: consuming layer cannot invent truth
+    ├── MARTECH_CONTROL_LOOP.md        # Resolver vs compiler vs channel (no compile CLI)
     ├── PUBLISHING_HEURISTICS.md       # Smells vs laws; children require a hub (not a check)
     ├── WEB_CONFORMANCE.md             # Profiles, verdicts, and reproducible evaluation
     ├── ADAPTER_BOUNDARY.md             # Public normalized records/private authorities
