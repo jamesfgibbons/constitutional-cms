@@ -161,6 +161,8 @@ The long constitution is not the landing page. Read it after you have a receipt.
 - [Protocol map](docs/PROTOCOL_MAP.md) — which scheme answers which question
 - [Publishing heuristics](docs/PUBLISHING_HEURISTICS.md) — smells, not checks; children require a hub
 - [Consuming layer](docs/CONSUMING_LAYER.md) — the universe law; unauthorized certainty, not a style guide
+- [Entity lifecycle](contracts/entity_lifecycle.yaml) — Gone is a verdict; 410 needs terminal authority
+- [MarTech control loop](docs/MARTECH_CONTROL_LOOP.md) — resolver vs compiler vs channel; CLI does not compile campaigns
 - [Web conformance](docs/WEB_CONFORMANCE.md) — profiles, verdicts, `UNMEASURED`
 - [CLI flags](docs/CLI.md)
 - [Novelty](docs/NOVELTY.md) · [Prior art](docs/PRIOR_ART.md) · [Source boundary](docs/SOURCE_BOUNDARY.md)

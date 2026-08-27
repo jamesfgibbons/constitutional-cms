@@ -24,6 +24,8 @@ Must not be used as: a ban on LLMs, a G0–G5 substitute, or a FAIL for UNMEASUR
 
 A consuming layer is any actuator another machine or person will treat as a fact: HTML, JSON-LD, FAQ, sitemaps, headers, CLI stdout, conformance receipts, ambient renderers, LLM answers over your page. It may **compose, translate, suppress, degrade, or hold**. It may not **upgrade uncertainty into a fact**.
 
+Companion (already on `main` as [`contracts/entity_lifecycle.yaml`](../contracts/entity_lifecycle.yaml)): **do not let one truth domain revoke another’s existence.** Absence is scoped. Terminality is explicit. `410 Gone` is a verdict, not a missing-fact fallback.
+
 ## Does this reduce AI slop?
 
 **Yes — the kind that matters. No — not all “slop.”**
@@ -99,5 +101,6 @@ Do not mint a second slogan. Gloss by audience; keep the title.
 | AI-search / answers | `UNMEASURED` is a public state. `certified: false` is correct. |
 | Anti-slop discourse | Unauthorized certainty — not “stop generating.” |
 | VIBEnet-adjacent | Renderers project; they do not create. |
+| MarTech | Resolver decides what may be said. Compiler builds one generation. Channels only render. CDP is not automatically source of truth. Generative AI is a compiler assistant, not claim authority. See [`MARTECH_CONTROL_LOOP.md`](MARTECH_CONTROL_LOOP.md). |
 
 If a sentence sounds like a second product (“web conformance framework,” “cybernetics for agents,” “anti-AI CMS”), it is the wrong description.
