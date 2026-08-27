@@ -48,6 +48,13 @@ A conformance receipt may cite a Signal Contract event as evidence that a
 human-facing renderer was honest. It may not treat sonification, attention
 mix, or an adapter profile as page-family certification.
 
+## Universe law (not a scheme)
+
+[`docs/CONSUMING_LAYER.md`](CONSUMING_LAYER.md) states Realm 4: the consuming
+layer cannot invent truth. Snapshot boundary and signal projection are the
+executable form. It is not a taxonomy admission, not CheckCatalogV1, and not a
+work-ordering scheme.
+
 ## Publishing heuristics (not a scheme)
 
 [`docs/PUBLISHING_HEURISTICS.md`](PUBLISHING_HEURISTICS.md) classifies recurring

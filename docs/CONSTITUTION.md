@@ -440,6 +440,7 @@ constitutional-cms/
     ├── SOURCE_BOUNDARY.md             # Public authority and private implementation boundary
     ├── CONSTITUTION.md                # Long-form contracts and priority stack (reference)
     ├── CLI.md                         # Extra CLI flags after the README fixture
+    ├── CONSUMING_LAYER.md             # Universe law: consuming layer cannot invent truth
     ├── PUBLISHING_HEURISTICS.md       # Smells vs laws; children require a hub (not a check)
     ├── WEB_CONFORMANCE.md             # Profiles, verdicts, and reproducible evaluation
     ├── ADAPTER_BOUNDARY.md             # Public normalized records/private authorities
