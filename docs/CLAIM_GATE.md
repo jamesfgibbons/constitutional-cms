@@ -56,6 +56,19 @@ Read this before treating a receipt as evidence of anything.
   `RECEIPT INTEGRITY OK (unauthenticated …)`, never `VERIFIED`.
 - **Supersession is an issuer-side assertion, not a revocation mechanism.** See
   "Supersession" below.
+- **Claim Gate does not answer entity lifecycle.** `verify()`, `verify_bundle`,
+  and `verify_receipt` attest **integrity and policy conformance** — that the
+  claim may be expressed — never whether the subject still exists. A green
+  ClaimBundle or ClaimReceipt about a retired, unknown, or `seasonal_inactive`
+  subject is ontology drift, not a lie. **Lifecycle authority is a different
+  court.** The companion law already on main,
+  [`contracts/entity_lifecycle.yaml`](../contracts/entity_lifecycle.yaml),
+  declares: Gone is a verdict, and it requires terminal authority. Separately,
+  [`docs/CONSUMING_LAYER.md`](CONSUMING_LAYER.md) states the universe law: the
+  consuming layer cannot invent truth. Claim Gate verifies the claim; entity
+  lifecycle verifies the subject. Claim Gate MUST NOT consult
+  `entity_lifecycle.yaml`, and entity lifecycle MUST NOT become a claim reason
+  code.
 
 Authenticated (signed) receipts are deferred until earned; see the last
 section.
