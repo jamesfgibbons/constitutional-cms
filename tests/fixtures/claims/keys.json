@@ -1,0 +1,17 @@
+{
+  "comment": "TEST ONLY keys for constitutional-cms fixtures. They protect nothing.",
+  "issuer": "example.com",
+  "keys": [
+    {
+      "alg": "Ed25519",
+      "key_id": "test-2026-a",
+      "public_key": "wrJmIyHRxysEazamplHdsk9E47H9+7v8r47ITmKtbW0="
+    },
+    {
+      "alg": "Ed25519",
+      "key_id": "test-2026-b",
+      "public_key": "WvUPFxbZBuOjYCltt16YYJkHMmhnn8yxZCBp50UCXo4="
+    }
+  ],
+  "schema_version": "ClaimKeysV0_1"
+}

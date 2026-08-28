@@ -1,0 +1,239 @@
+{
+  "bundle_hash": "sha256:bc3da8cf125e2e884185d501d61bfa4090699892180f6153ed340d358db97398",
+  "claims": [
+    {
+      "authority": "google_search_technical",
+      "claim_id": "claim:web.http.success",
+      "evidence_digest": "sha256:9e54416883b1a32b3d8ac276ef9a2ee86195807a404185301e501e3a85e7b8d6",
+      "observed_at": "2026-08-15T12:00:00Z",
+      "valid_until": "2026-08-16T12:00:00Z",
+      "value": {
+        "reason_code": "rule_satisfied",
+        "verdict": "PASS"
+      }
+    },
+    {
+      "authority": "wcag_2_2",
+      "claim_id": "claim:web.document.language",
+      "evidence_digest": "sha256:9e54416883b1a32b3d8ac276ef9a2ee86195807a404185301e501e3a85e7b8d6",
+      "observed_at": "2026-08-15T12:00:00Z",
+      "valid_until": "2026-08-16T12:00:00Z",
+      "value": {
+        "reason_code": "rule_satisfied",
+        "verdict": "PASS"
+      }
+    },
+    {
+      "authority": "wcag_2_2",
+      "claim_id": "claim:web.accessibility.automated",
+      "evidence_digest": "sha256:9e54416883b1a32b3d8ac276ef9a2ee86195807a404185301e501e3a85e7b8d6",
+      "observed_at": "2026-08-15T12:00:00Z",
+      "valid_until": "2026-08-16T12:00:00Z",
+      "value": {
+        "reason_code": "rule_satisfied",
+        "verdict": "PASS"
+      }
+    },
+    {
+      "authority": "core_web_vitals_2025",
+      "claim_id": "claim:web.performance.lab_lcp",
+      "evidence_digest": "sha256:9e54416883b1a32b3d8ac276ef9a2ee86195807a404185301e501e3a85e7b8d6",
+      "observed_at": "2026-08-15T12:00:00Z",
+      "valid_until": "2026-08-16T12:00:00Z",
+      "value": {
+        "reason_code": "rule_satisfied",
+        "verdict": "PASS"
+      }
+    },
+    {
+      "authority": "core_web_vitals_2025",
+      "claim_id": "claim:web.performance.field_cwv",
+      "evidence_digest": "sha256:9e54416883b1a32b3d8ac276ef9a2ee86195807a404185301e501e3a85e7b8d6",
+      "observed_at": "2026-08-15T12:00:00Z",
+      "valid_until": "2026-09-14T12:00:00Z",
+      "value": {
+        "reason_code": "rule_satisfied",
+        "verdict": "PASS"
+      }
+    },
+    {
+      "authority": "google_search_technical",
+      "claim_id": "claim:search.canonical.absolute",
+      "evidence_digest": "sha256:9e54416883b1a32b3d8ac276ef9a2ee86195807a404185301e501e3a85e7b8d6",
+      "observed_at": "2026-08-15T12:00:00Z",
+      "valid_until": "2026-08-16T12:00:00Z",
+      "value": {
+        "reason_code": "rule_satisfied",
+        "verdict": "PASS"
+      }
+    },
+    {
+      "authority": "robots_rfc_9309",
+      "claim_id": "claim:search.robots.indexable",
+      "evidence_digest": "sha256:9e54416883b1a32b3d8ac276ef9a2ee86195807a404185301e501e3a85e7b8d6",
+      "observed_at": "2026-08-15T12:00:00Z",
+      "valid_until": "2026-08-16T12:00:00Z",
+      "value": {
+        "reason_code": "rule_satisfied",
+        "verdict": "PASS"
+      }
+    },
+    {
+      "authority": "schema_org_30",
+      "claim_id": "claim:search.structured_data.visible_parity",
+      "evidence_digest": "sha256:9e54416883b1a32b3d8ac276ef9a2ee86195807a404185301e501e3a85e7b8d6",
+      "observed_at": "2026-08-15T12:00:00Z",
+      "valid_until": "2026-08-16T12:00:00Z",
+      "value": {
+        "reason_code": "rule_satisfied",
+        "verdict": "PASS"
+      }
+    },
+    {
+      "authority": "rfc8259_section_7",
+      "claim_id": "claim:search.structured_data.jsonld_rfc8259",
+      "evidence_digest": "sha256:9e54416883b1a32b3d8ac276ef9a2ee86195807a404185301e501e3a85e7b8d6",
+      "observed_at": "2026-08-15T12:00:00Z",
+      "valid_until": "2026-08-16T12:00:00Z",
+      "value": {
+        "reason_code": "rule_satisfied",
+        "verdict": "PASS"
+      }
+    },
+    {
+      "authority": "constitutional_link_graph",
+      "claim_id": "claim:search.links.targets_eligible",
+      "evidence_digest": "sha256:9e54416883b1a32b3d8ac276ef9a2ee86195807a404185301e501e3a85e7b8d6",
+      "observed_at": "2026-08-15T12:00:00Z",
+      "valid_until": "2026-08-16T12:00:00Z",
+      "value": {
+        "reason_code": "rule_satisfied",
+        "verdict": "PASS"
+      }
+    },
+    {
+      "authority": "constitutional_sensor_integrity",
+      "claim_id": "claim:search.corpus.complete",
+      "evidence_digest": "sha256:9e54416883b1a32b3d8ac276ef9a2ee86195807a404185301e501e3a85e7b8d6",
+      "observed_at": "2026-08-15T12:00:00Z",
+      "valid_until": "2026-08-16T12:00:00Z",
+      "value": {
+        "reason_code": "rule_satisfied",
+        "verdict": "PASS"
+      }
+    },
+    {
+      "authority": "google_ai_search",
+      "claim_id": "claim:answer.primary_answer.present",
+      "evidence_digest": "sha256:9e54416883b1a32b3d8ac276ef9a2ee86195807a404185301e501e3a85e7b8d6",
+      "observed_at": "2026-08-15T12:00:00Z",
+      "valid_until": "2026-08-16T12:00:00Z",
+      "value": {
+        "reason_code": "rule_satisfied",
+        "verdict": "PASS"
+      }
+    },
+    {
+      "authority": "google_ai_search",
+      "claim_id": "claim:answer.entity.clear",
+      "evidence_digest": "sha256:9e54416883b1a32b3d8ac276ef9a2ee86195807a404185301e501e3a85e7b8d6",
+      "observed_at": "2026-08-15T12:00:00Z",
+      "valid_until": "2026-08-16T12:00:00Z",
+      "value": {
+        "reason_code": "rule_satisfied",
+        "verdict": "PASS"
+      }
+    },
+    {
+      "authority": "constitutional_claim_decision",
+      "claim_id": "claim:answer.claims.provenance",
+      "evidence_digest": "sha256:9e54416883b1a32b3d8ac276ef9a2ee86195807a404185301e501e3a85e7b8d6",
+      "observed_at": "2026-08-15T12:00:00Z",
+      "valid_until": "2026-08-22T12:00:00Z",
+      "value": {
+        "reason_code": "rule_satisfied",
+        "verdict": "PASS"
+      }
+    },
+    {
+      "authority": "openai_publishers",
+      "claim_id": "claim:answer.crawlers.choice",
+      "evidence_digest": "sha256:9e54416883b1a32b3d8ac276ef9a2ee86195807a404185301e501e3a85e7b8d6",
+      "observed_at": "2026-08-15T12:00:00Z",
+      "valid_until": "2026-08-22T12:00:00Z",
+      "value": {
+        "reason_code": "rule_satisfied",
+        "verdict": "PASS"
+      }
+    },
+    {
+      "authority": "constitutional_projection",
+      "claim_id": "claim:agent.actions.typed",
+      "evidence_digest": "sha256:9e54416883b1a32b3d8ac276ef9a2ee86195807a404185301e501e3a85e7b8d6",
+      "observed_at": "2026-08-15T12:00:00Z",
+      "valid_until": "2026-08-22T12:00:00Z",
+      "value": {
+        "reason_code": "rule_satisfied",
+        "verdict": "PASS"
+      }
+    },
+    {
+      "authority": "constitutional_sensor_integrity",
+      "claim_id": "claim:agent.actions.side_effects",
+      "evidence_digest": "sha256:9e54416883b1a32b3d8ac276ef9a2ee86195807a404185301e501e3a85e7b8d6",
+      "observed_at": "2026-08-15T12:00:00Z",
+      "valid_until": "2026-08-22T12:00:00Z",
+      "value": {
+        "reason_code": "rule_satisfied",
+        "verdict": "PASS"
+      }
+    },
+    {
+      "authority": "constitutional_projection",
+      "claim_id": "claim:agent.actions.receipts",
+      "evidence_digest": "sha256:9e54416883b1a32b3d8ac276ef9a2ee86195807a404185301e501e3a85e7b8d6",
+      "observed_at": "2026-08-15T12:00:00Z",
+      "valid_until": "2026-08-16T12:00:00Z",
+      "value": {
+        "reason_code": "rule_satisfied",
+        "verdict": "PASS"
+      }
+    },
+    {
+      "authority": "webmcp_draft",
+      "claim_id": "claim:agent.webmcp.experimental",
+      "evidence_digest": "sha256:9e54416883b1a32b3d8ac276ef9a2ee86195807a404185301e501e3a85e7b8d6",
+      "observed_at": "2026-08-15T12:00:00Z",
+      "valid_until": "2026-08-16T12:00:00Z",
+      "value": {
+        "reason_code": "rule_satisfied",
+        "verdict": "PASS"
+      }
+    },
+    {
+      "authority": "google_search_technical",
+      "claim_id": "claim:web.http.success",
+      "evidence_digest": "sha256:9e54416883b1a32b3d8ac276ef9a2ee86195807a404185301e501e3a85e7b8d6",
+      "observed_at": "2026-08-15T12:00:00Z",
+      "valid_until": "2026-08-16T12:00:00Z",
+      "value": {
+        "reason_code": "rule_falsified",
+        "verdict": "FAIL"
+      }
+    }
+  ],
+  "generated_at": "2026-08-15T12:00:00Z",
+  "issuer": "example.com",
+  "policy_digest": "sha256:978b46ddb83e468636a30c95e5a25ff9ded2c4904c4c83a25047001146fdd285",
+  "schema_version": "ClaimBundleV0_1",
+  "signature": {
+    "alg": "Ed25519",
+    "key_id": "test-2026-b",
+    "sig": "SzjddeQqXKBbBleAOg58cEmYEpC618xj66/3ITLt9QLxJkldz5xgrMM8FFbVAS1rOWUa/JpRaSoCsxBOVdwdDQ=="
+  },
+  "subject": {
+    "id": "https://example.com/guide",
+    "type": "url"
+  },
+  "valid_until": "2026-08-16T12:00:00Z"
+}

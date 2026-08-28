@@ -29,6 +29,13 @@ dependencies = [
     "jsonschema>=4.23,<5.0",
 ]
 
+[project.optional-dependencies]
+# Ed25519 signing/verification for Claim Gate v0.1 (claim-bundle / claim-sign /
+# claim-verify). The base install stays lean: PyYAML + jsonschema only.
+claims = [
+    "cryptography>=42.0,<47.0",
+]
+
 [project.scripts]
 constitutional-cms = "constitutional_cms.cli:main"
 

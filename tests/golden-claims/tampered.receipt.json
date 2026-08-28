@@ -1,0 +1,18 @@
+{
+  "bundle_hash": "sha256:6bec5d153df4df7ddf11decb8400804bbdec5ffb42c31691afb40d12fc16cdb5",
+  "evaluator": {
+    "name": "constitutional-cms",
+    "version": "0.5.0"
+  },
+  "reason_codes": [
+    "hash_mismatch"
+  ],
+  "receipt_hash": "sha256:54addf02217b0b75c68a2e75f9b00bd650751250f1fda5a8a5d98ca30d669333",
+  "receipt_id": "cr_47aaecb37a870884",
+  "schema_version": "ClaimReceiptV0_1",
+  "superseded": false,
+  "superseded_by": null,
+  "valid_until": "2026-08-16T12:00:00Z",
+  "verdict": "FAIL",
+  "verified_at": "2026-08-15T12:30:00Z"
+}
