@@ -10,7 +10,7 @@ Agents prepare work. Humans review and merge.
 
 - Open a pull request. Do not push directly to `main`.
 - Keep PRs small and reviewable. One contract tightening per PR is the intended cadence.
-- A change is not done when CI is green. It is done when the live surface still satisfies the contracts it claims to enforce.
+- A change is not done when CI is green. It is done when the live surface still satisfies the contracts it claims to enforce. See [`docs/MERGE_IS_NOT_SHIP.md`](docs/MERGE_IS_NOT_SHIP.md).
 
 ## Before you write code
 

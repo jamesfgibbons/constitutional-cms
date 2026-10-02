@@ -80,6 +80,23 @@ The inverse of `hub_to_children` is `children_require_hub` in
 [`contracts/link_rules.yaml`](../contracts/link_rules.yaml), enforcement
 `soft_warn` until a founder ratifies `hard_block`.
 
+## Merge is not ship (not a scheme)
+
+[`docs/MERGE_IS_NOT_SHIP.md`](MERGE_IS_NOT_SHIP.md) reads the relation ladder
+of [`contracts/promotion_protocol_v1.yaml`](../contracts/promotion_protocol_v1.yaml)
+for delivery claims: merged, served, and accepted are distinct relations. It
+is not a release-gate list, it does not order work, and it adds no receipt
+schema. Done remains the proof ledger's `live_verified`.
+
+## Evidence hygiene (not a scheme)
+
+[`docs/EVIDENCE_HYGIENE.md`](EVIDENCE_HYGIENE.md) classifies whether an
+observation may stand as evidence before it reaches a verdict. It applies
+[`contracts/sensor_integrity.yaml`](../contracts/sensor_integrity.yaml) and
+the honest absence states of
+[`contracts/signal_projection.yaml`](../contracts/signal_projection.yaml). It
+adds no CheckCatalogV1 checks and never turns missing evidence into FAIL.
+
 ## Claim Gate v0.1 (DRAFT)
 
 ClaimBundleV0_1 and ClaimReceiptV0_1 (`schemas/claim_bundle_v0_1.schema.json`,
