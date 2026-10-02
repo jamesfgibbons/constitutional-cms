@@ -443,6 +443,8 @@ constitutional-cms/
     ├── CONSUMING_LAYER.md             # Universe law: consuming layer cannot invent truth
     ├── MARTECH_CONTROL_LOOP.md        # Resolver vs compiler vs channel (no compile CLI)
     ├── PUBLISHING_HEURISTICS.md       # Smells vs laws; children require a hub (not a check)
+    ├── MERGE_IS_NOT_SHIP.md           # Merged ≠ served ≠ accepted; live receipt proves done
+    ├── EVIDENCE_HYGIENE.md            # When an observation may stand as evidence
     ├── WEB_CONFORMANCE.md             # Profiles, verdicts, and reproducible evaluation
     ├── ADAPTER_BOUNDARY.md             # Public normalized records/private authorities
     ├── CANONICAL_JSON.md               # Cross-language digest and receipt identity

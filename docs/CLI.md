@@ -4,6 +4,8 @@ The product page is the [README](../README.md). This page is the extra flags.
 
 Default `audit` writes a receipt and exits `0`. That is intentional: the command is a receipt generator. CI that should block a release must opt in with `--fail-on`.
 
+A green audit in CI judges the evidence collected before the merge. It is not proof of publication. Merged is not served, and served is not accepted: see [`MERGE_IS_NOT_SHIP.md`](MERGE_IS_NOT_SHIP.md). Collect evidence from the served surfaces and audit again before you call a change done. For what may count as evidence, see [`EVIDENCE_HYGIENE.md`](EVIDENCE_HYGIENE.md).
+
 ## Custom catalog or evaluation timestamp
 
 ```bash

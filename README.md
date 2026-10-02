@@ -193,6 +193,8 @@ The long constitution is not the landing page. Read it after you have a receipt.
 - [MarTech control loop](docs/MARTECH_CONTROL_LOOP.md) — resolver vs compiler vs channel; CLI does not compile campaigns
 - [Claim Gate](docs/CLAIM_GATE.md) — ClaimBundle + ClaimReceipt; portable claim verification (v0.1 DRAFT)
 - [Web conformance](docs/WEB_CONFORMANCE.md) — profiles, verdicts, `UNMEASURED`
+- [Merge is not ship](docs/MERGE_IS_NOT_SHIP.md) — merged ≠ served ≠ accepted; evidence binds to an exact head
+- [Evidence hygiene](docs/EVIDENCE_HYGIENE.md) — scoped absence, two-sided guards, honest probes, visible failure
 - [CLI flags](docs/CLI.md)
 - [Novelty](docs/NOVELTY.md) · [Prior art](docs/PRIOR_ART.md) · [Source boundary](docs/SOURCE_BOUNDARY.md)
 
