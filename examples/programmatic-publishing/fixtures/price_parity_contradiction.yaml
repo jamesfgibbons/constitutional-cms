@@ -1,0 +1,153 @@
+# Provenance: synthetic. HTML list price mutated without changing the snapshot.
+case_id: price_parity_contradiction
+as_of: "2026-10-04T12:00:00Z"
+injection: channel_price_mutation
+
+entities:
+  - id: product:northline-task-lamp
+    type: product
+    lifecycle:
+      state: active
+      terminal: false
+    relationships:
+      product_in_collection:
+        target: collection:desk-essentials
+        state: active
+  - id: product:northline-clamp-lamp
+    type: product
+    lifecycle:
+      state: active
+      terminal: false
+  - id: collection:desk-essentials
+    type: collection
+    lifecycle:
+      state: active
+      terminal: false
+  - id: comparison:task-lamp-vs-clamp-lamp
+    type: comparison
+    lifecycle:
+      state: active
+      terminal: false
+
+claims:
+  - claim_id: claim:task-lamp-price
+    subject_id: product:northline-task-lamp
+    claim_type: price
+    value: "64.00"
+    unit: USD
+    scope: list-price
+    rights: catalogue-display
+    observed_at: "2026-10-04T10:00:00Z"
+    valid_until: "2026-10-11T10:00:00Z"
+    source:
+      source_id: snapshot:price:task-lamp:2026-10-04
+      source_class: canonical_snapshot
+    status: publish
+    confidence: high
+    evidence_identity: ev:price:task-lamp:2026-10-04
+  - claim_id: claim:clamp-lamp-price
+    subject_id: product:northline-clamp-lamp
+    claim_type: price
+    value: "54.00"
+    unit: USD
+    scope: list-price
+    rights: catalogue-display
+    observed_at: "2026-10-04T10:00:00Z"
+    source:
+      source_id: snapshot:price:clamp-lamp:2026-10-04
+      source_class: canonical_snapshot
+    status: publish
+    confidence: high
+    evidence_identity: ev:price:clamp-lamp:2026-10-04
+
+pages:
+  - page_id: page:product:task-lamp
+    family: product_page
+    url: /products/task-lamp
+    entity_id: product:northline-task-lamp
+    fields:
+      product_name: Northline Task Lamp
+      list_price: present
+      inventory_status: absent
+      description_block: present
+    word_count: 520
+    projections:
+      html:
+        # Channel mutation: displayed price changed; governed input did not.
+        claim:task-lamp-price: "79.00"
+      jsonld:
+        claim:task-lamp-price: "64.00"
+      table:
+        claim:task-lamp-price: "64.00"
+    discovery:
+      robots: index,follow
+      canonical: https://catalog.example/products/task-lamp
+  - page_id: page:product:clamp-lamp
+    family: product_page
+    url: /products/clamp-lamp
+    entity_id: product:northline-clamp-lamp
+    fields:
+      product_name: Northline Clamp Lamp
+      list_price: present
+      inventory_status: absent
+      description_block: present
+    word_count: 480
+    projections:
+      html:
+        claim:clamp-lamp-price: "54.00"
+      jsonld:
+        claim:clamp-lamp-price: "54.00"
+      table:
+        claim:clamp-lamp-price: "54.00"
+    discovery:
+      robots: index,follow
+      canonical: https://catalog.example/products/clamp-lamp
+  - page_id: page:collection:desk-essentials
+    family: collection_page
+    url: /collections/desk-essentials
+    entity_id: collection:desk-essentials
+    fields:
+      collection_name: Desk Essentials
+      child_products: present
+    word_count: 260
+    child_entity_ids:
+      - product:northline-task-lamp
+      - product:northline-clamp-lamp
+    projections:
+      collection_card:
+        claim:task-lamp-price: "64.00"
+        claim:clamp-lamp-price: "54.00"
+    discovery:
+      robots: index,follow
+      canonical: https://catalog.example/collections/desk-essentials
+  - page_id: page:compare:task-lamp-vs-clamp-lamp
+    family: comparison_page
+    url: /compare/task-lamp-vs-clamp-lamp
+    entity_id: comparison:task-lamp-vs-clamp-lamp
+    fields:
+      product_a_snapshot: present
+      product_b_snapshot: present
+      spec_diff_table: present
+    word_count: 340
+    projections:
+      comparison_cell:
+        claim:task-lamp-price: "64.00"
+        claim:clamp-lamp-price: "54.00"
+    discovery:
+      robots: index,follow
+      canonical: https://catalog.example/compare/task-lamp-vs-clamp-lamp
+
+sensors: []
+
+release:
+  candidate_generation_id: gen-2026-10-04-a
+  candidate_content_hash: "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  served_generation_id: gen-2026-10-04-a
+  served_content_hash: "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  relation: served
+
+outcomes:
+  - outcome_id: outcome:impressions:task-lamp
+    metric: impressions
+    state: not_observed
+    actual: null

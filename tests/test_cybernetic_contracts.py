@@ -85,6 +85,7 @@ class CyberneticContractsTest(unittest.TestCase):
             ROOT / "README.md",
             ROOT / "docs" / "STORY_BIBLE.md",
             ROOT / "docs" / "CONSTITUTIONAL_CYBERNETICS.md",
+            ROOT / "docs" / "PROGRAMMATIC_PUBLISHING.md",
         ]
         link_pattern = re.compile(r"\[[^\]]+\]\((?!https?://)([^)#]+)")
 
@@ -104,6 +105,7 @@ class CyberneticContractsTest(unittest.TestCase):
             ROOT / "README.md",
             ROOT / "docs" / "STORY_BIBLE.md",
             ROOT / "docs" / "CONSTITUTIONAL_CYBERNETICS.md",
+            ROOT / "docs" / "PROGRAMMATIC_PUBLISHING.md",
         ]
         forbidden = [
             "/Users/",

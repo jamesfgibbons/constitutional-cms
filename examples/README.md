@@ -8,3 +8,8 @@ thresholds, and ownership labels before using the contract grammar in an impleme
 
 The manifest and link-target examples demonstrate the public/private adapter boundary. Their origins, route families,
 eligibility decisions, and timestamps are fabricated.
+
+[`programmatic-publishing/`](programmatic-publishing/) is the Governed Programmatic Publishing application pack: a
+synthetic ecommerce catalogue (product, collection, comparison) that maps those pages onto the existing contracts.
+It is teaching material, not a site compiler and not a fifth conformance profile. See
+[`docs/PROGRAMMATIC_PUBLISHING.md`](../docs/PROGRAMMATIC_PUBLISHING.md).

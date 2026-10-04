@@ -1,0 +1,35 @@
+# Provenance: synthetic. HTML price mutated; governed snapshot unchanged.
+case_id: price_parity_contradiction
+acceptance: failed
+failures:
+  - price_parity_contradiction
+
+entities:
+  product:northline-task-lamp:
+    lifecycle_state: active
+    artifact_state: publish
+    body_publishable: true
+    retired: false
+
+pages:
+  page:product:task-lamp:
+    family: product_page
+    quality_tier: BASIC
+    purpose_satisfied: true
+    seo_indexable: true
+    sitemap_eligible: true
+    same_approved_inputs: false
+
+claims:
+  claim:task-lamp-price:
+    status: publish
+    authority_ok: true
+    parity_consistent: false
+
+release:
+  served_matches_candidate: true
+  acceptance: failed
+  live_verified_allowed: false
+
+outcomes:
+  delivery_used_as_outcome: false

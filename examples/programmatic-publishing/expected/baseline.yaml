@@ -1,0 +1,94 @@
+# Provenance: synthetic. Expected verdicts for fixtures/baseline.yaml
+case_id: baseline
+acceptance: accepted
+failures: []
+
+entities:
+  product:northline-task-lamp:
+    lifecycle_state: active
+    artifact_state: publish
+    body_publishable: true
+    retired: false
+  product:northline-clamp-lamp:
+    lifecycle_state: active
+    artifact_state: publish
+    body_publishable: true
+    retired: false
+  product:northline-monitor-arm:
+    lifecycle_state: active
+    artifact_state: publish
+    body_publishable: true
+    retired: false
+  collection:desk-essentials:
+    lifecycle_state: active
+    artifact_state: publish
+    body_publishable: true
+    retired: false
+  comparison:task-lamp-vs-clamp-lamp:
+    lifecycle_state: active
+    artifact_state: publish
+    body_publishable: true
+    retired: false
+
+pages:
+  page:product:task-lamp:
+    family: product_page
+    quality_tier: FULL
+    purpose_satisfied: true
+    seo_indexable: true
+    sitemap_eligible: true
+    same_approved_inputs: true
+  page:product:clamp-lamp:
+    family: product_page
+    quality_tier: FULL
+    purpose_satisfied: true
+    seo_indexable: true
+    sitemap_eligible: true
+    same_approved_inputs: true
+  page:product:monitor-arm:
+    family: product_page
+    quality_tier: BASIC
+    purpose_satisfied: true
+    seo_indexable: true
+    sitemap_eligible: true
+    same_approved_inputs: true
+  page:collection:desk-essentials:
+    family: collection_page
+    quality_tier: FULL
+    purpose_satisfied: true
+    seo_indexable: true
+    sitemap_eligible: true
+    same_approved_inputs: true
+  page:compare:task-lamp-vs-clamp-lamp:
+    family: comparison_page
+    quality_tier: FULL
+    purpose_satisfied: true
+    seo_indexable: true
+    sitemap_eligible: true
+    same_approved_inputs: true
+
+claims:
+  claim:task-lamp-price:
+    status: publish
+    authority_ok: true
+    parity_consistent: true
+  claim:task-lamp-inventory:
+    status: publish
+    authority_ok: true
+    parity_consistent: true
+  claim:clamp-lamp-price:
+    status: publish
+    authority_ok: true
+    parity_consistent: true
+  claim:monitor-arm-price:
+    status: publish
+    authority_ok: true
+    parity_consistent: true
+
+release:
+  served_matches_candidate: true
+  acceptance: accepted
+  live_verified_allowed: true
+
+outcomes:
+  delivery_used_as_outcome: false

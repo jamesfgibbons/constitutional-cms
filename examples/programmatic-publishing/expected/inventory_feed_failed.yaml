@@ -1,0 +1,48 @@
+# Provenance: synthetic. Feed failed; withhold inventory; do not retire.
+case_id: inventory_feed_failed
+acceptance: accepted
+failures: []
+handling:
+  - inventory_withheld_entity_intact
+
+entities:
+  product:northline-task-lamp:
+    lifecycle_state: active
+    artifact_state: publish
+    body_publishable: true
+    retired: false
+
+pages:
+  page:product:task-lamp:
+    family: product_page
+    quality_tier: BASIC
+    purpose_satisfied: true
+    seo_indexable: true
+    sitemap_eligible: true
+    same_approved_inputs: true
+  page:collection:desk-essentials:
+    family: collection_page
+    quality_tier: FULL
+    purpose_satisfied: true
+    seo_indexable: true
+    sitemap_eligible: true
+    same_approved_inputs: true
+
+claims:
+  claim:task-lamp-price:
+    status: publish
+    authority_ok: true
+    parity_consistent: true
+  claim:task-lamp-inventory:
+    status: withheld
+    authority_ok: true
+    parity_consistent: true
+    invented_zero: false
+
+release:
+  served_matches_candidate: true
+  acceptance: accepted
+  live_verified_allowed: true
+
+outcomes:
+  delivery_used_as_outcome: false

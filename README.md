@@ -195,6 +195,7 @@ The long constitution is not the landing page. Read it after you have a receipt.
 - [Web conformance](docs/WEB_CONFORMANCE.md) — profiles, verdicts, `UNMEASURED`
 - [Merge is not ship](docs/MERGE_IS_NOT_SHIP.md) — merged ≠ served ≠ accepted; evidence binds to an exact head
 - [Evidence hygiene](docs/EVIDENCE_HYGIENE.md) — scoped absence, two-sided guards, honest probes, visible failure
+- [Governed programmatic publishing](docs/PROGRAMMATIC_PUBLISHING.md) — apply existing contracts to a generated page family; not a fifth profile
 - [CLI flags](docs/CLI.md)
 - [Novelty](docs/NOVELTY.md) · [Prior art](docs/PRIOR_ART.md) · [Source boundary](docs/SOURCE_BOUNDARY.md)
 
@@ -1028,6 +1029,7 @@ constitutional-cms/
 │   ├── hello-site/                    # Synthetic evidence fixture for the CLI quickstart
 │   ├── location-intelligence/         # Location intelligence example
 │   ├── ecommerce-catalog/             # Product page example
+│   ├── programmatic-publishing/       # Governed Programmatic Publishing pack (synthetic catalogue)
 │   ├── manifests/                     # Public-safe configuration examples
 │   └── link-targets/                  # Normalized link-authority examples
 ├── schemas/                           # JSON Schemas for portable interfaces (incl. claim_bundle_v0_1, claim_receipt_v0_1)
@@ -1050,6 +1052,7 @@ constitutional-cms/
     ├── V0_2_REFERENCE_PATTERNS.md     # Portable methods for explicit contract ratchets
     ├── CONSTITUTIONAL_CYBERNETICS.md  # Control-system frame for the agentic web
     ├── AGENT_COORDINATION.md          # How agents use these contracts
+    ├── PROGRAMMATIC_PUBLISHING.md     # Application pack: generated page families
     └── PRIOR_ART.md                   # Honest comparison to existing tools
 ```
 
