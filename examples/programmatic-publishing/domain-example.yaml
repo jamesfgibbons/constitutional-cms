@@ -1,0 +1,339 @@
+# Northline Desk Co. — synthetic ecommerce constitution
+# Provenance: synthetic. Not a customer catalogue.
+#
+# This file is the domain adapter for the Governed Programmatic Publishing
+# pack. It does not fork schemas. It names how existing contracts apply.
+
+pack_name: Governed Programmatic Publishing
+pack_id: governed-programmatic-publishing
+promise: >
+  Turn structured business data into useful, searchable pages—with controlled
+  claims, consistent representations, and proof of what was published.
+provenance_mode: synthetic
+domain:
+  name: Northline Desk Co.
+  kind: ecommerce_catalogue
+  origin: https://catalog.example
+  note: >
+    Fabricated desk-goods catalogue. Ecommerce, not travel. Public-safe
+    teaching records only.
+
+# ---------------------------------------------------------------------------
+# Precedence — declared so adopters do not invent it
+# ---------------------------------------------------------------------------
+precedence:
+  existence_and_terminality:
+    authority: contracts/entity_lifecycle.yaml
+    wins_over: [page_types, claim_decision, discovery_policy]
+  quality_tier:
+    authority: page_types
+    wins_over: [entity_lifecycle]
+    note: Lifecycle does not pick FULL / BASIC / SHELL.
+  claim_emission:
+    authority: contracts/claim_decision.yaml
+    wins_over: [renderers]
+  discovery:
+    authority: family_indexability_policy
+    complements: contracts/page_health_resolver.yaml
+    note: >
+      Missing a primary number does not imply noindex. SHELL does not
+      automatically imply noindex.
+  served_identity:
+    authority: contracts/promotion_protocol_v1.yaml
+    complements: [contracts/proof_ledger.yaml, contracts/cache_materialization.yaml]
+  outcomes:
+    authority: contracts/outcome_record.yaml
+    note: Delivery evidence cannot fill outcome actuals.
+  rule: >
+    page_types may degrade quality tier, withhold schema or links, and apply
+    family-declared SUPPRESS for discovery. page_types may not authorize
+    410 Gone or entity retirement. Source failure is a forbidden terminal
+    trigger (entity_lifecycle.yaml terminal_transition.forbidden_triggers).
+
+maps_to:
+  contract_families:
+    - contracts/page_types.yaml
+    - contracts/enrichment_stages.yaml
+    - contracts/link_rules.yaml
+    - contracts/snapshot_boundary.yaml
+    - contracts/sprints/example-sprint.yaml
+  lifecycle: contracts/entity_lifecycle.yaml
+  claims: contracts/claim_decision.yaml
+  projection: contracts/signal_projection.yaml
+  sensors: contracts/sensor_integrity.yaml
+  health: contracts/page_health_resolver.yaml
+  cache: contracts/cache_materialization.yaml
+  promotion: contracts/promotion_protocol_v1.yaml
+  proof: contracts/proof_ledger.yaml
+  outcomes: contracts/outcome_record.yaml
+  certification: contracts/page_family_certification_v1.yaml
+  web_conformance_profiles:
+    - foundation
+    - search
+    - answer_and_ai_retrieval
+    - agentic_web
+  certification_sequence: G0-G5
+  not_a_fifth_profile: true
+  not_a_site_compiler: true
+
+# ---------------------------------------------------------------------------
+# Entity adapter (entity_lifecycle.yaml domain_adapter_contract)
+# ---------------------------------------------------------------------------
+entity_types:
+  product:
+    identity_authority: synthetic_product_registry
+    lifecycle_authority: synthetic_product_registry
+    terminal_conditions:
+      - authorized_discontinuation
+    note: Inventory or price source failure is not a terminal condition.
+  collection:
+    identity_authority: synthetic_collection_registry
+    lifecycle_authority: synthetic_collection_registry
+    terminal_conditions:
+      - authorized_collection_retirement
+  comparison:
+    identity_authority: synthetic_comparison_registry
+    lifecycle_authority: synthetic_comparison_registry
+    terminal_conditions: []
+    note: A comparison is a derived page. Child source failure does not retire it.
+
+relationship_types:
+  product_in_collection:
+    relationship_authority: synthetic_collection_registry
+  compared_pair:
+    relationship_authority: synthetic_comparison_registry
+
+# ---------------------------------------------------------------------------
+# Page families
+# ---------------------------------------------------------------------------
+page_families:
+  product_page:
+    purpose: "What is this product, what does it cost, and what is its availability?"
+    url_pattern: "/products/{slug}"
+    governed_entity: product
+    required_evidence:
+      - product_identity
+      - list_price_or_typed_withhold
+      - inventory_or_typed_withhold
+    allowed_public_claims: [price, availability, specification]
+    forbidden_public_claims: [ranking_guarantee, invented_zero_stock]
+    indexability_policy:
+      FULL: index
+      BASIC: index
+      SHELL: index
+      SUPPRESS: noindex
+      note: >
+        Indexability is explicit family policy. Withholding inventory or
+        degrading to SHELL does not flip this to noindex.
+    sitemap_policy:
+      FULL: include
+      BASIC: include
+      SHELL: include
+      SUPPRESS: exclude
+    structured_data_types: [Product]
+    certification_target: G5
+
+  collection_page:
+    purpose: "Which products are in this set, and what do they cost?"
+    url_pattern: "/collections/{slug}"
+    governed_entity: collection
+    required_evidence:
+      - collection_identity
+      - child_product_refs
+    allowed_public_claims: [price]
+    forbidden_public_claims: [ranking_guarantee]
+    indexability_policy:
+      FULL: index
+      BASIC: index
+      SHELL: index
+      SUPPRESS: noindex
+    sitemap_policy:
+      FULL: include
+      BASIC: include
+      SHELL: include
+      SUPPRESS: exclude
+    structured_data_types: [CollectionPage]
+    hub_heuristic: children_require_hub
+    hub_enforcement: soft_warn
+    certification_target: G5
+
+  comparison_page:
+    purpose: "How do these two products differ on governed specs and price?"
+    url_pattern: "/compare/{slug-a}-vs-{slug-b}"
+    governed_entity: comparison
+    required_evidence:
+      - product_a_snapshot_basic_plus
+      - product_b_snapshot_basic_plus
+      - spec_diff_from_approved_claims
+    allowed_public_claims: [price, specification]
+    forbidden_public_claims: [availability]
+    note: >
+      Page-specific permission: comparison omits inventory even when the
+      product page publishes it. Shared price claims must still agree.
+    indexability_policy:
+      FULL: index
+      BASIC: index
+      SHELL: noindex
+      SUPPRESS: noindex
+    sitemap_policy:
+      FULL: include
+      BASIC: include
+      SHELL: exclude
+      SUPPRESS: exclude
+    structured_data_types: [ItemList]
+    certification_target: G5
+
+# ---------------------------------------------------------------------------
+# Page types (quality tiers) — emission only; not existence
+# ---------------------------------------------------------------------------
+page_types:
+  product_page:
+    description: "Product detail page for a catalogue SKU"
+    url_pattern: "/products/{slug}"
+    tiers:
+      FULL:
+        required_fields:
+          - product_name
+          - list_price
+          - inventory_status
+          - description_block
+        min_word_count: 400
+        schema_emission: true
+        internal_links: true
+      BASIC:
+        required_fields:
+          - product_name
+          - list_price
+        min_word_count: 120
+        schema_emission: true
+        internal_links: true
+      SHELL:
+        required_fields:
+          - product_name
+        min_word_count: 0
+        schema_emission: false
+        internal_links: false
+      SUPPRESS:
+        trigger: "Authorized product retirement (entity_lifecycle retired + terminal)"
+        action: "Omit from sitemap; apply family noindex; do not emit 410 without terminal authority"
+    degradation_rules:
+      - condition: "list_price withheld or stale"
+        action: "degrade to SHELL; withhold price claim"
+      - condition: "inventory feed failed or inventory claim withheld"
+        action: "withhold inventory claim; cap at BASIC when other FULL fields remain; do not retire"
+      - condition: "description_block below min_word_count"
+        action: "cap at BASIC"
+
+  collection_page:
+    description: "Collection hub listing member products"
+    url_pattern: "/collections/{slug}"
+    tiers:
+      FULL:
+        required_fields:
+          - collection_name
+          - child_products
+        min_word_count: 200
+        schema_emission: true
+        internal_links: true
+      BASIC:
+        required_fields:
+          - collection_name
+          - child_products
+        min_word_count: 80
+        schema_emission: true
+        internal_links: true
+      SHELL:
+        required_fields:
+          - collection_name
+        min_word_count: 0
+        schema_emission: false
+        internal_links: false
+      SUPPRESS:
+        trigger: "Authorized collection retirement (entity_lifecycle retired + terminal)"
+
+  comparison_page:
+    description: "Head-to-head comparison of two catalogue products"
+    url_pattern: "/compare/{slug-a}-vs-{slug-b}"
+    tiers:
+      FULL:
+        required_fields:
+          - product_a_snapshot
+          - product_b_snapshot
+          - spec_diff_table
+        min_word_count: 300
+        schema_emission: true
+        internal_links: true
+      BASIC:
+        required_fields:
+          - product_a_snapshot
+          - product_b_snapshot
+          - spec_diff_table
+        min_word_count: 120
+        schema_emission: true
+        internal_links: true
+      SHELL:
+        required_fields:
+          - product_a_name
+          - product_b_name
+        min_word_count: 0
+        schema_emission: false
+        internal_links: false
+      SUPPRESS:
+        trigger: "Either compared product is below BASIC or has been retired with terminal authority"
+
+# ---------------------------------------------------------------------------
+# Claim authority
+# ---------------------------------------------------------------------------
+admitted_source_classes:
+  - canonical_snapshot
+  - verified_observation
+  - editorial_review
+
+forbidden_source_classes_for_public_claims:
+  - fallback
+  - unknown
+
+claim_slots:
+  price:
+    unit: USD
+    required_qualifiers: [observed_at, source_id, scope, rights]
+    surfaces: [html, jsonld, table, collection_card, comparison_cell]
+  availability:
+    unit: count
+    required_qualifiers: [observed_at, source_id, scope, rights]
+    surfaces: [html, jsonld]
+    not_surfaces: [comparison_cell]
+    failed_sensor_behavior: withhold
+    invent_zero: false
+  specification:
+    unit: null
+    required_qualifiers: [observed_at, source_id]
+    surfaces: [html, table, comparison_cell]
+
+# ---------------------------------------------------------------------------
+# Presentation
+# ---------------------------------------------------------------------------
+presentation:
+  rule: >
+    Static answer, spec table, and machine-readable markup derive from the
+    same approved snapshot. Renderers do not recompute list price or stock.
+  snapshot_boundary: contracts/snapshot_boundary.yaml
+  projection: contracts/signal_projection.yaml
+
+# ---------------------------------------------------------------------------
+# Release
+# ---------------------------------------------------------------------------
+release:
+  candidate_must_match_served: true
+  acceptance_on_mismatch: failed
+  live_verified_requires_wire_match: true
+
+# ---------------------------------------------------------------------------
+# Outcomes
+# ---------------------------------------------------------------------------
+outcomes:
+  delivery_is_not_outcome: true
+  forbidden_inference:
+    - impressions_from_deploy
+    - conversions_from_receipt
+    - revenue_from_generation_hash

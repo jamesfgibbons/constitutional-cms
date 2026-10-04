@@ -1,0 +1,117 @@
+# Provenance: synthetic. Inventory feed failed; product remains a real entity.
+case_id: inventory_feed_failed
+as_of: "2026-10-04T12:00:00Z"
+injection: inventory_feed_unavailable
+
+entities:
+  - id: product:northline-task-lamp
+    type: product
+    lifecycle:
+      state: active
+      terminal: false
+    relationships:
+      product_in_collection:
+        target: collection:desk-essentials
+        state: active
+  - id: collection:desk-essentials
+    type: collection
+    lifecycle:
+      state: active
+      terminal: false
+
+claims:
+  - claim_id: claim:task-lamp-price
+    subject_id: product:northline-task-lamp
+    claim_type: price
+    value: "64.00"
+    unit: USD
+    scope: list-price
+    rights: catalogue-display
+    observed_at: "2026-10-04T10:00:00Z"
+    valid_until: "2026-10-11T10:00:00Z"
+    source:
+      source_id: snapshot:price:task-lamp:2026-10-04
+      source_class: canonical_snapshot
+    status: publish
+    confidence: high
+    evidence_identity: ev:price:task-lamp:2026-10-04
+  - claim_id: claim:task-lamp-inventory
+    subject_id: product:northline-task-lamp
+    claim_type: availability
+    value: null
+    unit: count
+    scope: sellable-on-hand
+    rights: catalogue-display
+    observed_at: "2026-10-04T11:00:00Z"
+    source:
+      source_id: feed:inventory:2026-10-04
+      source_class: verified_observation
+    status: withheld
+    confidence: unknown
+    reason_codes: [source_failed]
+    evidence_identity: ev:inventory:task-lamp:unavailable
+
+pages:
+  - page_id: page:product:task-lamp
+    family: product_page
+    url: /products/task-lamp
+    entity_id: product:northline-task-lamp
+    fields:
+      product_name: Northline Task Lamp
+      list_price: present
+      inventory_status: withheld
+      description_block: present
+    word_count: 520
+    projections:
+      html:
+        claim:task-lamp-price: "64.00"
+        # Inventory omitted — typed withhold, not a silent zero.
+      jsonld:
+        claim:task-lamp-price: "64.00"
+      table:
+        claim:task-lamp-price: "64.00"
+    discovery:
+      robots: index,follow
+      canonical: https://catalog.example/products/task-lamp
+  - page_id: page:collection:desk-essentials
+    family: collection_page
+    url: /collections/desk-essentials
+    entity_id: collection:desk-essentials
+    fields:
+      collection_name: Desk Essentials
+      child_products: present
+    word_count: 260
+    child_entity_ids:
+      - product:northline-task-lamp
+    projections:
+      collection_card:
+        claim:task-lamp-price: "64.00"
+    discovery:
+      robots: index,follow
+      canonical: https://catalog.example/collections/desk-essentials
+
+sensors:
+  - sensor_id: feed:inventory
+    sensor_class: external_api
+    source_name: synthetic-inventory-feed
+    source_status: failed
+    coverage_state: unavailable
+    trust_state: untrusted
+    mutation_class: pure_read
+    latest_success_at: "2026-10-03T11:00:00Z"
+    subjects: [product:northline-task-lamp]
+    integrity_flags: [source_failed]
+
+release:
+  candidate_generation_id: gen-2026-10-04-b
+  candidate_content_hash: "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+  served_generation_id: gen-2026-10-04-b
+  served_content_hash: "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+  relation: served
+
+outcomes:
+  - outcome_id: outcome:impressions:task-lamp
+    metric: impressions
+    state: unmeasured
+    actual: null
+    notes: "Feed failure is not world silence and not an outcome zero."

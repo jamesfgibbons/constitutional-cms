@@ -1,0 +1,298 @@
+# Provenance: synthetic. Healthy Northline catalogue — no injected failures.
+case_id: baseline
+as_of: "2026-10-04T12:00:00Z"
+injection: none
+
+entities:
+  - id: product:northline-task-lamp
+    type: product
+    lifecycle:
+      state: active
+      terminal: false
+    relationships:
+      product_in_collection:
+        target: collection:desk-essentials
+        state: active
+  - id: product:northline-clamp-lamp
+    type: product
+    lifecycle:
+      state: active
+      terminal: false
+    relationships:
+      product_in_collection:
+        target: collection:desk-essentials
+        state: active
+  - id: product:northline-monitor-arm
+    type: product
+    lifecycle:
+      state: active
+      terminal: false
+    relationships:
+      product_in_collection:
+        target: collection:desk-essentials
+        state: active
+  - id: collection:desk-essentials
+    type: collection
+    lifecycle:
+      state: active
+      terminal: false
+  - id: comparison:task-lamp-vs-clamp-lamp
+    type: comparison
+    lifecycle:
+      state: active
+      terminal: false
+    relationships:
+      compared_pair:
+        targets: [product:northline-task-lamp, product:northline-clamp-lamp]
+        state: active
+
+claims:
+  - claim_id: claim:task-lamp-price
+    subject_id: product:northline-task-lamp
+    claim_type: price
+    value: "64.00"
+    unit: USD
+    scope: list-price
+    rights: catalogue-display
+    observed_at: "2026-10-04T10:00:00Z"
+    valid_until: "2026-10-11T10:00:00Z"
+    source:
+      source_id: snapshot:price:task-lamp:2026-10-04
+      source_class: canonical_snapshot
+    status: publish
+    confidence: high
+    evidence_identity: ev:price:task-lamp:2026-10-04
+  - claim_id: claim:task-lamp-inventory
+    subject_id: product:northline-task-lamp
+    claim_type: availability
+    value: "18"
+    unit: count
+    scope: sellable-on-hand
+    rights: catalogue-display
+    observed_at: "2026-10-04T11:00:00Z"
+    valid_until: "2026-10-04T17:00:00Z"
+    source:
+      source_id: feed:inventory:2026-10-04
+      source_class: verified_observation
+    status: publish
+    confidence: high
+    evidence_identity: ev:inventory:task-lamp:2026-10-04
+  - claim_id: claim:task-lamp-weight
+    subject_id: product:northline-task-lamp
+    claim_type: specification
+    value: "1.1"
+    unit: kg
+    scope: shipping-weight
+    rights: catalogue-display
+    observed_at: "2026-10-01T09:00:00Z"
+    source:
+      source_id: snapshot:spec:task-lamp:2026-10-01
+      source_class: canonical_snapshot
+    status: publish
+    confidence: high
+    evidence_identity: ev:spec:task-lamp-weight
+  - claim_id: claim:clamp-lamp-price
+    subject_id: product:northline-clamp-lamp
+    claim_type: price
+    value: "54.00"
+    unit: USD
+    scope: list-price
+    rights: catalogue-display
+    observed_at: "2026-10-04T10:00:00Z"
+    valid_until: "2026-10-11T10:00:00Z"
+    source:
+      source_id: snapshot:price:clamp-lamp:2026-10-04
+      source_class: canonical_snapshot
+    status: publish
+    confidence: high
+    evidence_identity: ev:price:clamp-lamp:2026-10-04
+  - claim_id: claim:clamp-lamp-inventory
+    subject_id: product:northline-clamp-lamp
+    claim_type: availability
+    value: "11"
+    unit: count
+    scope: sellable-on-hand
+    rights: catalogue-display
+    observed_at: "2026-10-04T11:00:00Z"
+    source:
+      source_id: feed:inventory:2026-10-04
+      source_class: verified_observation
+    status: publish
+    confidence: high
+    evidence_identity: ev:inventory:clamp-lamp:2026-10-04
+  - claim_id: claim:clamp-lamp-weight
+    subject_id: product:northline-clamp-lamp
+    claim_type: specification
+    value: "0.8"
+    unit: kg
+    scope: shipping-weight
+    rights: catalogue-display
+    observed_at: "2026-10-01T09:00:00Z"
+    source:
+      source_id: snapshot:spec:clamp-lamp:2026-10-01
+      source_class: canonical_snapshot
+    status: publish
+    confidence: high
+    evidence_identity: ev:spec:clamp-lamp-weight
+  - claim_id: claim:monitor-arm-price
+    subject_id: product:northline-monitor-arm
+    claim_type: price
+    value: "89.00"
+    unit: USD
+    scope: list-price
+    rights: catalogue-display
+    observed_at: "2026-10-04T10:00:00Z"
+    source:
+      source_id: snapshot:price:monitor-arm:2026-10-04
+      source_class: canonical_snapshot
+    status: publish
+    confidence: high
+    evidence_identity: ev:price:monitor-arm:2026-10-04
+
+pages:
+  - page_id: page:product:task-lamp
+    family: product_page
+    url: /products/task-lamp
+    entity_id: product:northline-task-lamp
+    fields:
+      product_name: Northline Task Lamp
+      list_price: present
+      inventory_status: present
+      description_block: present
+    word_count: 520
+    projections:
+      html:
+        claim:task-lamp-price: "64.00"
+        claim:task-lamp-inventory: "18"
+        claim:task-lamp-weight: "1.1"
+      jsonld:
+        claim:task-lamp-price: "64.00"
+        claim:task-lamp-inventory: "18"
+      table:
+        claim:task-lamp-price: "64.00"
+        claim:task-lamp-weight: "1.1"
+    discovery:
+      robots: index,follow
+      canonical: https://catalog.example/products/task-lamp
+  - page_id: page:product:clamp-lamp
+    family: product_page
+    url: /products/clamp-lamp
+    entity_id: product:northline-clamp-lamp
+    fields:
+      product_name: Northline Clamp Lamp
+      list_price: present
+      inventory_status: present
+      description_block: present
+    word_count: 480
+    projections:
+      html:
+        claim:clamp-lamp-price: "54.00"
+        claim:clamp-lamp-inventory: "11"
+        claim:clamp-lamp-weight: "0.8"
+      jsonld:
+        claim:clamp-lamp-price: "54.00"
+        claim:clamp-lamp-inventory: "11"
+      table:
+        claim:clamp-lamp-price: "54.00"
+        claim:clamp-lamp-weight: "0.8"
+    discovery:
+      robots: index,follow
+      canonical: https://catalog.example/products/clamp-lamp
+  - page_id: page:product:monitor-arm
+    family: product_page
+    url: /products/monitor-arm
+    entity_id: product:northline-monitor-arm
+    fields:
+      product_name: Northline Monitor Arm
+      list_price: present
+      inventory_status: absent
+      description_block: present
+    word_count: 410
+    projections:
+      html:
+        claim:monitor-arm-price: "89.00"
+      jsonld:
+        claim:monitor-arm-price: "89.00"
+      table:
+        claim:monitor-arm-price: "89.00"
+    discovery:
+      robots: index,follow
+      canonical: https://catalog.example/products/monitor-arm
+  - page_id: page:collection:desk-essentials
+    family: collection_page
+    url: /collections/desk-essentials
+    entity_id: collection:desk-essentials
+    fields:
+      collection_name: Desk Essentials
+      child_products: present
+    word_count: 260
+    child_entity_ids:
+      - product:northline-task-lamp
+      - product:northline-clamp-lamp
+      - product:northline-monitor-arm
+    projections:
+      html:
+        claim:task-lamp-price: "64.00"
+        claim:clamp-lamp-price: "54.00"
+        claim:monitor-arm-price: "89.00"
+      collection_card:
+        claim:task-lamp-price: "64.00"
+        claim:clamp-lamp-price: "54.00"
+        claim:monitor-arm-price: "89.00"
+    discovery:
+      robots: index,follow
+      canonical: https://catalog.example/collections/desk-essentials
+  - page_id: page:compare:task-lamp-vs-clamp-lamp
+    family: comparison_page
+    url: /compare/task-lamp-vs-clamp-lamp
+    entity_id: comparison:task-lamp-vs-clamp-lamp
+    fields:
+      product_a_snapshot: present
+      product_b_snapshot: present
+      spec_diff_table: present
+      product_a_name: Northline Task Lamp
+      product_b_name: Northline Clamp Lamp
+    word_count: 340
+    projections:
+      html:
+        claim:task-lamp-price: "64.00"
+        claim:clamp-lamp-price: "54.00"
+        claim:task-lamp-weight: "1.1"
+        claim:clamp-lamp-weight: "0.8"
+      comparison_cell:
+        claim:task-lamp-price: "64.00"
+        claim:clamp-lamp-price: "54.00"
+        claim:task-lamp-weight: "1.1"
+        claim:clamp-lamp-weight: "0.8"
+      jsonld:
+        claim:task-lamp-price: "64.00"
+        claim:clamp-lamp-price: "54.00"
+    discovery:
+      robots: index,follow
+      canonical: https://catalog.example/compare/task-lamp-vs-clamp-lamp
+
+sensors:
+  - sensor_id: feed:inventory
+    sensor_class: external_api
+    source_name: synthetic-inventory-feed
+    source_status: healthy
+    coverage_state: complete
+    trust_state: trusted
+    mutation_class: pure_read
+    latest_success_at: "2026-10-04T11:00:00Z"
+    subjects: [product:northline-task-lamp, product:northline-clamp-lamp]
+
+release:
+  candidate_generation_id: gen-2026-10-04-a
+  candidate_content_hash: "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  served_generation_id: gen-2026-10-04-a
+  served_content_hash: "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  relation: served
+
+outcomes:
+  - outcome_id: outcome:impressions:task-lamp
+    metric: impressions
+    state: not_observed
+    actual: null
+    intervention_ref: gen-2026-10-04-a
+    notes: "Delivery proof must not fill this actual."

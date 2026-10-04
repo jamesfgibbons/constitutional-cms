@@ -1,0 +1,65 @@
+# Provenance: synthetic. Wire served a different generation than the candidate.
+case_id: served_artifact_mismatch
+as_of: "2026-10-04T12:00:00Z"
+injection: wrong_served_generation
+
+entities:
+  - id: product:northline-task-lamp
+    type: product
+    lifecycle:
+      state: active
+      terminal: false
+
+claims:
+  - claim_id: claim:task-lamp-price
+    subject_id: product:northline-task-lamp
+    claim_type: price
+    value: "64.00"
+    unit: USD
+    scope: list-price
+    rights: catalogue-display
+    observed_at: "2026-10-04T10:00:00Z"
+    source:
+      source_id: snapshot:price:task-lamp:2026-10-04
+      source_class: canonical_snapshot
+    status: publish
+    confidence: high
+    evidence_identity: ev:price:task-lamp:2026-10-04
+
+pages:
+  - page_id: page:product:task-lamp
+    family: product_page
+    url: /products/task-lamp
+    entity_id: product:northline-task-lamp
+    fields:
+      product_name: Northline Task Lamp
+      list_price: present
+      inventory_status: absent
+      description_block: present
+    word_count: 520
+    projections:
+      html:
+        claim:task-lamp-price: "64.00"
+      jsonld:
+        claim:task-lamp-price: "64.00"
+      table:
+        claim:task-lamp-price: "64.00"
+    discovery:
+      robots: index,follow
+      canonical: https://catalog.example/products/task-lamp
+
+sensors: []
+
+release:
+  candidate_generation_id: gen-2026-10-04-a
+  candidate_content_hash: "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  served_generation_id: gen-2026-10-03-b
+  served_content_hash: "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  relation: promoted
+  proof_status_claimed: live_verified
+
+outcomes:
+  - outcome_id: outcome:impressions:task-lamp
+    metric: impressions
+    state: not_observed
+    actual: null

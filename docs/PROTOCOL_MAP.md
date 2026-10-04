@@ -69,6 +69,14 @@ layer cannot invent truth. Snapshot boundary and signal projection are the
 executable form. It is not a taxonomy admission, not CheckCatalogV1, and not a
 work-ordering scheme.
 
+## Governed programmatic publishing (not a scheme)
+
+[`docs/PROGRAMMATIC_PUBLISHING.md`](PROGRAMMATIC_PUBLISHING.md) shows how a
+generated page family applies the schemes above. It is an application pack,
+not a taxonomy admission. It does not add a fifth web-conformance profile, a
+G-state, or a site compiler. The public CLI still evaluates evidence; a future
+`governed-publishing-starter` would be the runnable publisher.
+
 ## Publishing heuristics (not a scheme)
 
 [`docs/PUBLISHING_HEURISTICS.md`](PUBLISHING_HEURISTICS.md) classifies recurring
