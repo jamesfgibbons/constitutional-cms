@@ -69,6 +69,16 @@ layer cannot invent truth. Snapshot boundary and signal projection are the
 executable form. It is not a taxonomy admission, not CheckCatalogV1, and not a
 work-ordering scheme.
 
+## Claim drift (not a scheme)
+
+[`docs/CLAIM_DRIFT.md`](CLAIM_DRIFT.md) applies the schemes above to a
+finite inventory of enrolled material claims. It is an application pack,
+not a taxonomy admission. Publication permission remains
+`claim_decision.yaml` (`publish` / `hold` / `suppress`). Integrity remains
+Claim Gate v0.1. Existence remains `entity_lifecycle.yaml`. It does not
+add a fifth web-conformance profile, a score, or a compiler. Draft
+application — not a released v0.5.0 feature.
+
 ## Governed programmatic publishing (not a scheme)
 
 [`docs/PROGRAMMATIC_PUBLISHING.md`](PROGRAMMATIC_PUBLISHING.md) shows how a

@@ -1,0 +1,15 @@
+# CD-07 — valid signed bundle; statement still unsupported
+case_id: CD-07
+as_of: "2026-10-09T16:00:00Z"
+include_assertions:
+  - claim:ccms.claim-gate.released-in-v0.5.0
+include_evidence:
+  - ev:ccms-claim-gate
+integrity:
+  mode: bundle
+  bundle_path: tests/golden-claims/verified.bundle.json
+  keys_path: tests/fixtures/claims/keys.json
+  as_of: "2026-08-15T12:30:00Z"
+  note: >
+    Integrity clock is the golden's valid window. Publication uses the
+    case as_of. A PASS bundle must not authorize the unsupported statement.

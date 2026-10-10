@@ -1,0 +1,8 @@
+# CD-03 — current vs legacy prices are different cohorts
+case_id: CD-03
+as_of: "2026-10-09T16:00:00Z"
+include_assertions:
+  - claim:harbor.price.current
+  - claim:harbor.price.legacy-2024
+include_evidence:
+  - ev:harbor-pricing

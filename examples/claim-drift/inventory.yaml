@@ -1,0 +1,518 @@
+# Nominated material-assertion inventory for the Claim Drift pilot.
+# Approximately 20 assertions. Mix of owned Constitutional CMS facts
+# and synthetic Harbor Ledger plan / pricing / comparison cases.
+#
+# Extraction proposes. These records are not authoritative product state.
+
+pack_id: claim-drift
+provenance_mode: mixed
+as_of_default: "2026-10-09T16:00:00Z"
+evaluation_clock_note: Explicit fixture input. Never wall clock.
+
+entities:
+  - id: product:constitutional-cms
+    type: product
+    lifecycle: {state: active, terminal: false}
+    indexability: index
+    owner: constitutional-cms-maintainers
+  - id: product:harbor-ledger
+    type: product
+    lifecycle: {state: active, terminal: false}
+    indexability: index
+    owner: harbor-docs
+    note: Synthetic vendor used for plan, price, and comparison cases.
+
+evidence:
+  - evidence_id: ev:ccms-claim-gate
+    path: sources/ccms-claim-gate-excerpt.md
+    origin_id: origin:ccms-docs
+    source_class: canonical_snapshot
+    source_status: ok
+    inspectable: true
+    authority_class: product_documentation
+    observed_at: "2026-10-01T12:00:00Z"
+    retrieved_at: "2026-10-01T12:00:00Z"
+    effective_from: "2026-08-15T00:00:00Z"
+    page_modified_at: "2026-10-01T12:00:00Z"
+  - evidence_id: ev:ccms-changelog
+    path: sources/ccms-changelog-excerpt.md
+    origin_id: origin:ccms-changelog
+    source_class: canonical_snapshot
+    source_status: ok
+    inspectable: true
+    authority_class: product_documentation
+    observed_at: "2026-08-22T00:00:00Z"
+    retrieved_at: "2026-10-01T12:00:00Z"
+    effective_from: "2026-08-22T00:00:00Z"
+    page_modified_at: "2026-08-22T00:00:00Z"
+  - evidence_id: ev:ccms-catalog
+    path: sources/ccms-catalog-provenance.md
+    origin_id: origin:ccms-catalog
+    source_class: canonical_snapshot
+    source_status: ok
+    inspectable: true
+    authority_class: product_documentation
+    observed_at: "2026-10-01T12:00:00Z"
+    retrieved_at: "2026-10-01T12:00:00Z"
+    effective_from: "2026-08-22T00:00:00Z"
+  - evidence_id: ev:harbor-docs-sso
+    path: sources/harbor-docs-sso.md
+    origin_id: origin:harbor-docs
+    source_class: canonical_snapshot
+    source_status: ok
+    inspectable: true
+    authority_class: product_documentation
+    observed_at: "2026-09-15T09:00:00Z"
+    retrieved_at: "2026-10-01T12:00:00Z"
+    effective_from: "2026-09-01T00:00:00Z"
+    scope: {plan: Enterprise, release_stage: ga, region: US}
+  - evidence_id: ev:harbor-roadmap-sso
+    path: sources/harbor-docs-sso-roadmap.md
+    origin_id: origin:harbor-docs
+    source_class: canonical_snapshot
+    source_status: ok
+    inspectable: true
+    authority_class: product_documentation
+    observed_at: "2026-06-01T09:00:00Z"
+    retrieved_at: "2026-10-01T12:00:00Z"
+    effective_from: "2026-06-01T00:00:00Z"
+    effective_until: "2026-09-01T00:00:00Z"
+    scope: {release_stage: roadmap}
+  - evidence_id: ev:harbor-pricing
+    path: sources/harbor-pricing.md
+    origin_id: origin:harbor-pricing
+    source_class: canonical_snapshot
+    source_status: ok
+    inspectable: true
+    authority_class: product_documentation
+    observed_at: "2026-09-01T09:00:00Z"
+    retrieved_at: "2026-10-01T12:00:00Z"
+    effective_from: "2024-01-01T00:00:00Z"
+  - evidence_id: ev:comparestack-denial
+    path: sources/comparestack-universal-denial.md
+    origin_id: origin:comparestack
+    source_class: unverified_observation
+    source_status: ok
+    inspectable: true
+    authority_class: competitor_marketing
+    observed_at: "2026-09-20T14:00:00Z"
+    retrieved_at: "2026-10-01T12:00:00Z"
+    attempted_policy_mutation: true
+  - evidence_id: ev:wire-upstream
+    path: sources/syndicated-upstream.md
+    origin_id: origin:wire-harbor-sso
+    source_class: unverified_observation
+    source_status: ok
+    inspectable: true
+    authority_class: competitor_marketing
+    observed_at: "2026-09-18T08:00:00Z"
+    retrieved_at: "2026-10-01T12:00:00Z"
+  - evidence_id: ev:wire-copy-a
+    path: sources/syndicated-upstream.md
+    origin_id: origin:wire-harbor-sso
+    source_class: unverified_observation
+    source_status: ok
+    inspectable: true
+    authority_class: competitor_marketing
+    observed_at: "2026-09-19T08:00:00Z"
+    retrieved_at: "2026-10-01T12:00:00Z"
+    note: Syndicated reprint of ev:wire-upstream
+  - evidence_id: ev:wire-copy-b
+    path: sources/syndicated-upstream.md
+    origin_id: origin:wire-harbor-sso
+    source_class: unverified_observation
+    source_status: ok
+    inspectable: true
+    authority_class: competitor_marketing
+    observed_at: "2026-09-19T11:00:00Z"
+    retrieved_at: "2026-10-01T12:00:00Z"
+    note: Second syndicated reprint of ev:wire-upstream
+  - evidence_id: ev:customer-outage
+    path: sources/customer-outage-report.md
+    origin_id: origin:acme-outage-2026-03
+    source_class: editorial_review
+    source_status: ok
+    inspectable: true
+    authority_class: customer_report
+    observed_at: "2026-03-12T18:00:00Z"
+    retrieved_at: "2026-10-01T12:00:00Z"
+    effective_from: "2026-03-12T00:00:00Z"
+    effective_until: "2026-03-12T23:59:59Z"
+    scope: {plan: Enterprise, region: US, audience: acme-corp}
+  - evidence_id: ev:scrape-failed
+    path: null
+    origin_id: origin:incomplete-scrape
+    source_class: unknown
+    source_status: failed
+    inspectable: false
+    authority_class: competitor_marketing
+    observed_at: null
+    retrieved_at: "2026-10-09T16:00:00Z"
+    note: Failed crawl. Bytes unavailable.
+
+assertions:
+  - claim_id: claim:ccms.receipts.never-truth
+    assertion_version: "1"
+    issuer: constitutionalcms.com
+    subject: product:constitutional-cms
+    predicate: attest_integrity_not_truth
+    value: true
+    polarity: affirms
+    claim_type: other
+    claim_kind: product_capability
+    scope: {release_stage: ga}
+    assertion_text: Receipts attest integrity and policy conformance, never truth.
+    required_qualifications: []
+    supporting_evidence: [ev:ccms-claim-gate]
+    source_authority_policy: product_documentation
+    owner: constitutional-cms-maintainers
+    permitted_projections: [html, sales_answer, api]
+    expected_by_users: true
+  - claim_id: claim:ccms.release.v0.5.0-published
+    assertion_version: "1"
+    issuer: constitutionalcms.com
+    subject: product:constitutional-cms
+    predicate: latest_published_release
+    value: v0.5.0
+    polarity: affirms
+    claim_type: other
+    claim_kind: release_status
+    scope: {release_stage: ga, product_version: "0.5.0"}
+    assertion_text: v0.5.0 is the latest published release as of 2026-08-22.
+    supporting_evidence: [ev:ccms-changelog]
+    source_authority_policy: product_documentation
+    owner: constitutional-cms-maintainers
+    permitted_projections: [html, sales_answer, api]
+  - claim_id: claim:ccms.catalog.nineteen-checks
+    assertion_version: "1"
+    issuer: constitutionalcms.com
+    subject: product:constitutional-cms
+    predicate: catalog_check_count
+    value: "19"
+    polarity: affirms
+    claim_type: metric
+    claim_kind: product_capability
+    scope: {product_version: "0.5.0"}
+    assertion_text: CheckCatalogV1 1.0.2 contains 19 checks.
+    supporting_evidence: [ev:ccms-changelog]
+    source_authority_policy: product_documentation
+    owner: constitutional-cms-maintainers
+    permitted_projections: [html, api]
+  - claim_id: claim:ccms.audit.receipt-first
+    assertion_version: "1"
+    issuer: constitutionalcms.com
+    subject: product:constitutional-cms
+    predicate: audit_exit_means_receipt
+    value: true
+    polarity: affirms
+    claim_type: other
+    claim_kind: product_capability
+    scope: {release_stage: ga}
+    assertion_text: Default audit success means a receipt was generated, not that publication is allowed.
+    supporting_evidence: [ev:ccms-changelog]
+    source_authority_policy: product_documentation
+    owner: constitutional-cms-maintainers
+    permitted_projections: [html, sales_answer, api]
+  - claim_id: claim:ccms.claim-gate.not-in-v0.5.0
+    assertion_version: "1"
+    issuer: constitutionalcms.com
+    subject: product:constitutional-cms
+    predicate: claim_gate_release_status
+    value: draft_on_main
+    polarity: affirms
+    claim_type: other
+    claim_kind: release_status
+    scope: {release_stage: draft, product_version: main}
+    assertion_text: Claim Gate v0.1 is draft on main and is not a released v0.5.0 feature.
+    supporting_evidence: [ev:ccms-claim-gate]
+    source_authority_policy: product_documentation
+    owner: constitutional-cms-maintainers
+    permitted_projections: [html, sales_answer, api]
+    required_qualifications: ["draft on main", "not a released v0.5.0 feature"]
+  - claim_id: claim:ccms.cli.not-compiler
+    assertion_version: "1"
+    issuer: constitutionalcms.com
+    subject: product:constitutional-cms
+    predicate: is_site_compiler
+    value: false
+    polarity: denies
+    claim_type: other
+    claim_kind: product_capability
+    assertion_text: The public CLI is not a site compiler.
+    supporting_evidence: [ev:ccms-changelog]
+    source_authority_policy: product_documentation
+    owner: constitutional-cms-maintainers
+    permitted_projections: [html, sales_answer, api]
+  - claim_id: claim:ccms.license.apache-2.0
+    assertion_version: "1"
+    issuer: constitutionalcms.com
+    subject: product:constitutional-cms
+    predicate: license
+    value: Apache-2.0
+    polarity: affirms
+    claim_type: other
+    claim_kind: pricing_model
+    assertion_text: Constitutional CMS is licensed Apache-2.0.
+    supporting_evidence: [ev:ccms-changelog]
+    source_authority_policy: product_documentation
+    owner: constitutional-cms-maintainers
+    permitted_projections: [html, api]
+  - claim_id: claim:ccms.evaluator.offline
+    assertion_version: "1"
+    issuer: constitutionalcms.com
+    subject: product:constitutional-cms
+    predicate: evaluator_network_access
+    value: false
+    polarity: denies
+    claim_type: other
+    claim_kind: product_capability
+    assertion_text: The reference evaluator performs no network access.
+    supporting_evidence: [ev:ccms-changelog]
+    source_authority_policy: product_documentation
+    owner: constitutional-cms-maintainers
+    permitted_projections: [html, api]
+  - claim_id: claim:ccms.certified.false
+    assertion_version: "1"
+    issuer: constitutionalcms.com
+    subject: product:constitutional-cms
+    predicate: public_receipt_certified
+    value: false
+    polarity: denies
+    claim_type: other
+    claim_kind: product_capability
+    assertion_text: Public recreate-a-check receipts set certified to false.
+    supporting_evidence: [ev:ccms-changelog]
+    source_authority_policy: product_documentation
+    owner: constitutional-cms-maintainers
+    permitted_projections: [html, api]
+  - claim_id: claim:ccms.provenance.declared-config
+    assertion_version: "1"
+    issuer: constitutionalcms.com
+    subject: product:constitutional-cms
+    predicate: provenance_check_scope
+    value: declared_config
+    polarity: affirms
+    claim_type: other
+    claim_kind: product_capability
+    assertion_text: answer.claims.provenance checks a declared boolean, not independent semantic examination.
+    supporting_evidence: [ev:ccms-catalog]
+    source_authority_policy: product_documentation
+    owner: constitutional-cms-maintainers
+    permitted_projections: [html, api]
+  - claim_id: claim:ccms.claim-gate.released-in-v0.5.0
+    assertion_version: "1"
+    issuer: constitutionalcms.com
+    subject: product:constitutional-cms
+    predicate: claim_gate_release_status
+    value: released_v0.5.0
+    polarity: affirms
+    claim_type: other
+    claim_kind: release_status
+    scope: {release_stage: ga, product_version: "0.5.0"}
+    assertion_text: Claim Gate is a released v0.5.0 feature.
+    supporting_evidence: []
+    conflicting_evidence: [ev:ccms-claim-gate]
+    source_authority_policy: product_documentation
+    owner: constitutional-cms-maintainers
+    permitted_projections: [html, sales_answer, api]
+    favors_subject: true
+    note: Inaccurate self-favoring claim. Same refusal policy as a competitor error.
+  - claim_id: claim:harbor.sso.enterprise
+    assertion_version: "1"
+    issuer: harbor-ledger.example
+    subject: product:harbor-ledger
+    predicate: has_capability
+    value: saml_sso
+    polarity: affirms
+    claim_type: availability
+    claim_kind: plan_entitlement
+    scope: {plan: Enterprise, release_stage: ga, region: US}
+    assertion_text: SAML SSO is available on the Enterprise plan.
+    required_qualifications: ["Enterprise plan"]
+    supporting_evidence: [ev:harbor-docs-sso]
+    source_authority_policy: product_documentation
+    owner: harbor-docs
+    permitted_projections: [html, sales_answer, api]
+    expected_by_users: true
+  - claim_id: claim:harbor.sso.enterprise-workload
+    assertion_version: "1"
+    issuer: harbor-ledger.example
+    subject: product:harbor-ledger
+    predicate: has_capability
+    value: saml_sso
+    polarity: affirms
+    claim_type: availability
+    claim_kind: plan_entitlement
+    scope: {plan: Enterprise, release_stage: ga, region: US, audience: directory-1000}
+    assertion_text: SAML SSO is available on the Enterprise plan for a 1000-seat directory workload.
+    required_qualifications: ["Enterprise plan", "1000-seat directory workload"]
+    supporting_evidence: [ev:harbor-docs-sso]
+    source_authority_policy: product_documentation
+    owner: harbor-docs
+    permitted_projections: [html, sales_answer, api]
+  - claim_id: claim:harbor.sso.absent-free
+    assertion_version: "1"
+    issuer: harbor-ledger.example
+    subject: product:harbor-ledger
+    predicate: has_capability
+    value: saml_sso
+    polarity: denies
+    claim_type: availability
+    claim_kind: plan_entitlement
+    scope: {plan: Free, release_stage: ga}
+    assertion_text: SAML SSO is not included on the Free plan.
+    supporting_evidence: [ev:harbor-docs-sso]
+    source_authority_policy: product_documentation
+    owner: harbor-docs
+    permitted_projections: [html, sales_answer, api]
+  - claim_id: claim:harbor.sso.universal-absent
+    assertion_version: "1"
+    issuer: comparestack.example
+    subject: product:harbor-ledger
+    predicate: has_capability
+    value: saml_sso
+    polarity: denies
+    claim_type: availability
+    claim_kind: product_capability
+    scope: {}
+    scope_explicitly_universal: true
+    assertion_text: Harbor Ledger has no SAML SSO.
+    supporting_evidence: [ev:comparestack-denial]
+    conflicting_evidence: [ev:harbor-docs-sso]
+    source_authority_policy: competitor_marketing
+    owner: comparestack-editorial
+    permitted_projections: [html, sales_answer, api]
+    expected_by_users: true
+  - claim_id: claim:harbor.price.current
+    assertion_version: "1"
+    issuer: harbor-ledger.example
+    subject: product:harbor-ledger
+    predicate: list_price
+    value: "29"
+    polarity: affirms
+    claim_type: price
+    claim_kind: pricing_model
+    scope: {plan: Workspace, billing_period: monthly, units: USD-per-member, audience: current}
+    effective_from: "2026-04-01T00:00:00Z"
+    assertion_text: Harbor Ledger Workspace is USD 29 per member per month.
+    supporting_evidence: [ev:harbor-pricing]
+    source_authority_policy: product_documentation
+    owner: harbor-docs
+    permitted_projections: [html, sales_answer, api]
+  - claim_id: claim:harbor.price.legacy-2024
+    assertion_version: "1"
+    issuer: harbor-ledger.example
+    subject: product:harbor-ledger
+    predicate: list_price
+    value: "19"
+    polarity: affirms
+    claim_type: price
+    claim_kind: pricing_model
+    scope: {plan: Workspace, billing_period: monthly, units: USD-per-member, audience: legacy-2024}
+    effective_from: "2024-01-01T00:00:00Z"
+    effective_until: "2026-03-31T23:59:59Z"
+    assertion_text: Harbor Ledger Workspace was USD 19 per member per month for the 2024 cohort.
+    supporting_evidence: [ev:harbor-pricing]
+    source_authority_policy: product_documentation
+    owner: harbor-docs
+    permitted_projections: [html, api]
+  - claim_id: claim:harbor.sso.ga
+    assertion_version: "1"
+    issuer: harbor-ledger.example
+    subject: product:harbor-ledger
+    predicate: availability_stage
+    value: generally_available
+    polarity: affirms
+    claim_type: availability
+    claim_kind: release_status
+    scope: {release_stage: ga, plan: null}
+    scope_explicitly_universal: true
+    assertion_text: SAML SSO is generally available.
+    supporting_evidence: [ev:harbor-roadmap-sso]
+    source_authority_policy: product_documentation
+    owner: harbor-docs
+    permitted_projections: [html, sales_answer, api]
+    required_qualifications: []
+    note: Roadmap evidence must not promote this to current availability.
+  - claim_id: claim:harbor.sso.roadmap
+    assertion_version: "1"
+    issuer: harbor-ledger.example
+    subject: product:harbor-ledger
+    predicate: availability_stage
+    value: roadmap
+    polarity: affirms
+    claim_type: availability
+    claim_kind: release_status
+    scope: {release_stage: roadmap}
+    assertion_text: SAML SSO will launch next quarter.
+    supporting_evidence: [ev:harbor-roadmap-sso]
+    source_authority_policy: product_documentation
+    owner: harbor-docs
+    permitted_projections: [html, api]
+  - claim_id: claim:harbor.reliability.three-nines
+    assertion_version: "1"
+    issuer: harbor-ledger.example
+    subject: product:harbor-ledger
+    predicate: reliability
+    value: "99.9"
+    polarity: affirms
+    claim_type: metric
+    claim_kind: product_capability
+    assertion_text: Harbor Ledger is 99.9 percent reliable.
+    supporting_evidence: [ev:harbor-docs-sso]
+    source_authority_policy: measured_reliability
+    owner: harbor-docs
+    permitted_projections: [html, api]
+    reliability_method: null
+    note: Product docs cannot support a reliability claim without method.
+  - claim_id: claim:harbor.customer.outage-2026-03
+    assertion_version: "1"
+    issuer: acme-corp.example
+    subject: product:harbor-ledger
+    predicate: experienced_outage
+    value: true
+    polarity: affirms
+    claim_type: other
+    claim_kind: attributed_experience
+    scope: {plan: Enterprise, region: US, audience: acme-corp}
+    assertion_text: Acme Corp reported a 2026-03-12 Enterprise SSO outage.
+    supporting_evidence: [ev:customer-outage]
+    source_authority_policy: customer_report
+    owner: review-desk
+    permitted_projections: [html, api]
+    required_qualifications: ["Acme Corp", "2026-03-12", "Enterprise"]
+  - claim_id: claim:harbor.feature.absent-unmeasured
+    assertion_version: "1"
+    issuer: comparestack.example
+    subject: product:harbor-ledger
+    predicate: has_capability
+    value: audit_log_export
+    polarity: denies
+    claim_type: availability
+    claim_kind: product_capability
+    scope_explicitly_universal: true
+    assertion_text: Harbor Ledger has no audit-log export.
+    supporting_evidence: [ev:scrape-failed]
+    source_authority_policy: competitor_marketing
+    owner: comparestack-editorial
+    permitted_projections: [html, api]
+  - claim_id: claim:ccms.receipts.never-truth.paraphrase
+    assertion_version: "1"
+    issuer: constitutionalcms.com
+    subject: product:constitutional-cms
+    predicate: attest_integrity_not_truth
+    value: true
+    polarity: affirms
+    claim_type: other
+    claim_kind: product_capability
+    paraphrase_of: claim:ccms.receipts.never-truth
+    assertion_text: A conformance receipt records integrity and policy fit. It does not certify that a statement is true.
+    required_qualifications: []
+    supporting_evidence: [ev:ccms-claim-gate]
+    source_authority_policy: product_documentation
+    owner: constitutional-cms-maintainers
+    permitted_projections: [html, sales_answer, api]
+
+indexability_policy:
+  default: index
+  note: Claim withhold does not change this policy.
