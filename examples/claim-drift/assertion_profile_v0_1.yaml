@@ -1,0 +1,255 @@
+# Claim Drift Assertion Profile v0.1
+# Companion application profile. Not a fifth web-conformance profile,
+# not a new permission authority, not a score, not a compiler.
+#
+# Maps section-4 assertion fields into the existing house contracts.
+# Does not add fields to ClaimBundleV0_1. The signed v0.1 artifact is
+# unchanged.
+
+profile_id: claim_drift_assertion_v0_1
+version: "0.1.0"
+status: draft_application
+schema_version: ClaimDriftAssertionProfileV0_1
+
+promise: >
+  For explicitly enrolled material claims and connected publishing
+  surfaces, evaluate the evidence and conditions that permit an
+  assertion, re-evaluate affected decisions when those inputs change,
+  prevent disallowed assertions from being republished, and verify
+  which surfaces actually received the correction.
+
+public_wording: >
+  Constitutional CMS provides publishing-governance contracts and
+  evidence receipts. We are applying that architecture to claim drift:
+  the gap between what a product currently supports and what websites,
+  comparison pages, and connected sales or AI systems continue to
+  assert.
+
+not_a:
+  - fifth_web_conformance_profile
+  - new_permission_authority
+  - site_compiler
+  - score
+  - truth_certification
+  - released_v0_5_0_feature
+
+maps_into:
+  publication_permission:
+    contract: contracts/claim_decision.yaml
+    vocabulary: [publish, hold, suppress]
+    note: >
+      This profile does not mint a second permission language.
+      Publication permission is a claim_decision status.
+  integrity_verification:
+    artifact: ClaimBundleV0_1
+    verifier: constitutional_cms.claims.verify_bundle
+    receipt: ClaimReceiptV0_1
+    note: >
+      Integrity and policy conformance of a signed bundle — never
+      truth and never publication permission. The signed v0.1 schema
+      is not extended.
+  entity_existence:
+    contract: contracts/entity_lifecycle.yaml
+    note: >
+      Withholding a claim is a forbidden terminal trigger
+      (claim_withheld / claim_suppressed / claim_absent).
+  catalog_audit:
+    contract: contracts/check_catalog_v1.yaml
+    note: >
+      Default audit success means a receipt was generated. It does
+      not authorize publication. answer.claims.provenance is a
+      declared-configuration boolean, not semantic examination.
+  delivery:
+    contracts:
+      - contracts/promotion_protocol_v1.yaml
+      - contracts/proof_ledger.yaml
+      - docs/MERGE_IS_NOT_SHIP.md
+    note: Merged ≠ served ≠ accepted. Each enrolled surface is inspected.
+  projection:
+    contracts:
+      - contracts/signal_projection.yaml
+      - docs/CONSUMING_LAYER.md
+    note: Renderers project approved inputs. They do not invent facts.
+  programmatic_publishing_pack:
+    docs: docs/PROGRAMMATIC_PUBLISHING.md
+    note: Reuse the pack's precedence — lifecycle over claim withhold.
+
+# Four layers that must not collapse into one another.
+layers:
+  integrity_verification:
+    question: Are the signed bytes intact and policy-conformant?
+    authority: claims.verify_bundle / verify_receipt
+    never_authorizes: publication_permission
+  evidence_support_assessment:
+    question: Does inspectable, in-scope evidence support the assertion?
+    verdicts: [SUPPORTED, UNSUPPORTED, UNMEASURED]
+    never_authorizes: entity_retirement
+  publication_permission:
+    question: What may we currently say?
+    authority: contracts/claim_decision.yaml
+    verdicts: [publish, hold, suppress]
+  delivery_verification:
+    question: Did each enrolled surface receive the current decision?
+    verdicts: [verified, stale, withheld, unmeasured]
+    acceptance: [complete, incomplete]
+
+# Section 4 — companion assertion record. These fields live beside
+# the signed bundle, never inside it.
+assertion_record:
+  identity:
+    - claim_id
+    - assertion_version
+  proposition:
+    - issuer
+    - subject
+    - predicate
+    - value
+    - polarity
+  scope:
+    - plan
+    - product_version
+    - region
+    - audience
+    - billing_period
+    - units
+    - release_stage
+    note: Unspecified scope is not automatically universal scope.
+  text_and_locator:
+    - assertion_text
+    - source_artifact_id
+    - locator
+  evidence:
+    - supporting_evidence
+    - conflicting_evidence
+    - evidence_bytes_or_ref
+    - content_digest
+    - evidence_inspectable
+    note: >
+      A digest identifies bytes. It does not establish truth or make
+      inaccessible evidence inspectable.
+  governance:
+    - source_authority_policy
+    - owner
+  clocks:
+    - effective_from
+    - effective_until
+    - evidence_observed_at
+    - retrieved_at
+    - decided_at
+    - last_served_verified_at
+    note: >
+      Retrieving or rendering a page again must not advance the
+      evidence's effective or observation clock.
+  emission:
+    - required_qualifications
+    - permitted_projections
+    - review_deadline
+    - dependent_artifact_ids
+
+clock_rules:
+  - id: retrieve_does_not_advance_observation
+    rule: retrieved_at and rendered_at never overwrite observed_at or effective_*
+  - id: page_modified_without_digest_change
+    rule: A newer page modified date with unchanged content digest does not reset freshness or review obligations
+  - id: evaluation_clock_is_an_input
+    rule: as_of is an explicit fixture input, never wall clock
+
+source_authority_policy:
+  product_documentation:
+    may_support: [has_capability, plan_entitlement, release_status, pricing_model]
+    may_not_support: [reliability_without_method]
+  measured_reliability:
+    requires: [workload, window, denominator, method]
+  competitor_marketing:
+    role: untrusted_observation
+    may_not: [override_product_documentation, mutate_policy, mutate_registry]
+  customer_report:
+    role: attributed_experience
+    may_not: [become_general_product_fact]
+  signed_bundle:
+    role: integrity_artifact
+    may_not: [stand_in_for_evidence_support]
+  unsigned_receipt:
+    role: unauthenticated_record
+    may_not: [prove_issuance_or_support]
+  catalog_audit:
+    role: conformance_receipt
+    may_not: [authorize_publication]
+
+decision_rules:
+  - id: extraction_proposes_only
+    rule: Extraction proposes an assertion. It does not create authoritative product state.
+  - id: same_evidentiary_standard
+    rule: Favorable self-claims and unfavorable competitor claims use the same standard.
+  - id: compare_like_scopes
+    rule: Classify contradiction only after plan, dates, region, audience, and release stage overlap.
+  - id: missing_is_unmeasured
+    rule: Missing or failed evidence is UNMEASURED, never proof of absence.
+  - id: roadmap_is_not_ga
+    rule: A future launch announcement cannot support current availability.
+  - id: evidence_change_marks_reeval
+    rule: New evidence invalidates current permission versions. It does not rewrite historical artifacts.
+  - id: integrity_is_not_permission
+    rule: A PASS bundle or green receipt never grants publish by itself.
+  - id: audit_exit_is_not_permission
+    rule: Required material claims with UNMEASURED support cannot publish because audit exited 0.
+  - id: current_permission_needs_current_decision
+    rule: Possession of an old unexpired bundle is not current permission after supersession.
+  - id: qualifications_must_survive_projection
+    rule: Dropping a material qualifier is a stronger claim and is refused.
+  - id: paraphrase_without_strengthening
+    rule: Harmless paraphrase of a still-supported claim preserves publish.
+  - id: withhold_is_not_retire
+    rule: hold or suppress does not retire the subject or change indexability.
+  - id: source_text_cannot_mutate_authority
+    rule: Crawled instructions are untrusted evidence. They cannot change policy, registry, tools, or permission.
+  - id: syndication_is_one_origin
+    rule: Copies that share origin_id are one corroborating source.
+  - id: delivery_is_per_surface
+    rule: One corrected HTML page cannot establish correction of a sales artifact or API.
+  - id: enrolled_paths_only
+    rule: A path that bypasses the gate is uncovered until integrated.
+
+surfaces:
+  html:
+    kind: visible_text
+    publish_requires: [status is publish]
+  sales_answer:
+    kind: visible_text
+    note: One approved sales-answer text artifact.
+  api:
+    kind: agent_api
+    publish_requires:
+      - status is publish
+      - source_id and reason_codes are exposed with the value
+    suppress_behavior: Return claim status and reason without inventing a substitute value.
+
+reason_codes:
+  # Reuse claim_decision recommended codes; add profile-documented extras.
+  from_claim_decision:
+    - source_missing
+    - source_stale
+    - source_unvalidated
+    - source_conflict
+    - insufficient_evidence
+    - confidence_low
+    - fallback_value
+    - editorial_hold
+  profile:
+    - scope_mismatch_not_contradiction
+    - universal_denied_by_qualified_support
+    - roadmap_is_not_ga
+    - evidence_unmeasured
+    - evidence_not_inspectable
+    - qualifier_dropped
+    - obsolete_permission
+    - integrity_is_not_permission
+    - receipt_unauthenticated
+    - audit_is_not_permission
+    - common_origin_not_independent
+    - attributed_experience_retained
+    - paraphrase_without_strengthening
+    - source_instruction_untrusted
+    - delivery_surface_stale
+    - delivery_surface_unmeasured
+    - claim_withheld_entity_intact

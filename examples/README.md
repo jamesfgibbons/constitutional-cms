@@ -13,3 +13,8 @@ eligibility decisions, and timestamps are fabricated.
 synthetic ecommerce catalogue (product, collection, comparison) that maps those pages onto the existing contracts.
 It is teaching material, not a site compiler and not a fifth conformance profile. See
 [`docs/PROGRAMMATIC_PUBLISHING.md`](../docs/PROGRAMMATIC_PUBLISHING.md).
+
+[`claim-drift/`](claim-drift/) is the Claim Drift application pack: a finite inventory of owned Constitutional CMS
+claims plus synthetic comparison and plan fixtures. It maps those assertions onto `claim_decision`, Claim Gate,
+entity lifecycle, and per-surface delivery. It is not a fifth profile, not truth certification, and not a released
+v0.5.0 feature. See [`docs/CLAIM_DRIFT.md`](../docs/CLAIM_DRIFT.md).

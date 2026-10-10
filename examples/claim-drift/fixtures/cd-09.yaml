@@ -1,0 +1,26 @@
+# CD-09 — new evidence supersedes an unexpired prior decision
+case_id: CD-09
+as_of: "2026-10-09T16:00:00Z"
+include_assertions:
+  - claim:harbor.sso.ga
+  - claim:harbor.sso.enterprise
+include_evidence:
+  - ev:harbor-docs-sso
+  - ev:harbor-roadmap-sso
+prior_decisions:
+  - decision_id: decision:harbor.sso.ga:v1
+    claim_id: claim:harbor.sso.ga
+    status: publish
+    decided_at: "2026-06-02T09:00:00Z"
+    valid_until: "2026-12-01T00:00:00Z"
+    evidence_ids: [ev:harbor-roadmap-sso]
+    superseded_by: decision:harbor.sso.ga:v2
+current_decision_ids:
+  claim:harbor.sso.ga: decision:harbor.sso.ga:v2
+serving_decision_ids:
+  claim:harbor.sso.ga: decision:harbor.sso.ga:v1
+historical_artifact:
+  mode: receipt
+  receipt_path: tests/golden-claims/verified.receipt.json
+  current: false
+  as_of: "2026-08-15T12:30:00Z"

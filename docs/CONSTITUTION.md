@@ -425,6 +425,7 @@ constitutional-cms/
 │   ├── location-intelligence/         # Location intelligence example
 │   ├── ecommerce-catalog/             # Product page example
 │   ├── programmatic-publishing/       # Governed Programmatic Publishing pack (synthetic catalogue)
+│   ├── claim-drift/                   # Claim Drift application pack (frozen fixtures; draft)
 │   ├── manifests/                     # Public-safe configuration examples
 │   └── link-targets/                  # Normalized link-authority examples
 ├── schemas/                           # JSON Schemas for portable interfaces
@@ -453,6 +454,7 @@ constitutional-cms/
     ├── CONSTITUTIONAL_CYBERNETICS.md  # Control-system frame for the agentic web
     ├── AGENT_COORDINATION.md          # How agents use these contracts
     ├── PROGRAMMATIC_PUBLISHING.md     # Application pack: generated page families
+    ├── CLAIM_DRIFT.md                 # Application pack: enrolled material claims (draft)
     └── PRIOR_ART.md                   # Honest comparison to existing tools
 ```
 

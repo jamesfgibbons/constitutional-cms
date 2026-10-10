@@ -1,0 +1,42 @@
+# Section 7 — source revision through delivery, including HTML-fixed / API-stale
+case_id: CD-E2E
+as_of: "2026-10-09T16:00:00Z"
+owner: harbor-docs
+before:
+  include_assertions:
+    - claim:harbor.sso.ga
+    - claim:harbor.sso.enterprise
+  include_evidence:
+    - ev:harbor-roadmap-sso
+  note: Before the docs revision, only a roadmap announcement exists.
+after:
+  include_assertions:
+    - claim:harbor.sso.ga
+    - claim:harbor.sso.enterprise
+  include_evidence:
+    - ev:harbor-docs-sso
+  source_revision:
+    from: ev:harbor-roadmap-sso
+    to: ev:harbor-docs-sso
+    artifact_versions:
+      policy: assertion_profile_v0_1
+      evidence: ev:harbor-docs-sso
+      assertion: claim:harbor.sso.enterprise@1
+served_after:
+  html:
+    body: |
+      <article>
+      <p data-claim="claim:harbor.sso.enterprise">SAML SSO is available on the Enterprise plan.</p>
+      </article>
+    observed_at: "2026-10-09T16:00:00Z"
+  sales_answer:
+    body: SAML SSO is available on the Enterprise plan.
+    observed_at: "2026-10-09T16:00:00Z"
+  api:
+    body:
+      claims:
+        claim:harbor.sso.ga:
+          status: publish
+          value: SAML SSO is generally available.
+    observed_at: "2026-10-09T15:00:00Z"
+enrolled_surfaces: [html, sales_answer, api]

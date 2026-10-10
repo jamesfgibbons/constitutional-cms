@@ -1,0 +1,10 @@
+# CD-13 — syndicated reprints share one origin
+case_id: CD-13
+as_of: "2026-10-09T16:00:00Z"
+include_assertions:
+  - claim:harbor.sso.universal-absent
+include_evidence:
+  - ev:wire-upstream
+  - ev:wire-copy-a
+  - ev:wire-copy-b
+  - ev:harbor-docs-sso
