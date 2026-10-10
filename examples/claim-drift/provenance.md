@@ -28,4 +28,4 @@ does not copy those pages and does not perform network retrieval.
 - Not a released v0.5.0 feature.
 - Not a live pilot.
 - Not a public source-registry change.
-- Not SERPRadio, tgflightsfromnyc, Railway, or production configuration.
+- Not a production publisher, provider configuration, or release tag.

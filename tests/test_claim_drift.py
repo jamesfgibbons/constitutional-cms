@@ -101,7 +101,7 @@ class ClaimDriftPackLawTest(unittest.TestCase):
         self.assertTrue(forbidden.isdisjoint(claim_props))
 
     def test_docs_use_section_9_public_wording(self):
-        text = (DOCS / "CLAIM_DRIFT.md").read_text(encoding="utf-8")
+        text = " ".join((DOCS / "CLAIM_DRIFT.md").read_text(encoding="utf-8").split())
         self.assertIn(
             "Constitutional CMS provides publishing-governance contracts and evidence",
             text,

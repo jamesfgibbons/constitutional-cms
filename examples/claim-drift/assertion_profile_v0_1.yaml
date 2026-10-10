@@ -19,11 +19,10 @@ promise: >
   which surfaces actually received the correction.
 
 public_wording: >
-  Constitutional CMS provides publishing-governance contracts and
-  evidence receipts. We are applying that architecture to claim drift:
-  the gap between what a product currently supports and what websites,
-  comparison pages, and connected sales or AI systems continue to
-  assert.
+  Constitutional CMS provides publishing-governance contracts and evidence
+  receipts. We are applying that architecture to claim drift: the gap between
+  what a product currently supports and what websites, comparison pages, and
+  connected sales or AI systems continue to assert.
 
 not_a:
   - fifth_web_conformance_profile
@@ -106,24 +105,14 @@ assertion_record:
     - value
     - polarity
   scope:
-    - plan
-    - product_version
-    - region
-    - audience
-    - billing_period
-    - units
-    - release_stage
+    fields: [plan, product_version, region, audience, billing_period, units, release_stage]
     note: Unspecified scope is not automatically universal scope.
   text_and_locator:
     - assertion_text
     - source_artifact_id
     - locator
   evidence:
-    - supporting_evidence
-    - conflicting_evidence
-    - evidence_bytes_or_ref
-    - content_digest
-    - evidence_inspectable
+    fields: [supporting_evidence, conflicting_evidence, evidence_bytes_or_ref, content_digest, evidence_inspectable]
     note: >
       A digest identifies bytes. It does not establish truth or make
       inaccessible evidence inspectable.
@@ -131,12 +120,7 @@ assertion_record:
     - source_authority_policy
     - owner
   clocks:
-    - effective_from
-    - effective_until
-    - evidence_observed_at
-    - retrieved_at
-    - decided_at
-    - last_served_verified_at
+    fields: [effective_from, effective_until, evidence_observed_at, retrieved_at, decided_at, last_served_verified_at]
     note: >
       Retrieving or rendering a page again must not advance the
       evidence's effective or observation clock.

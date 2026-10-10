@@ -8,10 +8,7 @@ web-conformance profile. Claim Gate v0.1 remains DRAFT on main. Default
 `audit` success still means a receipt was generated, not that
 publication is allowed.
 
-> Constitutional CMS provides publishing-governance contracts and evidence
-> receipts. We are applying that architecture to claim drift: the gap
-> between what a product currently supports and what websites, comparison
-> pages, and connected sales or AI systems continue to assert.
+> Constitutional CMS provides publishing-governance contracts and evidence receipts. We are applying that architecture to claim drift: the gap between what a product currently supports and what websites, comparison pages, and connected sales or AI systems continue to assert.
 
 Do not yet claim automatic web-wide correction, guaranteed AI citation,
 comprehensive contradiction detection, independent truth certification,

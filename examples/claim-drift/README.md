@@ -7,10 +7,7 @@ This pack applies existing Constitutional CMS governance to a finite
 inventory of material assertions. It is not a new platform, score,
 compiler, or fifth web-conformance profile.
 
-> Constitutional CMS provides publishing-governance contracts and evidence
-> receipts. We are applying that architecture to claim drift: the gap
-> between what a product currently supports and what websites, comparison
-> pages, and connected sales or AI systems continue to assert.
+> Constitutional CMS provides publishing-governance contracts and evidence receipts. We are applying that architecture to claim drift: the gap between what a product currently supports and what websites, comparison pages, and connected sales or AI systems continue to assert.
 
 Do not read these fixtures as automatic web-wide correction, guaranteed
 AI citation, comprehensive contradiction detection, or independent truth
