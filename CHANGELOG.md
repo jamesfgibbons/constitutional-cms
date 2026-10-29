@@ -4,6 +4,12 @@ All notable changes to Constitutional CMS are documented here. This project foll
 
 ## [Unreleased] — v0.6.0-dev (pre-ratification)
 
+### Added — Claim Drift application pack (DRAFT: not a released v0.5.0 feature)
+- [`docs/CLAIM_DRIFT.md`](docs/CLAIM_DRIFT.md) and `examples/claim-drift/`: a bounded application of existing `claim_decision`, Claim Gate, entity lifecycle, catalog audit, and delivery contracts to a finite enrolled inventory. Not a fifth web-conformance profile, score, compiler, or second permission authority.
+- Versioned companion assertion profile `claim_drift_assertion_v0_1` (0.1.0) mapped into those contracts. The signed `ClaimBundleV0_1` artifact is unchanged.
+- Offline fixtures CD-01–CD-18 plus the section-7 source-revision sequence, with frozen clocks and retained source snapshots. `tests/test_claim_drift.py` asserts observable publication decisions and HTML / sales-answer / API projections.
+- Public wording is the pack's section-9 sentence. This pack does not claim automatic web-wide correction, AI citation, comprehensive contradiction detection, or truth certification.
+
 ### Added — Claim Gate v0.1 (DRAFT: not ratified until the founder tags a release)
 - **ClaimBundleV0_1** (`schemas/claim_bundle_v0_1.schema.json`): frozen, hashed, Ed25519-signed claim core. Volatile facts forbidden inside; `bundle_hash` and the signature cover the same canonical bytes (house `docs/CANONICAL_JSON.md` procedure, one code path). Bundle `valid_until` MUST equal the earliest claim `valid_until` — earliest-expiry-governs is verifier-enforced.
 - **ClaimReceiptV0_1** (`schemas/claim_receipt_v0_1.schema.json`): volatile verification record quoting `bundle_hash`. Verifies integrity + policy conformance, never truth. Deterministic `receipt_id` (`cr_…`); supersession annotations live outside `receipt_hash` so superseding never mutates the old receipt's hashed core.

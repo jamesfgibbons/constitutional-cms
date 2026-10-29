@@ -1,0 +1,11 @@
+# CD-08 — green-looking unsigned receipt without authenticated chain
+case_id: CD-08
+as_of: "2026-10-09T16:00:00Z"
+include_assertions:
+  - claim:ccms.claim-gate.released-in-v0.5.0
+include_evidence:
+  - ev:ccms-claim-gate
+integrity:
+  mode: receipt_only
+  receipt_path: tests/golden-claims/verified.receipt.json
+  as_of: "2026-08-15T12:30:00Z"

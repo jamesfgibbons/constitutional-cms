@@ -1,0 +1,7 @@
+# CD-05 — failed scrape cannot prove feature absence
+case_id: CD-05
+as_of: "2026-10-09T16:00:00Z"
+include_assertions:
+  - claim:harbor.feature.absent-unmeasured
+include_evidence:
+  - ev:scrape-failed

@@ -1,0 +1,8 @@
+# CD-17 — harmless paraphrase of a still-supported claim
+case_id: CD-17
+as_of: "2026-10-09T16:00:00Z"
+include_assertions:
+  - claim:ccms.receipts.never-truth
+  - claim:ccms.receipts.never-truth.paraphrase
+include_evidence:
+  - ev:ccms-claim-gate

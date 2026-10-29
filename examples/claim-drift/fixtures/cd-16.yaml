@@ -1,0 +1,8 @@
+# CD-16 — inaccurate claim favors Constitutional CMS
+case_id: CD-16
+as_of: "2026-10-09T16:00:00Z"
+include_assertions:
+  - claim:ccms.claim-gate.released-in-v0.5.0
+  - claim:ccms.claim-gate.not-in-v0.5.0
+include_evidence:
+  - ev:ccms-claim-gate

@@ -1,0 +1,10 @@
+# CD-14 — dated customer experience is retained with attribution
+case_id: CD-14
+as_of: "2026-10-09T16:00:00Z"
+include_assertions:
+  - claim:harbor.customer.outage-2026-03
+  - claim:harbor.sso.enterprise
+include_evidence:
+  - ev:customer-outage
+  - ev:harbor-docs-sso
+marketing_differs: true

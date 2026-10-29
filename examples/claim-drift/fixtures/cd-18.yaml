@@ -1,0 +1,11 @@
+# CD-18 — evidence-support UNMEASURED while catalog audit exits 0
+case_id: CD-18
+as_of: "2026-10-09T16:00:00Z"
+include_assertions:
+  - claim:harbor.feature.absent-unmeasured
+include_evidence:
+  - ev:scrape-failed
+audit:
+  evidence_path: tests/fixtures/conformance/pass_all.yaml
+  as_of: "2026-08-15T12:00:00Z"
+  required_claim: claim:harbor.feature.absent-unmeasured

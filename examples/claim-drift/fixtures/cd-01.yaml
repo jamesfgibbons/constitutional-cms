@@ -1,0 +1,18 @@
+# CD-01 — universal denial vs qualified Enterprise support
+case_id: CD-01
+as_of: "2026-10-09T16:00:00Z"
+include_assertions:
+  - claim:harbor.sso.universal-absent
+  - claim:harbor.sso.enterprise
+include_evidence:
+  - ev:comparestack-denial
+  - ev:harbor-docs-sso
+projection_overrides:
+  claim:harbor.sso.enterprise:
+    html: SAML SSO is available on the Enterprise plan.
+    sales_answer: SAML SSO is available on the Enterprise plan.
+    api: SAML SSO is available on the Enterprise plan.
+  claim:harbor.sso.universal-absent:
+    html: Harbor Ledger has no SAML SSO.
+    sales_answer: Harbor Ledger has no SAML SSO.
+    api: Harbor Ledger has no SAML SSO.

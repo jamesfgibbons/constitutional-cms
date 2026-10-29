@@ -1,0 +1,10 @@
+# CD-15 — unsupported claim removed from a legitimate product page
+case_id: CD-15
+as_of: "2026-10-09T16:00:00Z"
+include_assertions:
+  - claim:harbor.sso.universal-absent
+include_evidence:
+  - ev:comparestack-denial
+  - ev:harbor-docs-sso
+remove_from_page: claim:harbor.sso.universal-absent
+entity_id: product:harbor-ledger

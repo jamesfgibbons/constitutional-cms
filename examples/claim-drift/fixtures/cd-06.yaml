@@ -1,0 +1,15 @@
+# CD-06 — page modified date advances; evidence bytes unchanged
+case_id: CD-06
+as_of: "2026-10-09T16:00:00Z"
+include_assertions:
+  - claim:ccms.receipts.never-truth
+include_evidence:
+  - ev:ccms-claim-gate
+render_again_at: "2026-10-09T16:00:00Z"
+page_modified_at: "2026-10-09T15:59:00Z"
+evidence_mutations:
+  ev:ccms-claim-gate:
+    page_modified_at: "2026-10-09T15:59:00Z"
+    retrieved_at: "2026-10-09T16:00:00Z"
+    # observed_at and effective_from must stay 2026-10-01T12:00:00Z / 2026-08-15
+review_deadline_before: "2026-10-15T12:00:00Z"

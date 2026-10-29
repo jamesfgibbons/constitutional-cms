@@ -1,0 +1,27 @@
+# CD-10 — HTML corrected; API retains the old claim
+case_id: CD-10
+as_of: "2026-10-09T16:00:00Z"
+include_assertions:
+  - claim:harbor.sso.universal-absent
+  - claim:harbor.sso.enterprise
+include_evidence:
+  - ev:comparestack-denial
+  - ev:harbor-docs-sso
+served:
+  html:
+    body: |
+      <article>
+      <p data-claim="claim:harbor.sso.enterprise">SAML SSO is available on the Enterprise plan.</p>
+      </article>
+    observed_at: "2026-10-09T16:00:00Z"
+  sales_answer:
+    body: SAML SSO is available on the Enterprise plan.
+    observed_at: "2026-10-09T16:00:00Z"
+  api:
+    body:
+      claims:
+        claim:harbor.sso.universal-absent:
+          status: publish
+          value: Harbor Ledger has no SAML SSO.
+    observed_at: "2026-10-09T15:00:00Z"
+    note: Cached API still serves the universal denial.

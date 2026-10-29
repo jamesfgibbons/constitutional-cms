@@ -1,0 +1,13 @@
+# CD-11 — summary drops Enterprise / workload qualifier
+case_id: CD-11
+as_of: "2026-10-09T16:00:00Z"
+include_assertions:
+  - claim:harbor.sso.enterprise-workload
+include_evidence:
+  - ev:harbor-docs-sso
+projection_overrides:
+  claim:harbor.sso.enterprise-workload:
+    html: SAML SSO is available.
+    sales_answer: SAML SSO is available.
+    api: SAML SSO is available.
+    note: Stronger projection — qualifiers dropped.
